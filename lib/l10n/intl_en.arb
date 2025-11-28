@@ -1,0 +1,15 @@
+{
+    "@@locale": "en",
+    "skipButton": "Skip",
+    "nextButton": "Next",
+    "getStartedButton": "Get Started",
+
+    "onboarding1Title": "Fastest Delivery",
+    "onboarding1Description": "Select your chilled and frozen products easily, and receive your order fresh and fast.",
+    
+    "onboarding2Title": "Unforgettable Quality & Flavor",
+    "onboarding2Description": "Meat, poultry, canned goods, and cold products carefully selected to ensure the best taste for your family.",
+    
+    "onboarding3Title": "Our Offers Never End!",
+    "onboarding3Description": "Enjoy exclusive discounts and weekly saving offers designed specifically for you and your family."
+}

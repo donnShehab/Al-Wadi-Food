@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "838699599098",
+    "project_id": "alwadifood-462c6",
+    "storage_bucket": "alwadifood-462c6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:838699599098:android:0ea36b45e3b470590db543",
+        "android_client_info": {
+          "package_name": "com.example.alwadi_food"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKYPSqHgMQCoWGokpNLXPE-yRdIaINlAs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
