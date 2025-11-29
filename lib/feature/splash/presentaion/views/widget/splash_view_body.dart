@@ -75,18 +75,18 @@ class _SplashViewBodyState extends State<SplashViewBody>
   void _navigateBasedOnPrefsAndAuth() {
     bool isOnBoardingViewSeen = Prefs.getBool(kIsOnBoardingViewSeen);
     Future.delayed(Duration(seconds: 3), () {
-      if (isOnBoardingViewSeen) {
-        var isLoggedIn = FirebaseAuthService().isLoggedIn();
-        if (isLoggedIn) {
-          GoRouter.of(context).go(AppRouter.kHomeView);
-        }
-        else
-        {
-          GoRouter.of(context).push(AppRouter.kSigninView);
-        }
-      } else {
+      // if (isOnBoardingViewSeen) {
+      //   // var isLoggedIn = FirebaseAuthService().isLoggedIn();
+      //   // if (isLoggedIn) {
+      //   //   GoRouter.of(context).go(AppRouter.kHomeView);
+      //   // }
+      //   // else
+      //   // {
+      //   //   GoRouter.of(context).push(AppRouter.kSigninView);
+      //   // }
+      // } else {
         GoRouter.of(context).push(AppRouter.kOnboarding);
-      }
+      // }
     });
   }
 }

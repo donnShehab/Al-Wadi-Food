@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:alwadi_food/core/errors/exceptions.dart';
 import 'package:alwadi_food/core/errors/failures.dart';
 import 'package:alwadi_food/core/services/firebase_auth_service.dart';
@@ -43,5 +45,18 @@ class AuthRepoImpl implements AuthRepo {
     } on CustomException catch (e) {
       return Left(ServerFailure(message: e.message));
     }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> signInWithGoogle() async {
+    try {
+      var user = await firebaseAuthService.signInWithGoogle();
+      return Right(UserModel.fromFirebaseUser(user));
+    } on CustomException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      log('Exception in AuthRepoImpl.signInWithGoogle: ${e.toString()}');
+    }
+    return Left(ServerFailure(message: 'Something went wrong'));
   }
 }

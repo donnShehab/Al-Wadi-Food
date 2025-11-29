@@ -135,7 +135,9 @@ class _SiginViewBodyState extends State<SiginViewBody> {
                   titleColor: AppColors.alwadiOrange,
                   imageSocial: SvgPicture.asset(Assets.imagesGoogleIcon),
                   title: 'Login By Google',
-                  onPressed: () {},
+                  onPressed: () {
+                    context.read<SigninCubit>().signInWithGoogle();
+                  },
                 ),
                 SizedBox(height: 12),
                 Platform.isIOS
