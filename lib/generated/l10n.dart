@@ -53,96 +53,13 @@ class S {
   static S? maybeOf(BuildContext context) {
     return Localizations.of<S>(context, S);
   }
-
-  /// `Skip`
-  String get skipButton {
-    return Intl.message('Skip', name: 'skipButton', desc: '', args: []);
-  }
-
-  /// `Next`
-  String get nextButton {
-    return Intl.message('Next', name: 'nextButton', desc: '', args: []);
-  }
-
-  /// `Get Started`
-  String get getStartedButton {
-    return Intl.message(
-      'Get Started',
-      name: 'getStartedButton',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Fastest Delivery`
-  String get onboarding1Title {
-    return Intl.message(
-      'Fastest Delivery',
-      name: 'onboarding1Title',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Select your chilled and frozen products easily, and receive your order fresh and fast.`
-  String get onboarding1Description {
-    return Intl.message(
-      'Select your chilled and frozen products easily, and receive your order fresh and fast.',
-      name: 'onboarding1Description',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Unforgettable Quality & Flavor`
-  String get onboarding2Title {
-    return Intl.message(
-      'Unforgettable Quality & Flavor',
-      name: 'onboarding2Title',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Meat, poultry, canned goods, and cold products carefully selected to ensure the best taste for your family.`
-  String get onboarding2Description {
-    return Intl.message(
-      'Meat, poultry, canned goods, and cold products carefully selected to ensure the best taste for your family.',
-      name: 'onboarding2Description',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Our Offers Never End!`
-  String get onboarding3Title {
-    return Intl.message(
-      'Our Offers Never End!',
-      name: 'onboarding3Title',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Enjoy exclusive discounts and weekly saving offers designed specifically for you and your family.`
-  String get onboarding3Description {
-    return Intl.message(
-      'Enjoy exclusive discounts and weekly saving offers designed specifically for you and your family.',
-      name: 'onboarding3Description',
-      desc: '',
-      args: [],
-    );
-  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
   const AppLocalizationDelegate();
 
   List<Locale> get supportedLocales {
-    return const <Locale>[
-      Locale.fromSubtags(languageCode: 'en'),
-      Locale.fromSubtags(languageCode: 'ar'),
-    ];
+    return const <Locale>[Locale.fromSubtags(languageCode: 'en')];
   }
 
   @override

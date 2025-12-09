@@ -1,2 +1,2 @@
-const kPaypalSecretkEY = 'EOIBiYSL0vEW0YJVbxaSyFHqUJ7BiGLtohYnqRbdQcBB2fEr8nv_BvfJ2xm7THDEdsSE1w5KTwts_Y-_';
-const kPaypalClientId = 'AUYtwX7rYlR-JGjIZwgw60pXLjZt5Q_uBmr8AyTYXVNuC1h4h7YVZaNbdLmAv_e3UqoBe1EDuO2UEw5-';
+// const kPaypalSecretkEY = 'EOIBiYSL0vEW0YJVbxaSyFHqUJ7BiGLtohYnqRbdQcBB2fEr8nv_BvfJ2xm7THDEdsSE1w5KTwts_Y-_';
+// const kPaypalClientId = 'AUYtwX7rYlR-JGjIZwgw60pXLjZt5Q_uBmr8AyTYXVNuC1h4h7YVZaNbdLmAv_e3UqoBe1EDuO2UEw5-';
