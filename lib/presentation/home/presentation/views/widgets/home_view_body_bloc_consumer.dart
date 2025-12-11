@@ -14,10 +14,13 @@ class HomeViewBodyBlocConsumer extends StatelessWidget {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return LoadingOverlay(
+          // Loading overly when state is loading
           isLoading: state is HomeLoading,
           child: Scaffold(
+            // show homeContent when data is loaded
             body: state is HomeLoaded
                 ? HomeViewBodyContent(user: state.user)
+                // show error message if error occurs
                 : state is HomeError
                 ? Center(child: Text(state.message))
                 : const Center(child: CircularProgressIndicator()),

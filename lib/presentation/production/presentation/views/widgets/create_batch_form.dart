@@ -1,18 +1,14 @@
 import 'dart:io';
+import 'package:alwadi_food/core/utils/validators.dart';
 import 'package:alwadi_food/presentation/production/data/models/production_batch_model.dart';
 import 'package:alwadi_food/presentation/production/presentation/views/widgets/create_batch/date_time_picker_field.dart';
 import 'package:alwadi_food/presentation/production/presentation/views/widgets/create_batch/image_picker_grid.dart';
 import 'package:alwadi_food/presentation/production/presentation/views/widgets/create_batch/line_dropdown.dart';
-import 'package:alwadi_food/presentation/production/presentation/views/widgets/create_batch/notes_field.dart';
-import 'package:alwadi_food/presentation/production/presentation/views/widgets/create_batch/operator_field.dart';
+import 'package:alwadi_food/presentation/production/presentation/views/widgets/create_batch/create_batch_field.dart';
 import 'package:alwadi_food/presentation/production/presentation/views/widgets/create_batch/product_dropdown.dart';
-import 'package:alwadi_food/presentation/production/presentation/views/widgets/create_batch/quantity_field.dart';
 import 'package:alwadi_food/presentation/production/presentation/views/widgets/create_batch/submit_button.dart';
 import 'package:flutter/material.dart';
-import 'package:alwadi_food/presentation/widgets/custom_text_field.dart';
-import 'package:alwadi_food/presentation/widgets/custom_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:alwadi_food/core/di/injection.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart';
@@ -96,14 +92,28 @@ class _CreateBatchFormState extends State<CreateBatchForm> {
                   onChanged: (v) => setState(() => _selectedProduct = v),
                 ),
                 const SizedBox(height: 12),
-                QuantityField(controller: _quantityController),
+                // QuantityField(controller: _quantityController),
+                CreateBatchField(
+                  controller: _quantityController,
+                  textLabel: 'Quantity *',
+                  hint: 'Enter quntity',
+                  validator: (v) =>
+                      Validators.validatePositiveNumber(v, 'Quantity'),
+                ),
                 const SizedBox(height: 12),
                 LineDropdown(
                   selectedLine: _selectedLine,
                   onChanged: (v) => setState(() => _selectedLine = v),
                 ),
                 const SizedBox(height: 12),
-                OperatorField(controller: _operatorController),
+                // OperatorField(controller: _operatorController),
+                CreateBatchField(
+                  controller: _operatorController,
+                  textLabel: 'Operator Name *',
+                  hint: 'Enter operator name',
+                  validator: (v) =>
+                      Validators.validateRequired(v, 'Operator name'),
+                ),
                 const SizedBox(height: 12),
                 DateTimePickerField(
                   label: 'Start Time *',
@@ -117,7 +127,13 @@ class _CreateBatchFormState extends State<CreateBatchForm> {
                   onDateSelected: (v) => setState(() => _endTime = v),
                 ),
                 const SizedBox(height: 12),
-                NotesField(controller: _notesController),
+                // NotesField(controller: _notesController),
+                CreateBatchField(
+                  controller: _notesController,
+                  textLabel: 'Notes',
+                  hint: 'Enter notes',
+                  maxLines: 3,
+                ),
                 const SizedBox(height: 12),
                 Text(
                   'Product Images *',
@@ -131,7 +147,9 @@ class _CreateBatchFormState extends State<CreateBatchForm> {
                   onChanged: () => setState(() {}),
                 ),
                 const SizedBox(height: 24),
-                SubmitButton(onPressed: () => _handleSubmit(context)),
+                SubmitButtonCreateBatch(
+                  onPressed: () => _handleSubmit(context),
+                ),
               ],
             ),
           ),

@@ -18,20 +18,25 @@ class AppConstants {
   static const List<String> productTypes = [
     'Burger',
     'Nuggets',
+    'Escalope'
     'Luncheon',
+    'Chicken Strips',
+    'Meatballs',
     'Zinger',
     'Hot Dog',
     'Sausage',
-    'Chicken Strips',
-    'Meatballs',
   ];
 
   // Production Lines
   static const List<String> productionLines = [
-    'Line A',
-    'Line B',
-    'Line C',
-    'Line D',
+    'Line GEA CutMaster',
+    'Line WEILER ',
+    'Line Laska',
+    'Line WolfKing',
+    'Line Zinger Production',
+    'Line Burger Patties',
+    'Line Escalope Production',
+    'Line Nuggets Production',
   ];
 
   // Firebase Collections

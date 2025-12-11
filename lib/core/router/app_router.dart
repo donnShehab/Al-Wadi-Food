@@ -18,7 +18,7 @@ import 'package:go_router/go_router.dart';
 abstract class AppRouter {
   static const KsplashView = '/';
   static const KloginView = '/login';
-  static const KregisterView = '/register';
+  static const KsignupView = '/signup';
   static const KhomeView = '/home';
   static const KcreateBatchView = '/create-batch';
   static const KbatchListView = '/batch-list';
@@ -37,9 +37,12 @@ abstract class AppRouter {
         path: KsplashView,
         builder: (context, state) => const SplashView(),
       ),
-      GoRoute(path: KloginView, builder: (context, state) => const LoginView()),
       GoRoute(
-        path: '/register',
+        path: KloginView,
+        builder: (context, state) => const SigninView(),
+      ),
+      GoRoute(
+        path: '/signup',
         builder: (context, state) => const SignupView(),
       ),
 

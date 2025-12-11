@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:alwadi_food/presentation/widgets/custom_button.dart';
 
-class SubmitButton extends StatelessWidget {
+class SubmitButtonCreateBatch extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const SubmitButton({super.key, required this.onPressed});
+  const SubmitButtonCreateBatch({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

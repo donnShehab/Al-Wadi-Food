@@ -15,11 +15,30 @@ class SignupViewBody extends StatefulWidget {
 }
 
 class _SignupViewBodyState extends State<SignupViewBody> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   String _role = 'manager';
+
+  void handleSignup(BuildContext context) {
+    if (_formKey.currentState!.validate()) {
+      final name = _nameController.text.trim();
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      if (name.isEmpty || email.isEmpty || password.isEmpty) return;
+
+      context.read<AuthCubit>().signUp(
+        role: _role,
+        name: name,
+        email: email,
+        password: password,
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -33,61 +52,61 @@ class _SignupViewBodyState extends State<SignupViewBody> {
   Widget build(BuildContext context) {
     final loading = context.watch<AuthCubit>().state is AuthLoading;
 
-    return Padding(
-      padding: AppSpacing.paddingLg,
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            CustomTextField(
-              label: 'Name',
-              controller: _nameController,
-              validator: (value) => Validators.validateRequired(value, "Name"),
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Email',
-              controller: _emailController,
-              validator: Validators.validateEmail,
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Password',
-              controller: _passwordController,
-              obscureText: true,
-              validator: Validators.validatePassword,
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _role,
-              decoration: const InputDecoration(label: Text("Role")),
-              items: const [
-                DropdownMenuItem(value: 'manager', child: Text("Manager")),
-                DropdownMenuItem(
-                  value: 'supervisor',
-                  child: Text("Supervisor"),
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: AppSpacing.paddingLg,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                CustomTextField(
+                  controller: _nameController,
+                  label: 'Name',
+                  validator: (value) =>
+                      Validators.validateRequired(value, "Name"),
                 ),
-                DropdownMenuItem(value: 'qc', child: Text("QC")),
+                const SizedBox(height: 16),
+                CustomTextField(
+                  controller: _emailController,
+                  label: 'Email',
+                  validator: Validators.validateEmail,
+                ),
+                const SizedBox(height: 16),
+                CustomTextField(
+                  controller: _passwordController,
+                  label: 'Password',
+                  obscureText: true,
+                  validator: Validators.validatePassword,
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _role,
+                  decoration: const InputDecoration(label: Text("Role")),
+                  items: const [
+                    DropdownMenuItem(value: 'manager', child: Text("Manager")),
+                    DropdownMenuItem(
+                      value: 'supervisor',
+                      child: Text("Supervisor"),
+                    ),
+                    DropdownMenuItem(value: 'qc', child: Text("QC")),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _role = value);
+                    }
+                  },
+                ),
+                const SizedBox(height: 32),
+                CustomButton(
+                  text: 'Create Account',
+                  icon: Icons.person_add,
+                  isLoading: loading,
+                  onPressed: () => handleSignup(context),
+                ),
               ],
-              onChanged: (value) => setState(() => _role = value!),
             ),
-            const SizedBox(height: 32),
-            CustomButton(
-              text: 'Create Account',
-              icon: Icons.person_add,
-              isLoading: loading,
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  context.read<AuthCubit>().signUp(
-                    name: _nameController.text.trim(),
-                    email: _emailController.text.trim(),
-                    password: _passwordController.text.trim(),
-                    role: _role,
-                  );
-                }
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );

@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'package:alwadi_food/presentation/auth/domain/entites/qc_result_entity.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart';
-import 'package:alwadi_food/presentation/auth/domain/repos/qc_repository.dart';
 import 'package:alwadi_food/presentation/production/domain/repos/production_repository.dart';
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
 import 'package:alwadi_food/presentation/qc/domain/repos/qc_repository.dart';

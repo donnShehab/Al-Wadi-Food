@@ -17,14 +17,14 @@ class SplashViewBody extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'IceBox',
+            'AlWadi Smart Factory',
             style: Theme.of(
               context,
             ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
-            'Factory Management',
+            'Food Production & QC Management',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 48),

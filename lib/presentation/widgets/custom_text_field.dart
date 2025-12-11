@@ -14,6 +14,7 @@ class CustomTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final List<TextInputFormatter>? inputFormatters;
+  final void Function(String?)? onSaved;
 
   const CustomTextField({
     super.key,
@@ -27,7 +28,7 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.readOnly = false,
     this.onTap,
-    this.inputFormatters,
+    this.inputFormatters, this.onSaved,
   });
 
   @override

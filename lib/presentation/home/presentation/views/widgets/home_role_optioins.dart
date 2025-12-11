@@ -1,6 +1,6 @@
+import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:alwadi_food/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import 'home_navigation_card.dart';
 
@@ -28,7 +28,7 @@ class SupervisorOptions extends StatelessWidget {
           subtitle: 'See all production batches',
           icon: Icons.view_list,
           color: LightModeColors.lightSecondary,
-          route: '/batch-list',
+          route: AppRouter.KbatchListView,
         ),
       ],
     );
@@ -54,7 +54,7 @@ class QCOptions extends StatelessWidget {
           subtitle: 'Batches waiting for QC',
           icon: Icons.assignment,
           color: LightModeColors.lightTertiary,
-          route: '/qc-pending',
+          route: AppRouter.KqCPendingListView,
         ),
         const SizedBox(height: AppSpacing.md),
         HomeNavigationCard(
@@ -62,7 +62,7 @@ class QCOptions extends StatelessWidget {
           subtitle: 'View all production batches',
           icon: Icons.view_list,
           color: LightModeColors.lightSecondary,
-          route: '/batch-list',
+          route: AppRouter.KbatchListView,
         ),
       ],
     );
@@ -85,7 +85,7 @@ class ManagerOptions extends StatelessWidget {
           subtitle: 'Analytics and insights',
           icon: Icons.dashboard,
           color: LightModeColors.lightPrimary,
-          route: '/dashboard',
+          route: AppRouter.KdashboardView,
         ),
         const SizedBox(height: AppSpacing.md),
         HomeNavigationCard(
@@ -93,7 +93,7 @@ class ManagerOptions extends StatelessWidget {
           subtitle: 'Full batch tracking',
           icon: Icons.track_changes,
           color: LightModeColors.lightSecondary,
-          route: '/traceability',
+          route: AppRouter.KtraceabilityView,
         ),
         const SizedBox(height: AppSpacing.md),
         HomeNavigationCard(
@@ -101,7 +101,7 @@ class ManagerOptions extends StatelessWidget {
           subtitle: 'Manage users and roles',
           icon: Icons.people,
           color: LightModeColors.lightTertiary,
-          route: '/user-management',
+          route: AppRouter.KuserManagementView,
         ),
         const SizedBox(height: AppSpacing.md),
         HomeNavigationCard(
@@ -109,7 +109,7 @@ class ManagerOptions extends StatelessWidget {
           subtitle: 'View all production batches',
           icon: Icons.view_list,
           color: LightModeColors.lightSuccess,
-          route: '/batch-list',
+          route: AppRouter.KbatchListView,
         ),
       ],
     );

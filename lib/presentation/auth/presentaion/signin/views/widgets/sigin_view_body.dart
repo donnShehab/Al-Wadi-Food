@@ -1,3 +1,4 @@
+import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:alwadi_food/core/utils/validators.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
 import 'package:alwadi_food/presentation/widgets/custom_button.dart';
@@ -15,24 +16,21 @@ class SigninViewBody extends StatefulWidget {
 }
 
 class _SigninViewBodyState extends State<SigninViewBody> {
-  final _formKey = GlobalKey<FormState>();
-  final _email = TextEditingController();
-  final _password = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   bool _obscure = true;
-
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
-
+  // handle Login use Cubit to signin
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
-      context.read<AuthCubit>().signIn(
-        _email.text.trim(),
-        _password.text.trim(),
-      );
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+      if (email.isEmpty || password.isEmpty) return;
+
+      context.read<AuthCubit>().signIn(email: email, password: password);
     }
   }
 
@@ -46,6 +44,7 @@ class _SigninViewBodyState extends State<SigninViewBody> {
           padding: AppSpacing.paddingLg,
           child: Form(
             key: _formKey,
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -77,9 +76,13 @@ class _SigninViewBodyState extends State<SigninViewBody> {
 
                 // Email
                 CustomTextField(
+                  suffixIcon: Icon(
+                    Icons.email,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  controller: _emailController,
                   label: 'Email',
                   hint: 'Enter your email',
-                  controller: _email,
                   validator: Validators.validateEmail,
                   keyboardType: TextInputType.emailAddress,
                 ),
@@ -87,9 +90,9 @@ class _SigninViewBodyState extends State<SigninViewBody> {
 
                 // Password
                 CustomTextField(
+                  controller: _passwordController,
                   label: 'Password',
                   hint: 'Enter your password',
-                  controller: _password,
                   validator: Validators.validatePassword,
                   obscureText: _obscure,
                   suffixIcon: IconButton(
@@ -113,7 +116,7 @@ class _SigninViewBodyState extends State<SigninViewBody> {
                 ),
 
                 TextButton(
-                  onPressed: () => context.go('/register'),
+                  onPressed: () => context.push(AppRouter.KsignupView),
                   child: const Text("Create a new account"),
                 ),
               ],

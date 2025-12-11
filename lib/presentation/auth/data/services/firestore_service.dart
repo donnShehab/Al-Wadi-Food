@@ -7,7 +7,7 @@ class FirestoreService {
   // Get collection reference
   CollectionReference collection(String path) => _firestore.collection(path);
 
-  // Create document
+  // Create new document in collection
   Future<void> createDocument(
     String collection,
     String docId,
@@ -20,8 +20,9 @@ class FirestoreService {
       rethrow;
     }
   }
-// set document
-    Future<void> setDocument(
+
+  // set document in collection
+  Future<void> setDocument(
     String collection,
     String docId,
     Map<String, dynamic> data,
@@ -34,7 +35,7 @@ class FirestoreService {
     }
   }
 
-  // Update document
+  // Update document in collection
   Future<void> updateDocument(
     String collection,
     String docId,
@@ -48,7 +49,7 @@ class FirestoreService {
     }
   }
 
-  // Delete document
+  // Delete document from collection
   Future<void> deleteDocument(String collection, String docId) async {
     try {
       await _firestore.collection(collection).doc(docId).delete();
@@ -58,7 +59,7 @@ class FirestoreService {
     }
   }
 
-  // Get document
+  // Get one document by ID
   Future<DocumentSnapshot> getDocument(String collection, String docId) async {
     try {
       return await _firestore.collection(collection).doc(docId).get();
@@ -68,7 +69,7 @@ class FirestoreService {
     }
   }
 
-  // Get collection stream
+  // Get collection stream From the query results for real-time updates
   Stream<QuerySnapshot> getCollectionStream(String collection) {
     try {
       return _firestore.collection(collection).snapshots();
@@ -78,7 +79,7 @@ class FirestoreService {
     }
   }
 
-  // Get document stream
+  // Get document stream From the document for real-time updates
   Stream<DocumentSnapshot> getDocumentStream(String collection, String docId) {
     try {
       return _firestore.collection(collection).doc(docId).snapshots();
@@ -88,7 +89,7 @@ class FirestoreService {
     }
   }
 
-  // Query collection
+  // Performing a complex query on a collection (filtering, sorting, specifying a number)
   Future<QuerySnapshot> queryCollection(
     String collection, {
     List<QueryFilter>? filters,

@@ -1,5 +1,3 @@
-import 'package:alwadi_food/presentation/auth/domain/entites/production_batch_entity.dart';
-import 'package:alwadi_food/presentation/auth/domain/entites/qc_result_entity.dart';
 import 'package:alwadi_food/presentation/production/domain/entities/production_batch_entity.dart';
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
 import 'package:equatable/equatable.dart';

@@ -6,6 +6,7 @@ class HomeCubit extends Cubit<HomeState> {
   final AuthRepository _authRepository;
 
   HomeCubit(this._authRepository) : super(const HomeInitial());
+  // It requests user data from the repository
 
   Future<void> loadUser() async {
     emit(const HomeLoading());

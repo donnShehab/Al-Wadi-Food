@@ -11,6 +11,8 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
+      // get an instance of the cubit vid dependency injection
+      // we call the function to fetch user data fromfirebase ..loadUser()
       create: (_) => getIt<HomeCubit>()..loadUser(),
       child: const HomeViewBodyBlocConsumer(),
     );

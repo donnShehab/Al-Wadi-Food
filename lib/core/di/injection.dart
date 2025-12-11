@@ -1,14 +1,11 @@
 import 'package:alwadi_food/core/services/preferences_service.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
 import 'package:alwadi_food/presentation/auth/data/repos/auth_repository_impl.dart';
-import 'package:alwadi_food/presentation/auth/data/repos/qc_repository_impl.dart';
 import 'package:alwadi_food/presentation/auth/data/repos/user_repository_impl.dart';
 import 'package:alwadi_food/presentation/auth/data/services/firebase_auth_service.dart';
 import 'package:alwadi_food/presentation/auth/data/services/firestore_service.dart';
 import 'package:alwadi_food/presentation/auth/data/services/storage_service.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart';
-import 'package:alwadi_food/presentation/auth/domain/repos/production_repository.dart';
-import 'package:alwadi_food/presentation/auth/domain/repos/qc_repository.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/user_repository.dart';
 import 'package:alwadi_food/presentation/home/cubit/home_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/dashboard_cubit.dart';

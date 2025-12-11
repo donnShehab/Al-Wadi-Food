@@ -1,3 +1,4 @@
+import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_State.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
 import 'package:alwadi_food/presentation/auth/presentaion/signup/views/widget/signup_view_body.dart';
@@ -16,7 +17,7 @@ class SignupViewBlocConsumer extends StatelessWidget {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          context.go('/home');
+          context.go(AppRouter.KhomeView);
         } else if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -29,7 +30,7 @@ class SignupViewBlocConsumer extends StatelessWidget {
       builder: (context, state) {
         return LoadingOverlay(
           isLoading: state is AuthLoading,
-          child: const SignupViewBody (),
+          child: const SignupViewBody(),
         );
       },
     );

@@ -102,12 +102,12 @@ class MyApp extends StatelessWidget {
           create: (_) => getIt<AppSettingsCubit>()..load(),
         ),
 
-        BlocProvider<AuthCubit>(create: (_) => getIt<AuthCubit>()),
+        BlocProvider<AuthCubit>(create: (_) => getIt<AuthCubit>()..checkAuthStatus()),
       ],
       child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
         builder: (context, state) {
           return MaterialApp.router(
-            title: 'IceBox Factory Manager',
+            title: 'AlWadi Smart Factory',
             debugShowCheckedModeBanner: false,
             theme: lightTheme,
             darkTheme: darkTheme,

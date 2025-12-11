@@ -1,7 +1,6 @@
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_history/qc_history_item.dart';
 import 'package:flutter/material.dart';
-import 'package:alwadi_food/presentation/auth/domain/entites/qc_result_entity.dart';
 import 'package:alwadi_food/theme.dart';
 
 class QCHistoryBody extends StatelessWidget {

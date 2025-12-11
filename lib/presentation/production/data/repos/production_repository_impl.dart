@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:alwadi_food/presentation/auth/data/services/firestore_service.dart';
 import 'package:alwadi_food/presentation/auth/data/services/storage_service.dart';
@@ -34,7 +35,7 @@ class ProductionRepositoryImpl implements ProductionRepository {
       );
       return Right(batchModel);
     } catch (e) {
-      debugPrint('createBatch error: $e');
+      log('createBatch error: $e');
       return Left('Failed to create batch: $e');
     }
   }

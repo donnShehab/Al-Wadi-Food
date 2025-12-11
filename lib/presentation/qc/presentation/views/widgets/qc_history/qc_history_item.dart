@@ -1,6 +1,5 @@
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:alwadi_food/presentation/auth/domain/entites/qc_result_entity.dart';
 import 'package:alwadi_food/theme.dart';
 import 'package:alwadi_food/core/utils/date_formatter.dart';
 
