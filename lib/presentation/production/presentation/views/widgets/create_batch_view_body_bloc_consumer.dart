@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'create_batch_form.dart';
+import 'create_batch/create_batch_form.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_state.dart';
 import 'package:alwadi_food/presentation/widgets/loading_overlay.dart';
 import 'package:go_router/go_router.dart';
 
+
+
 class CreateBatchViewBodyBlocConsumer extends StatelessWidget {
-  const CreateBatchViewBodyBlocConsumer({super.key});
+  const CreateBatchViewBodyBlocConsumer({super.key, required this.theme});
+
+  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return BlocConsumer<ProductionCubit, ProductionState>(
       listener: (context, state) {
         if (state is ProductionSuccess) {

@@ -18,7 +18,7 @@ class AppConstants {
   static const List<String> productTypes = [
     'Burger',
     'Nuggets',
-    'Escalope'
+    'Escalope',
     'Luncheon',
     'Chicken Strips',
     'Meatballs',

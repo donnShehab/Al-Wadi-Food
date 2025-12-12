@@ -1,3 +1,4 @@
+
 import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_state.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class BatchListViewBodyBlocBuilder extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else if (state is ProductionBatchesLoaded) {
           return BatchListViewBody(batches: state.batches);
-        } else if (state is ProductionError ) {
+        } else if (state is ProductionError) {
           return Center(child: Text(state.message));
         }
         return const SizedBox();

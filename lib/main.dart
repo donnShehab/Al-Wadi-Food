@@ -42,6 +42,7 @@ import 'package:alwadi_food/core/di/injection.dart';
 import 'package:alwadi_food/core/localization/app_localizations.dart';
 import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
+import 'package:alwadi_food/presentation/home/cubit/home_cubit.dart';
 import 'package:alwadi_food/presentation/settings/cubit/app_settings_cubit.dart';
 import 'package:alwadi_food/presentation/settings/cubit/app_settings_state.dart';
 import 'package:flutter/material.dart';
@@ -98,11 +99,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<HomeCubit>(create: (_) => getIt<HomeCubit>()),
+
+        BlocProvider<AuthCubit>(
+          create: (_) => getIt<AuthCubit>()..checkAuthStatus(),
+        ),
         BlocProvider<AppSettingsCubit>(
           create: (_) => getIt<AppSettingsCubit>()..load(),
         ),
-
-        BlocProvider<AuthCubit>(create: (_) => getIt<AuthCubit>()..checkAuthStatus()),
       ],
       child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
         builder: (context, state) {

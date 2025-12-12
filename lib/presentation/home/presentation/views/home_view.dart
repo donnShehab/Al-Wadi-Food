@@ -4,17 +4,14 @@ import 'package:alwadi_food/presentation/home/presentation/views/widgets/home_vi
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      // get an instance of the cubit vid dependency injection
-      // we call the function to fetch user data fromfirebase ..loadUser()
-      create: (_) => getIt<HomeCubit>()..loadUser(),
-      child: const HomeViewBodyBlocConsumer(),
-    );
+    return
+    // get an instance of the cubit vid dependency injection
+    // we call the function to fetch user data fromfirebase ..loadUser()
+    const HomeViewBodyBlocConsumer();
   }
 }

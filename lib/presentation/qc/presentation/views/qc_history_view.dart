@@ -20,15 +20,3 @@ class QCHistoryView extends StatelessWidget {
     );
   }
 }
-
-// class _QCHistoryAppBar extends StatelessWidget with PreferredSizeWidget {
-//   const _QCHistoryAppBar();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return AppBar(title: const Text('QC History'));
-//   }
-
-//   @override
-//   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-// }

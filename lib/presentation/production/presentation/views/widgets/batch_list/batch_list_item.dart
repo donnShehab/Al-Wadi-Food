@@ -1,29 +1,8 @@
+
 import 'package:alwadi_food/core/constants/app_constants.dart';
 import 'package:alwadi_food/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-// class BatchListItem extends StatelessWidget {
-//   final dynamic batch;
-//   const BatchListItem({super.key, required this.batch});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final theme = Theme.of(context);
-//     return Card(
-//       margin: const EdgeInsets.only(bottom: AppSpacing.md),
-//       child: ListTile(
-//         leading: Icon(Icons.inventory_2, color: theme.colorScheme.primary),
-//         title: Text(batch.product),
-//         subtitle: Text(
-//           '${batch.quantity} units • ${batch.line} • ${batch.status}',
-//         ),
-//         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-//         onTap: () => context.push('/batch-details/${batch.batchId}'),
-//       ),
-//     );
-//   }
-// }
 
 class BatchListItem extends StatelessWidget {
   final dynamic batch;
@@ -48,10 +27,10 @@ class BatchListItem extends StatelessWidget {
     final color = getStatusColor(status);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color.withOpacity(0.4)),
       ),
       child: Text(
@@ -59,7 +38,8 @@ class BatchListItem extends StatelessWidget {
         style: TextStyle(
           color: color,
           fontWeight: FontWeight.bold,
-          fontSize: 12,
+          fontSize: 11,
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -70,24 +50,119 @@ class BatchListItem extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: ListTile(
-        leading: Icon(Icons.inventory_2, color: theme.colorScheme.primary),
-
-        title: Text(batch.product),
-
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${batch.quantity}  • ${batch.line}'),
-            const SizedBox(height: 6),
-            buildStatusBadge(batch.status),
-          ],
-        ),
-
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-
+      elevation: 2.5,
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.md),
         onTap: () => context.push('/batch-details/${batch.batchId}'),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              /// -------- Icon / Avatar (مع Hero للأنيميشن مع شاشة التفاصيل) --------
+              Hero(
+                tag: "batch_${batch.batchId}",
+                child: Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        theme.colorScheme.primary,
+                        theme.colorScheme.primary.withOpacity(0.7),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.restaurant_menu,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 14),
+
+              /// -------- Main Info --------
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// Top row: product + status badge
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            batch.product,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        buildStatusBadge(batch.status),
+                      ],
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    /// Middle row: line + quantity
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.factory,
+                          size: 16,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(batch.line, style: theme.textTheme.bodySmall),
+                        const SizedBox(width: 12),
+                        Icon(
+                          Icons.inventory_2,
+                          size: 16,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${batch.quantity} units',
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    /// Bottom row: Batch ID
+                    Text(
+                      'Batch ID: ${batch.batchId}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(width: 8),
+
+              /// -------- Arrow Icon --------
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

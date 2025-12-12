@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:alwadi_food/core/constants/app_constants.dart';
+import 'package:alwadi_food/generated/intl/messages_en.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart';
 import 'package:alwadi_food/presentation/production/domain/repos/production_repository.dart';
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
@@ -25,13 +27,12 @@ class QCCubit extends Cubit<QCState> {
     final result = await _qcRepository.createQCResult(qcResult, images);
 
     result.fold(
-      ifLeft: 
-      (failure) => emit(QCError(failure.message)),
-      ifRight: 
-       (_) async {
-      await _productionRepository.updateBatchStatus(batchId, newStatus);
-      emit(const QCSuccess('QC inspection completed'));
-    });
+      ifLeft: (failure) => emit(QCError(failure.message)),
+      ifRight: (_) async {
+        await _productionRepository.updateBatchStatus(batchId, newStatus);
+        emit(const QCSuccess('QC inspection completed'));
+      },
+    );
   }
 
   Future<void> loadQCResultsByBatchId(String batchId) async {
@@ -39,16 +40,27 @@ class QCCubit extends Cubit<QCState> {
     final result = await _qcRepository.getQCResultsByBatchId(batchId);
 
     result.fold(
-      ifLeft: 
-      (failure) => emit(QCError(failure.message)),
-      ifRight: 
-      (results) => emit(QCResultsLoaded(results)),
+      ifLeft: (failure) => emit(QCError(failure.message)),
+      ifRight: (results) => emit(QCResultsLoaded(results)),
     );
   }
-Future<void> loadPendingBatches() async {
+
+  // Future<void> loadPendingBatches() async {
+  //     emit(const QCLoading());
+
+  //     final result = await _productionRepository.getBatchesByStatus('pending');
+
+  //     result.fold(
+  //       ifLeft: (failure) => emit(QCError(failure)),
+  //       ifRight: (batches) => emit(QCPendingBatchesLoaded(batches)),
+  //     );
+  //   }
+  Future<void> loadPendingBatches() async {
     emit(const QCLoading());
 
-    final result = await _productionRepository.getBatchesByStatus('pending');
+    final result = await _productionRepository.getBatchesByStatus(
+      AppConstants.statusWaitingQC, // ✅ waiting_qc
+    );
 
     result.fold(
       ifLeft: (failure) => emit(QCError(failure)),
@@ -56,17 +68,13 @@ Future<void> loadPendingBatches() async {
     );
   }
 
-
   Future<void> loadAllQCResults() async {
     emit(const QCLoading());
     final result = await _qcRepository.getAllQCResults();
 
     result.fold(
-      ifLeft: 
-      (failure) => emit(QCError(failure.message)),
-      ifRight: 
-      
-      (results) => emit(QCResultsLoaded(results)),
+      ifLeft: (failure) => emit(QCError(failure.message)),
+      ifRight: (results) => emit(QCResultsLoaded(results)),
     );
   }
 }

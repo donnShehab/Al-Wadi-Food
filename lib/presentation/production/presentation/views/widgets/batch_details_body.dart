@@ -1,13 +1,12 @@
-import 'package:alwadi_food/presentation/production/presentation/views/widgets/batch_details/images_grid.dart';
-import 'package:alwadi_food/presentation/production/presentation/views/widgets/batch_details/info_row.dart';
-import 'package:flutter/material.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_state.dart';
-import 'package:alwadi_food/theme.dart';
-import 'package:alwadi_food/presentation/widgets/custom_button.dart';
-import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:alwadi_food/core/utils/date_formatter.dart';
-import 'package:go_router/go_router.dart';
+import 'package:alwadi_food/presentation/production/presentation/views/widgets/batch_details/batch_actions.dart';
+import 'package:alwadi_food/presentation/production/presentation/views/widgets/batch_details/batch_header_card.dart';
+import 'package:alwadi_food/presentation/production/presentation/views/widgets/batch_details/images_section.dart';
+import 'package:alwadi_food/presentation/production/presentation/views/widgets/batch_details/production_info_section.dart';
+import 'package:alwadi_food/presentation/production/presentation/views/widgets/batch_details/status_time_line.dart';
+import 'package:alwadi_food/presentation/production/presentation/views/widgets/batch_details/time_tracking_section.dart';
+import 'package:alwadi_food/presentation/widgets/custom_app_bar.dart';
+import 'package:flutter/material.dart';
 
 class BatchDetailsBody extends StatelessWidget {
   final ProductionState state;
@@ -24,58 +23,68 @@ class BatchDetailsBody extends StatelessWidget {
     final theme = Theme.of(context);
 
     if (state is ProductionLoading) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (state is ProductionBatchLoaded) {
-      final batch = (state as ProductionBatchLoaded).batch;
-      return SingleChildScrollView(
-        padding: AppSpacing.paddingLg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            InfoRow(label: 'Product', value: batch.product),
-            InfoRow(label: 'Quantity', value: '${batch.quantity} units'),
-            InfoRow(label: 'Line', value: batch.line),
-            InfoRow(label: 'Operator', value: batch.operatorName),
-            InfoRow(label: 'Status', value: batch.status.toUpperCase()),
-            InfoRow(
-              label: 'Start Time',
-              value: DateFormatter.formatDateTime(batch.startTime),
-            ),
-            InfoRow(
-              label: 'End Time',
-              value: DateFormatter.formatDateTime(batch.endTime),
-            ),
-            InfoRow(label: 'Notes', value: batch.notes),
-            const SizedBox(height: AppSpacing.lg),
-            Text('Images', style: theme.textTheme.titleMedium?.semiBold),
-            const SizedBox(height: AppSpacing.sm),
-            batch.images.isNotEmpty
-                ? ImagesGrid(urls: batch.images)
-                : const Text('No images available'),
-            const SizedBox(height: 32),
-            if (batch.status == 'in_progress')
-              CustomButton(
-                text: 'Send to QC',
-                onPressed: () =>
-                    context.read<ProductionCubit>().sendToQC(batchId),
-                backgroundColor: theme.colorScheme.secondary,
-                icon: Icons.send,
-              ),
-            const SizedBox(height: AppSpacing.md),
-            CustomButton(
-              text: 'View QC History',
-              onPressed: () => context.push('/qc-history/$batchId'),
-              isOutlined: true,
-              icon: Icons.history,
-            ),
-          ],
-        ),
-      );
-    } else if (state is ProductionError) {
-      final errorState = state as ProductionError;
-      return Center(child: Text(errorState.message));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    return const SizedBox();
+    if (state is ProductionError) {
+      return Scaffold(
+        body: Center(child: Text((state as ProductionError).message)),
+      );
+    }
+
+    if (state is! ProductionBatchLoaded) {
+      return const SizedBox();
+    }
+
+    final batch = (state as ProductionBatchLoaded).batch;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F9FC),
+      appBar: buildAppBar(
+        context,
+        title: "Batch Details",
+        backgroundColor: theme.colorScheme.primary,
+        titleColor: Colors.white,
+        showBackButton: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            BatchHeaderCard(batch: batch),
+            const SizedBox(height: 20),
+
+            StatusTimeline(currentStep: _statusStep(batch.status)),
+            const SizedBox(height: 24),
+
+            ProductionInfoSection(batch: batch),
+            const SizedBox(height: 24),
+
+            TimeTrackingSection(batch: batch),
+            const SizedBox(height: 24),
+
+            ImagesSection(images: batch.images),
+            const SizedBox(height: 32),
+
+            BatchActions(batch: batch, batchId: batchId),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Converts status string → step index
+  int _statusStep(String status) {
+    switch (status) {
+      case "in_progress":
+        return 1;
+      case "waiting_qc":
+        return 2;
+      case "passed":
+      case "failed":
+        return 3;
+      default:
+        return 0;
+    }
   }
 }

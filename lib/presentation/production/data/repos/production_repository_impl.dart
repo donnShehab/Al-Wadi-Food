@@ -178,4 +178,49 @@ class ProductionRepositoryImpl implements ProductionRepository {
               .toList(),
         );
   }
+  
+  @override
+  Future<int> getTotalBatchesCount() async {
+    try {
+      final snapshot = await _firestoreService.queryCollection(
+        AppConstants.batchesCollection,
+      );
+      return snapshot.docs.length;
+    } catch (e) {
+      debugPrint('getTotalBatchesCount error: $e');
+      return 0;
+    }
+  }
+
+  @override
+  Future<int> getPassedQCount() async {
+    try {
+      final snapshot = await _firestoreService.queryCollection(
+        AppConstants.batchesCollection,
+        filters: [
+          QueryFilter(field: 'status', isEqualTo: AppConstants.statusPassed),
+        ],
+      );
+      return snapshot.docs.length;
+    } catch (e) {
+      debugPrint('getPassedQCount error: $e');
+      return 0;
+    }
+  }
+
+  @override
+  Future<int> getIssuesCount() async {
+    try {
+      final snapshot = await _firestoreService.queryCollection(
+        AppConstants.batchesCollection,
+        filters: [
+          QueryFilter(field: 'status', isEqualTo: AppConstants.statusFailed),
+        ],
+      );
+      return snapshot.docs.length;
+    } catch (e) {
+      debugPrint('getIssuesCount error: $e');
+      return 0;
+    }
+  }
 }

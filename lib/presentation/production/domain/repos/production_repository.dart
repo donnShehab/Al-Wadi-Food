@@ -24,4 +24,10 @@ abstract class ProductionRepository {
   Stream<List<ProductionBatchEntity>> getBatchesStream();
   // Return a flow of payments based on a specific condition.
   Stream<List<ProductionBatchEntity>> getBatchesByStatusStream(String status);
+// get total batches count
+  Future<int> getTotalBatchesCount();
+  // get completed batches count
+  Future<int> getPassedQCount();
+  // get issues count
+  Future<int> getIssuesCount();
 }
