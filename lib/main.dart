@@ -101,9 +101,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<HomeCubit>(create: (_) => getIt<HomeCubit>()),
 
-        BlocProvider<AuthCubit>(
-          create: (_) => getIt<AuthCubit>()..checkAuthStatus(),
-        ),
+        BlocProvider<AuthCubit>(create: (_) => getIt<AuthCubit>()..checkAuthStatus()),
         BlocProvider<AppSettingsCubit>(
           create: (_) => getIt<AppSettingsCubit>()..load(),
         ),
@@ -111,6 +109,7 @@ class MyApp extends StatelessWidget {
       child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
         builder: (context, state) {
           return MaterialApp.router(
+            
             title: 'AlWadi Smart Factory',
             debugShowCheckedModeBanner: false,
             theme: lightTheme,
@@ -119,6 +118,7 @@ class MyApp extends StatelessWidget {
             locale: state.locale,
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: const [AppLocalizations.delegate],
+
             routerConfig: AppRouter.router,
           );
         },

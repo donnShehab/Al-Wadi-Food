@@ -1,6 +1,7 @@
 
 
 import 'package:alwadi_food/presentation/auth/presentaion/signin/views/signin_view.dart';
+import 'package:alwadi_food/presentation/auth/presentaion/signup/views/signup_view.dart';
 import 'package:alwadi_food/presentation/home/presentation/views/home_view.dart';
 import 'package:alwadi_food/presentation/settings/views/settings_view.dart';
 import 'package:alwadi_food/presentation/splash/presntation/views/splash_view.dart';
@@ -19,6 +20,7 @@ import 'package:alwadi_food/presentation/manager/presentation/views/user_managem
 class AppRouter {
   static const String KsplashView = '/splash';
   static const String KloginView = '/login';
+  static const String KSignup = '/Signup';
   static const String KhomeView = '/home';
 
   static const String KcreateBatchView = '/create-batch';
@@ -48,6 +50,11 @@ class AppRouter {
         path: KloginView,
         pageBuilder: (context, state) =>
             _transition(context, state, const SigninView()),
+      ),
+      GoRoute(
+        path: KSignup,
+        pageBuilder: (context, state) =>
+            _transition(context, state, const SignupView()),
       ),
 
       /// HOME
@@ -122,7 +129,7 @@ class AppRouter {
       key: state.pageKey,
       child: child,
       transitionsBuilder: (context, animation, secondary, widget) {
-        final fade = Tween(begin: 0.0, end: 1.0).animate(animation);
+final fade = Tween(begin: 0.9, end: 1.0).animate(animation);
         final slide = Tween(
           begin: const Offset(0, 0.04),
           end: Offset.zero,

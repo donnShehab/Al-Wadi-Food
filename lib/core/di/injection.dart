@@ -49,7 +49,7 @@ Future<void> setupDependencies() async {
 
   // Cubits
   getIt.registerFactory(() => AuthCubit(getIt()));
-  getIt.registerFactory(() => HomeCubit(getIt(),getIt()));
+  getIt.registerFactory(() => HomeCubit(getIt(),));
   getIt.registerFactory(() => ProductionCubit(getIt(), getIt()));
   getIt.registerFactory(() => QCCubit(getIt(), getIt(), getIt()));
   getIt.registerFactory(() => AppSettingsCubit(getIt()));

@@ -5,6 +5,7 @@ import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_State.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
 import 'package:alwadi_food/presentation/auth/presentaion/signin/views/widgets/sigin_view_body.dart';
+import 'package:alwadi_food/presentation/home/cubit/home_cubit.dart';
 import 'package:alwadi_food/presentation/widgets/loading_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +21,8 @@ class SigninViewBlocConsumer extends StatelessWidget {
     return BlocConsumer<AuthCubit,AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
+
+                // context.read<HomeCubit>().loadUser(); // 🔥 هذا السطر
           context.go(AppRouter.KhomeView);
         } else if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(

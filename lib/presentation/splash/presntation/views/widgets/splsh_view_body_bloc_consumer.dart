@@ -34,11 +34,8 @@ class SplashViewBodyBlocConsumer extends StatelessWidget {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) async {
         if (state is AuthSuccess) {
-          /// حمّل بيانات الـ Home قبل الانتقال
-          await context.read<HomeCubit>().loadHome();
-
           context.go(AppRouter.KhomeView);
-        } else if (state is AuthFailure || state is AuthInitial) {
+        } else if (state is AuthFailure || state is AuthUnauthenticated) {
           context.go(AppRouter.KloginView);
         }
       },

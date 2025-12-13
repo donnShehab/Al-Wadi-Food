@@ -1,17 +1,43 @@
-
+import 'package:alwadi_food/presentation/animations/staggered_fade_slide_item.dart';
 import 'package:alwadi_food/theme.dart';
 import 'package:flutter/material.dart';
 import 'batch_list/batch_list_item.dart';
 
-class BatchListViewBody extends StatelessWidget {
+class BatchListViewBody extends StatefulWidget {
   final List batches;
   const BatchListViewBody({super.key, required this.batches});
 
   @override
+  State<BatchListViewBody> createState() => _BatchListViewBodyState();
+}
+
+class _BatchListViewBodyState extends State<BatchListViewBody>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (batches.isEmpty) {
+    if (widget.batches.isEmpty) {
       return Center(
         child: Padding(
           padding: AppSpacing.paddingLg,
@@ -64,7 +90,7 @@ class BatchListViewBody extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${batches.length} active batch${batches.length > 1 ? 'es' : ''}',
+                  '${widget.batches.length} active batch${widget.batches.length > 1 ? 'es' : ''}',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -79,12 +105,17 @@ class BatchListViewBody extends StatelessWidget {
           Expanded(
             child: ListView.separated(
               padding: AppSpacing.paddingMd,
-              itemCount: batches.length,
+              itemCount: widget.batches.length,
               separatorBuilder: (_, __) =>
                   const SizedBox(height: AppSpacing.sm),
               itemBuilder: (context, index) {
-                final batch = batches[index];
-                return BatchListItem(batch: batch);
+                final batch = widget.batches[index];
+               return StaggeredFadeSlideItem(
+                  index: index,
+                  controller: _controller,
+                  child: BatchListItem(batch: batch),
+                );
+
               },
             ),
           ),

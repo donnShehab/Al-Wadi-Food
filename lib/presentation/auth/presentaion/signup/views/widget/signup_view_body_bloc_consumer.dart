@@ -17,7 +17,7 @@ class SignupViewBlocConsumer extends StatelessWidget {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          context.go(AppRouter.KhomeView);
+          context.go(AppRouter.KloginView);
         } else if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

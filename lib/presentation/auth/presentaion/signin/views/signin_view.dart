@@ -9,9 +9,8 @@ class SigninView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<AuthCubit>(),
-      child: const SigninViewBlocConsumer(),
+    return 
+   const SigninViewBlocConsumer(
     );
   }
 }

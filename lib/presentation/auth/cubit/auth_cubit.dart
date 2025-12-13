@@ -5,24 +5,26 @@ import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart'
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository authRepository;
 
-  AuthCubit(this.authRepository) : super(AuthInitial());
+  AuthCubit(this.authRepository) : super(AuthLoading()); // 👈 مهم
 
   Future<void> checkAuthStatus() async {
     emit(AuthLoading());
+
     final result = await authRepository.getCurrentUser();
 
     result.fold(
-      ifLeft: (failure) => emit(AuthFailure(message: failure.message)),
-
+      ifLeft: (failure) => emit(AuthUnauthenticated()),
       ifRight: (user) {
         if (user == null) {
-          emit(AuthInitial()); // No user logged in
+          emit(AuthUnauthenticated());
         } else {
-          emit(AuthSuccess(user: user)); // User logged in
+          emit(AuthSuccess(user: user));
         }
       },
     );
   }
+
+
 
   /// Login
   Future<void> signIn({required String email,required String password}) async {

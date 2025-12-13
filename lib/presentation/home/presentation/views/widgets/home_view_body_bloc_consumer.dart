@@ -1,4 +1,6 @@
 
+import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
+import 'package:alwadi_food/presentation/auth/cubit/auth_State.dart';
 import 'package:alwadi_food/presentation/home/cubit/home_cubit.dart';
 import 'package:alwadi_food/presentation/home/cubit/home_state.dart';
 import 'package:alwadi_food/presentation/home/presentation/views/widgets/home_skeleton.dart';
@@ -11,27 +13,40 @@ class HomeViewBodyBlocConsumer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomeCubit, HomeState>(
-      listener: (context, state) async {
-        if (state is HomeUserLoaded) {
-          await context.read<HomeCubit>().loadStats(state.user);
-        }
-      },
-      builder: (context, state) {
-      if (state is HomeLoading) {
-          return const HomeSkeleton();
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, authState) {
+        if (authState is! AuthSuccess) {
+          return const Center(child: CircularProgressIndicator());
         }
 
-        if (state is HomeFullyLoaded) {
-          return HomeViewBodyContent(
-            user: state.user,
-            totalBatches: state.totalBatches,
-            passedQC: state.passedQC,
-            issues: state.issues,
-          );
-        }
+        final user = authState.user; // ✅ المصدر الوحيد
 
-        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        return BlocBuilder<HomeCubit, HomeState>(
+          builder: (context, homeState) {
+            if (homeState is HomeInitial) {
+              context.read<HomeCubit>().loadStats(); // ✅ بدون user
+            }
+
+            if (homeState is HomeLoading) {
+              return const HomeSkeleton();
+            }
+
+            if (homeState is HomeFullyLoaded) {
+              return HomeViewBodyContent(
+                user: user, // 👈 من AuthCubit
+                totalBatches: homeState.totalBatches,
+                passedQC: homeState.passedQC,
+                issues: homeState.issues,
+              );
+            }
+
+            if (homeState is HomeError) {
+              return Center(child: Text(homeState.message));
+            }
+
+            return const SizedBox();
+          },
+        );
       },
     );
   }

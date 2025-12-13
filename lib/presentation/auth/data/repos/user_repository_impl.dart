@@ -173,4 +173,5 @@ class UserRepositoryImpl implements UserRepository {
       return Left(ServerFailure(message: e.toString()));
     }
   }
+  
 }

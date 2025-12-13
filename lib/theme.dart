@@ -175,6 +175,7 @@ class FontSizes {
 
 /// Light theme with modern, neutral aesthetic
 ThemeData get lightTheme => ThemeData(
+  
   useMaterial3: true,
   colorScheme: ColorScheme.light(
     primary: LightModeColors.lightPrimary,

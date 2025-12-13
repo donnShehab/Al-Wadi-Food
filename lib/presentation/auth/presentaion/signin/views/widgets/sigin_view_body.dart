@@ -116,7 +116,7 @@ class _SigninViewBodyState extends State<SigninViewBody> {
                 ),
 
                 TextButton(
-                  onPressed: () => context.push(AppRouter.KloginView),
+                  onPressed: () => context.push(AppRouter.KSignup),
                   child: const Text("Create a new account"),
                 ),
               ],
