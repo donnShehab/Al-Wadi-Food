@@ -1,11 +1,13 @@
 import 'package:alwadi_food/presentation/auth/cubit/auth_State.dart';
+import 'package:alwadi_food/presentation/home/cubit/home_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository authRepository;
+    final HomeCubit homeCubit;
 
-  AuthCubit(this.authRepository) : super(AuthLoading()); // 👈 مهم
+  AuthCubit(this.authRepository, this.homeCubit) : super(AuthLoading()); // 👈 مهم
 
   Future<void> checkAuthStatus() async {
     emit(AuthLoading());
@@ -18,6 +20,7 @@ class AuthCubit extends Cubit<AuthState> {
         if (user == null) {
           emit(AuthUnauthenticated());
         } else {
+            homeCubit.loadStats(); // 🔥 preload هنا (المكان الصحيح)
           emit(AuthSuccess(user: user));
         }
       },
@@ -34,8 +37,10 @@ class AuthCubit extends Cubit<AuthState> {
 
     result.fold(
       ifLeft: (failure) => emit(AuthFailure(message: failure.message)),
-      ifRight: (user) => emit(AuthSuccess(user: user)),
-    );
+ifRight: (user) {
+        homeCubit.loadStats(); // 🔥 preload
+        emit(AuthSuccess(user: user));
+      },    );
   }
 
   /// Register new user

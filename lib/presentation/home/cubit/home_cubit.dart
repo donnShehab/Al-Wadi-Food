@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alwadi_food/presentation/production/domain/repos/production_repository.dart';
 import 'home_state.dart';
@@ -68,7 +70,25 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit(this._productionRepository) : super(const HomeInitial());
 
   /// HomeCubit مسؤول فقط عن الإحصائيات
-  Future<void> loadStats() async {
+  // Future<void> loadStats() async {
+  //   emit(const HomeLoading());
+
+  //   try {
+  //     final total = await _productionRepository.getTotalBatchesCount();
+  //     final passed = await _productionRepository.getPassedQCount();
+  //     final issues = await _productionRepository.getIssuesCount();
+
+  //     emit(
+  //       HomeFullyLoaded(totalBatches: total, passedQC: passed, issues: issues),
+  //     );
+  //   } catch (e) {
+  //     emit(HomeError(e.toString()));
+  //   }
+  // }
+ 
+Future<void> loadStats() async {
+    log('🔥 loadStats CALLED: $hashCode');
+
     emit(const HomeLoading());
 
     try {
@@ -76,11 +96,17 @@ class HomeCubit extends Cubit<HomeState> {
       final passed = await _productionRepository.getPassedQCount();
       final issues = await _productionRepository.getIssuesCount();
 
+      log('✅ loadStats SUCCESS: $hashCode');
+
       emit(
         HomeFullyLoaded(totalBatches: total, passedQC: passed, issues: issues),
       );
     } catch (e) {
+      log('❌ loadStats ERROR: $e');
       emit(HomeError(e.toString()));
     }
   }
+
+
+
 }

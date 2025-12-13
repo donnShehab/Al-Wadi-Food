@@ -23,8 +23,11 @@ class HomeViewBodyBlocConsumer extends StatelessWidget {
 
         return BlocBuilder<HomeCubit, HomeState>(
           builder: (context, homeState) {
+                debugPrint(
+              '👀 HomeState: $homeState | Cubit: ${context.read<HomeCubit>().hashCode}',
+            );
             if (homeState is HomeInitial) {
-              context.read<HomeCubit>().loadStats(); // ✅ بدون user
+              // context.read<HomeCubit>().loadStats(); // ✅ بدون user
             }
 
             if (homeState is HomeLoading) {
@@ -40,11 +43,28 @@ class HomeViewBodyBlocConsumer extends StatelessWidget {
               );
             }
 
+            // if (homeState is HomeError) {
+            //   return Center(child: Text(homeState.message));
+            // }
             if (homeState is HomeError) {
-              return Center(child: Text(homeState.message));
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Unable to load data'),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<HomeCubit>().loadStats();
+                      },
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
             }
 
-            return const SizedBox();
+            return const HomeSkeleton();
           },
         );
       },

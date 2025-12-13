@@ -21,9 +21,10 @@ class SigninViewBlocConsumer extends StatelessWidget {
     return BlocConsumer<AuthCubit,AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-
-                // context.read<HomeCubit>().loadUser(); // 🔥 هذا السطر
-          context.go(AppRouter.KhomeView);
+         
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.go(AppRouter.KhomeView);
+          });
         } else if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
