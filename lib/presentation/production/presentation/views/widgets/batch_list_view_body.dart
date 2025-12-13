@@ -1,4 +1,5 @@
 import 'package:alwadi_food/presentation/animations/staggered_fade_slide_item.dart';
+import 'package:alwadi_food/presentation/production/presentation/views/empty_state_view.dart';
 import 'package:alwadi_food/theme.dart';
 import 'package:flutter/material.dart';
 import 'batch_list/batch_list_item.dart';
@@ -37,38 +38,46 @@ class _BatchListViewBodyState extends State<BatchListViewBody>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // if (widget.batches.isEmpty) {
+    //   return Center(
+    //     child: Padding(
+    //       padding: AppSpacing.paddingLg,
+    //       child: Column(
+    //         mainAxisSize: MainAxisSize.min,
+    //         children: [
+    //           Icon(
+    //             Icons.inventory_2_outlined,
+    //             size: 64,
+    //             color: theme.colorScheme.primary.withOpacity(0.4),
+    //           ),
+    //           const SizedBox(height: AppSpacing.md),
+    //           Text(
+    //             'No batches found',
+    //             style: theme.textTheme.titleMedium?.copyWith(
+    //               fontWeight: FontWeight.bold,
+    //             ),
+    //           ),
+    //           const SizedBox(height: AppSpacing.sm),
+    //           Text(
+    //             'Create a new production batch to see it listed here.',
+    //             textAlign: TextAlign.center,
+    //             style: theme.textTheme.bodyMedium?.copyWith(
+    //               color: theme.colorScheme.onSurfaceVariant,
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //   );
+    // }
     if (widget.batches.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: AppSpacing.paddingLg,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.inventory_2_outlined,
-                size: 64,
-                color: theme.colorScheme.primary.withOpacity(0.4),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                'No batches found',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                'Create a new production batch to see it listed here.',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
+      return const EmptyStateView(
+        icon: Icons.inventory_2_outlined,
+        title: 'No batches yet',
+        subtitle: 'Start by creating a new production batch',
       );
     }
+
 
     return Container(
       color: const Color(0xFFF7F9FC),
