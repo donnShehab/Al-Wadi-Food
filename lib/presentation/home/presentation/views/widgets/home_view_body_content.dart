@@ -1,6 +1,8 @@
 import 'package:alwadi_food/presentation/animations/breathing_card.dart';
 import 'package:alwadi_food/presentation/animations/fade_slide.dart';
+import 'package:alwadi_food/presentation/animations/header_fade_slide.dart';
 import 'package:alwadi_food/presentation/animations/soft_highlight_card.dart';
+import 'package:alwadi_food/presentation/animations/welcome_slide_in.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_State.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +95,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 //                     ),
 //                   ),
 
-
 //                   const SizedBox(height: 24),
 
 //                   /// STATS
@@ -126,8 +127,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 //     );
 //   }
 // }
+
 class HomeViewBodyContent extends StatelessWidget {
-    final UserEntity user;
+  final UserEntity user;
   final int totalBatches;
   final int passedQC;
   final int issues;
@@ -136,7 +138,8 @@ class HomeViewBodyContent extends StatelessWidget {
     super.key,
     required this.totalBatches,
     required this.passedQC,
-    required this.issues, required this.user,
+    required this.issues,
+    required this.user,
   });
 
   @override
@@ -159,11 +162,16 @@ class HomeViewBodyContent extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HomeHeader(user: user),
+                  HeaderFadeSlide(child: HomeHeader(user: user)),
 
                   const SizedBox(height: 20),
 
-                  HomeWelcomeCard(user: user, totalBatches: totalBatches),
+                  WelcomeSlideIn(
+                    child: HomeWelcomeCard(
+                      user: user,
+                      totalBatches: totalBatches,
+                    ),
+                  ),
 
                   const SizedBox(height: 24),
 

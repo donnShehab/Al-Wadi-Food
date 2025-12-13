@@ -1,30 +1,41 @@
 import 'package:flutter/material.dart';
 
-class Pressable extends StatefulWidget {
+class PressableScale extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
+  final double pressedScale;
+  final Duration duration;
 
-  const Pressable({super.key, required this.child, this.onTap});
+  const PressableScale({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.pressedScale = 0.96,
+    this.duration = const Duration(milliseconds: 124),
+  });
 
   @override
-  State<Pressable> createState() => _PressableState();
+  State<PressableScale> createState() => _PressableScaleState();
 }
 
-class _PressableState extends State<Pressable> {
+class _PressableScaleState extends State<PressableScale> {
   bool _pressed = false;
+
+  void _onTapDown(_) => setState(() => _pressed = true);
+  void _onTapUp(_) => setState(() => _pressed = false);
+  void _onTapCancel() => setState(() => _pressed = false);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
-        setState(() => _pressed = false);
-        widget.onTap?.call();
-      },
-      onTapCancel: () => setState(() => _pressed = false),
+      onTap: widget.onTap,
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      behavior: HitTestBehavior.translucent,
       child: AnimatedScale(
-        scale: _pressed ? 0.97 : 1.0,
-        duration: const Duration(milliseconds: 160),
+        scale: _pressed ? widget.pressedScale : 1.0,
+        duration: widget.duration,
         curve: Curves.easeOut,
         child: widget.child,
       ),

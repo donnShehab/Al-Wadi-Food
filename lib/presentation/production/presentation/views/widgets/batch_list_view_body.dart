@@ -110,9 +110,9 @@ class _BatchListViewBodyState extends State<BatchListViewBody>
                   const SizedBox(height: AppSpacing.sm),
               itemBuilder: (context, index) {
                 final batch = widget.batches[index];
-               return StaggeredFadeSlideItem(
+               return StaggeredSlideFade(
                   index: index,
-                  controller: _controller,
+                  // controller: _controller,
                   child: BatchListItem(batch: batch),
                 );
 

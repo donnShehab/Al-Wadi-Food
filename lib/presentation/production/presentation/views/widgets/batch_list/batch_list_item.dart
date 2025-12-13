@@ -1,5 +1,6 @@
-
 import 'package:alwadi_food/core/constants/app_constants.dart';
+import 'package:alwadi_food/presentation/animations/animated_status_badge.dart';
+import 'package:alwadi_food/presentation/animations/pressable_card.dart';
 import 'package:alwadi_food/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -49,15 +50,15 @@ class BatchListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      elevation: 2.5,
-      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: () => context.push('/batch-details/${batch.batchId}'),
+    return PressableScale(
+      onTap: () => context.push('/batch-details/${batch.batchId}'),
+      child: Card(
+        elevation: 2.5,
+        margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
+
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -109,7 +110,14 @@ class BatchListItem extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        buildStatusBadge(batch.status),
+                        // buildStatusBadge(batch.status),
+                        AnimatedStatusBadge(
+                          status: batch.status,
+                          color: getStatusColor(batch.status),
+                          enableAnimation:
+                              batch.status == AppConstants.statusInProgress ||
+                              batch.status == AppConstants.statusWaitingQC,
+                        ),
                       ],
                     ),
 

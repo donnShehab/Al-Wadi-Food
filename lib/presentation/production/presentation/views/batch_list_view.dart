@@ -1,5 +1,6 @@
 
 import 'package:alwadi_food/core/di/injection.dart';
+import 'package:alwadi_food/presentation/animations/screen_entry_animation.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart';
 import 'package:alwadi_food/presentation/production/presentation/views/widgets/batch_list_view_body_bloc_builder.dart';
 import 'package:alwadi_food/presentation/widgets/custom_app_bar.dart';

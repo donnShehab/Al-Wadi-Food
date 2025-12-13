@@ -1,39 +1,36 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-  class StaggeredFadeSlideItem extends StatelessWidget {
-    final Widget child;
-    final AnimationController controller;
-    final int index;
-    final double fromY;
+class StaggeredSlideFade extends StatelessWidget {
+  final int index;
+  final Widget child;
+  final Duration duration;
+  final double offsetX;
+  final double offsetY;
 
-    const StaggeredFadeSlideItem({
-      super.key,
-      required this.child,
-      required this.controller,
-      required this.index,
-      this.fromY = 24,
-    });
+  const StaggeredSlideFade({
+    super.key,
+    required this.index,
+    required this.child,
+    this.duration = const Duration(milliseconds: 1000),
+    this.offsetX = 0,
+    this.offsetY = 22,
+  });
 
-    @override
-    Widget build(BuildContext context) {
-      final animation = CurvedAnimation(
-        parent: controller,
-        curve: Interval(
-          (index * 0.08).clamp(0.0, 1.0),
-          1.0,
-          curve: Curves.easeOutCubic,
-        ),
-      );
-
-      return FadeTransition(
-        opacity: animation,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: Offset(0, fromY / 100),
-            end: Offset.zero,
-          ).animate(animation),
-          child: child,
-        ),
-      );
-    }
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: duration,
+      curve: Curves.easeOutCubic,
+      builder: (context, v, _) {
+        return Opacity(
+          opacity: v,
+          child: Transform.translate(
+            offset: Offset(offsetX * (1 - v), offsetY * (1 - v)),
+            child: Transform.scale(scale: 0.96 + (0.04 * v), child: child),
+          ),
+        );
+      },
+    );
   }
+}
