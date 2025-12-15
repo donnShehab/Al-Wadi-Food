@@ -98,12 +98,12 @@ class _CreateBatchFormState extends State<CreateBatchForm> {
                 selectedDate: _startTime,
                 onDateSelected: (v) => setState(() => _startTime = v),
               ),
-              const SizedBox(height: 12),
-              DateTimePickerField(
-                label: "End Time *",
-                selectedDate: _endTime,
-                onDateSelected: (v) => setState(() => _endTime = v),
-              ),
+              // const SizedBox(height: 12),
+              // DateTimePickerField(
+              //   label: "End Time *",
+              //   selectedDate: _endTime,
+              //   onDateSelected: (v) => setState(() => _endTime = v),
+              // ),
             ]),
 
             const SizedBox(height: 20),
@@ -224,7 +224,7 @@ class _CreateBatchFormState extends State<CreateBatchForm> {
         _selectedProduct == null ||
         _selectedLine == null ||
         _startTime == null ||
-        _endTime == null ||
+        // _endTime == null ||
         _images.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill all required fields.")),

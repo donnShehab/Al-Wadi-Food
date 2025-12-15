@@ -34,6 +34,7 @@ class _BatchListViewBodyState extends State<BatchListViewBody>
     _controller.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -78,7 +79,6 @@ class _BatchListViewBodyState extends State<BatchListViewBody>
       );
     }
 
-
     return Container(
       color: const Color(0xFFF7F9FC),
       child: Column(
@@ -119,12 +119,14 @@ class _BatchListViewBodyState extends State<BatchListViewBody>
                   const SizedBox(height: AppSpacing.sm),
               itemBuilder: (context, index) {
                 final batch = widget.batches[index];
-               return StaggeredSlideFade(
+                return StaggeredSlideFade(
                   index: index,
-                  // controller: _controller,
+                  delay: Duration(
+                    milliseconds: 80 * index,
+                  ), // ✅ هنا الستاجر الحقيقي
+                  offsetY: 30,
                   child: BatchListItem(batch: batch),
                 );
-
               },
             ),
           ),
