@@ -5,10 +5,15 @@ import 'package:alwadi_food/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class BatchListItem extends StatelessWidget {
+class BatchListItem extends StatefulWidget {
   final dynamic batch;
   const BatchListItem({super.key, required this.batch});
 
+  @override
+  State<BatchListItem> createState() => _BatchListItemState();
+}
+
+class _BatchListItemState extends State<BatchListItem> {
   Color getStatusColor(String status) {
     switch (status) {
       case AppConstants.statusInProgress:
@@ -51,7 +56,7 @@ class BatchListItem extends StatelessWidget {
     final theme = Theme.of(context);
 
     return PressableScale(
-      onTap: () => context.push('/batch-details/${batch.batchId}'),
+      onTap: () => context.push('/batch-details/${widget.batch.batchId}'),
       child: Card(
         elevation: 2.5,
         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -65,7 +70,7 @@ class BatchListItem extends StatelessWidget {
             children: [
               /// -------- Icon / Avatar (مع Hero للأنيميشن مع شاشة التفاصيل) --------
               Hero(
-                tag: "batch_${batch.batchId}",
+                tag: "batch_${widget.batch.batchId}",
                 child: Container(
                   width: 46,
                   height: 46,
@@ -101,7 +106,7 @@ class BatchListItem extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            batch.product,
+                            widget.batch.product,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.titleMedium?.copyWith(
@@ -112,11 +117,11 @@ class BatchListItem extends StatelessWidget {
                         const SizedBox(width: 8),
                         // buildStatusBadge(batch.status),
                         AnimatedStatusBadge(
-                          status: batch.status,
-                          color: getStatusColor(batch.status),
+                          status: widget.batch.status,
+                          color: getStatusColor(widget.batch.status),
                           enableAnimation:
-                              batch.status == AppConstants.statusInProgress ||
-                              batch.status == AppConstants.statusWaitingQC,
+                              widget.batch.status == AppConstants.statusInProgress ||
+                              widget.batch.status == AppConstants.statusWaitingQC,
                         ),
                       ],
                     ),
@@ -132,7 +137,7 @@ class BatchListItem extends StatelessWidget {
                           color: theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 4),
-                        Text(batch.line, style: theme.textTheme.bodySmall),
+                        Text(widget.batch.line, style: theme.textTheme.bodySmall),
                         const SizedBox(width: 12),
                         Icon(
                           Icons.inventory_2,
@@ -141,7 +146,7 @@ class BatchListItem extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${batch.quantity} units',
+                          '${widget.batch.quantity} units',
                           style: theme.textTheme.bodySmall,
                         ),
                       ],
@@ -151,7 +156,7 @@ class BatchListItem extends StatelessWidget {
 
                     /// Bottom row: Batch ID
                     Text(
-                      'Batch ID: ${batch.batchId}',
+                      'Batch ID: ${widget.batch.batchId}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),

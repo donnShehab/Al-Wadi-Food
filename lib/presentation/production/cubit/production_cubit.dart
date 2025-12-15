@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:alwadi_food/core/constants/app_constants.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_state.dart';
 import 'package:alwadi_food/presentation/production/domain/entities/production_batch_entity.dart';
@@ -26,24 +27,47 @@ class ProductionCubit extends Cubit<ProductionState> {
           emit(const ProductionSuccess('Batch created successfully')),
     );
   }
-Future<void> closeBatch(ProductionBatchEntity batch) async {
+// Future<void> closeBatch(ProductionBatchEntity batch) async {
+//     emit(const ProductionLoading());
+
+//     final updatedBatch = batch.copyWith(
+//       endTime: DateTime.now(),
+//       status: 'waiting_qc',
+//       updatedAt: DateTime.now(),
+//     );
+
+//     final result = await _productionRepository.updateBatch(updatedBatch);
+
+//     result.fold(
+//       ifLeft: (error) => emit(ProductionError(error)),
+//       ifRight: (_) =>
+//           emit(const ProductionSuccess('Batch closed successfully')),
+//     );
+//   }
+
+
+Future<void> closeBatch(String batchId) async {
     emit(const ProductionLoading());
 
-    final updatedBatch = batch.copyWith(
-      endTime: DateTime.now(),
-      status: 'waiting_qc',
-      updatedAt: DateTime.now(),
+    final result = await _productionRepository.updateBatchStatus(
+      batchId,
+      AppConstants.statusWaitingQC,
     );
-
-    final result = await _productionRepository.updateBatch(updatedBatch);
 
     result.fold(
-      ifLeft: (error) => emit(ProductionError(error)),
-      ifRight: (_) =>
-          emit(const ProductionSuccess('Batch closed successfully')),
+      ifLeft: (e) => emit(ProductionError(e)),
+      ifRight: (_) async {
+        await _productionRepository.updateBatch(
+          (state as ProductionBatchLoaded).batch.copyWith(
+            endTime: DateTime.now(), // ✅ هنا الحليييي
+            updatedAt: DateTime.now(),
+          ),
+        );
+
+        emit(const ProductionSuccess('Batch closed successfully'));
+      },
     );
   }
-
   /// جلب كل الـ Batches
   Future<void> loadAllBatches() async {
     emit(const ProductionLoading());
