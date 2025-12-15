@@ -5,7 +5,7 @@ class ProductionBatchEntity extends Equatable {
   final String product;
   final int quantity;
   final DateTime startTime;
-  final DateTime endTime;
+  final DateTime? endTime;
   final String line;
   final String operatorName;
   final List<String> images;
@@ -20,7 +20,7 @@ class ProductionBatchEntity extends Equatable {
     required this.product,
     required this.quantity,
     required this.startTime,
-    required this.endTime,
+     this.endTime,
     required this.line,
     required this.operatorName,
     required this.images,

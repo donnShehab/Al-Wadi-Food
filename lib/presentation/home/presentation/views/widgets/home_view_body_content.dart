@@ -1,3 +1,4 @@
+import 'package:alwadi_food/core/constants/app_constants.dart';
 import 'package:alwadi_food/presentation/animations/breathing_card.dart';
 import 'package:alwadi_food/presentation/animations/fade_slide.dart';
 import 'package:alwadi_food/presentation/animations/header_fade_slide.dart';
@@ -5,6 +6,8 @@ import 'package:alwadi_food/presentation/animations/soft_highlight_card.dart';
 import 'package:alwadi_food/presentation/animations/welcome_slide_in.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_State.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
+import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart';
+import 'package:alwadi_food/presentation/production/cubit/production_state.dart';
 import 'package:flutter/material.dart';
 import 'package:alwadi_food/presentation/auth/domain/entites/user_entity.dart';
 import 'package:alwadi_food/presentation/home/presentation/views/widgets/home_header.dart';
@@ -175,10 +178,34 @@ class HomeViewBodyContent extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  HomeStatsTiles(
-                    total: totalBatches,
-                    passed: passedQC,
-                    issues: issues,
+                  // HomeStatsTiles(
+                  //   total: totalBatches,
+                  //   passed: passedQC,
+                  //   issues: issues,
+                  // ),
+                  BlocBuilder<ProductionCubit, ProductionState>(
+                    builder: (context, state) {
+                      if (state is ProductionBatchesLoaded) {
+                        final batches = state.batches;
+
+                        final total = batches.length;
+                        final passed = batches
+                            .where((b) => b.status == AppConstants.statusPassed)
+                            .length;
+                        final issues = batches
+                            .where((b) => b.status == AppConstants.statusFailed)
+                            .length;
+
+                        return HomeStatsTiles(
+                          total: total,
+                          passed: passed,
+                          issues: issues,
+                        );
+                      }
+
+                      // Loading or empty
+                      return const SizedBox(height: 80);
+                    },
                   ),
 
                   const SizedBox(height: 32),

@@ -31,7 +31,6 @@ class _CreateBatchFormState extends State<CreateBatchForm> {
   String? _selectedProduct;
   String? _selectedLine;
   DateTime? _startTime;
-  DateTime? _endTime;
   final List<File> _images = [];
 
   @override
@@ -48,90 +47,93 @@ class _CreateBatchFormState extends State<CreateBatchForm> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(18),
-        child: Column(
-          children: [
-            _buildHeaderCard(theme),
-
-            const SizedBox(height: 20),
-
-            /// Product Section
-            _sectionCard(theme, "Product Information", [
-              ProductDropdown(
-                selectedProduct: _selectedProduct,
-                onChanged: (v) => setState(() => _selectedProduct = v),
-              ),
-              const SizedBox(height: 12),
-              CreateBatchField(
-                controller: _quantityController,
-                textLabel: "Quantity *",
-                hint: "Enter quantity",
-                keyboardType: TextInputType.number,
-                validator: (v) =>
-                    Validators.validatePositiveNumber(v, "Quantity"),
-              ),
-            ]),
-
-            const SizedBox(height: 20),
-
-            /// Production Details
-            _sectionCard(theme, "Production Details", [
-              LineDropdown(
-                selectedLine: _selectedLine,
-                onChanged: (v) => setState(() => _selectedLine = v),
-              ),
-              const SizedBox(height: 12),
-              CreateBatchField(
-                controller: _operatorController,
-                textLabel: "Operator Name *",
-                hint: "Enter operator name",
-                validator: (v) =>
-                    Validators.validateRequired(v, "Operator name"),
-              ),
-            ]),
-
-            const SizedBox(height: 20),
-
-            /// Time Section
-            _sectionCard(theme, "Production Timing", [
-              DateTimePickerField(
-                label: "Start Time *",
-                selectedDate: _startTime,
-                onDateSelected: (v) => setState(() => _startTime = v),
-              ),
-              // const SizedBox(height: 12),
-              // DateTimePickerField(
-              //   label: "End Time *",
-              //   selectedDate: _endTime,
-              //   onDateSelected: (v) => setState(() => _endTime = v),
-              // ),
-            ]),
-
-            const SizedBox(height: 20),
-
-            /// Notes Section
-            _sectionCard(theme, "Additional Notes", [
-              CreateBatchField(
-                controller: _notesController,
-                textLabel: "Notes",
-                hint: "Enter details or observations",
-                maxLines: 3,
-              ),
-            ]),
-
-            const SizedBox(height: 20),
-
-            /// Images Section
-            _sectionCard(theme, "Product Images *", [
-              ImagePickerGrid(
-                images: _images,
-                onChanged: () => setState(() {}),
-              ),
-            ]),
-
-            const SizedBox(height: 32),
-
-            SubmitButtonCreateBatch(onPressed: () => _handleSubmit(context)),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _buildHeaderCard(theme),
+          
+              const SizedBox(height: 20),
+          
+              /// Product Section
+              _sectionCard(theme, "Product Information", [
+                ProductDropdown(
+                  selectedProduct: _selectedProduct,
+                  onChanged: (v) => setState(() => _selectedProduct = v),
+                ),
+                const SizedBox(height: 12),
+                CreateBatchField(
+                  controller: _quantityController,
+                  textLabel: "Quantity *",
+                  hint: "Enter quantity",
+                  keyboardType: TextInputType.number,
+                  validator: (v) =>
+                      Validators.validatePositiveNumber(v, "Quantity"),
+                ),
+              ]),
+          
+              const SizedBox(height: 20),
+          
+              /// Production Details
+              _sectionCard(theme, "Production Details", [
+                LineDropdown(
+                  selectedLine: _selectedLine,
+                  onChanged: (v) => setState(() => _selectedLine = v),
+                ),
+                const SizedBox(height: 12),
+                CreateBatchField(
+                  controller: _operatorController,
+                  textLabel: "Operator Name *",
+                  hint: "Enter operator name",
+                  validator: (v) =>
+                      Validators.validateRequired(v, "Operator name"),
+                ),
+              ]),
+          
+              const SizedBox(height: 20),
+          
+              /// Time Section
+              _sectionCard(theme, "Production Timing", [
+                DateTimePickerField(
+                  label: "Start Time *",
+                  selectedDate: _startTime,
+                  onDateSelected: (v) => setState(() => _startTime = v),
+                ),
+                // const SizedBox(height: 12),
+                // DateTimePickerField(
+                //   label: "End Time *",
+                //   selectedDate: _endTime,
+                //   onDateSelected: (v) => setState(() => _endTime = v),
+                // ),
+              ]),
+          
+              const SizedBox(height: 20),
+          
+              /// Notes Section
+              _sectionCard(theme, "Additional Notes", [
+                CreateBatchField(
+                  controller: _notesController,
+                  textLabel: "Notes",
+                  hint: "Enter details or observations",
+                  maxLines: 3,
+                ),
+              ]),
+          
+              const SizedBox(height: 20),
+          
+              /// Images Section
+              _sectionCard(theme, "Product Images *", [
+                ImagePickerGrid(
+                  images: _images,
+                  onChanged: () => setState(() {}),
+                ),
+              ]),
+          
+              const SizedBox(height: 32),
+          
+              SubmitButtonCreateBatch(onPressed: () => _handleSubmit(context)),
+            ],
+          ),
         ),
       ),
     );
@@ -224,7 +226,6 @@ class _CreateBatchFormState extends State<CreateBatchForm> {
         _selectedProduct == null ||
         _selectedLine == null ||
         _startTime == null ||
-        // _endTime == null ||
         _images.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill all required fields.")),
@@ -239,7 +240,7 @@ class _CreateBatchFormState extends State<CreateBatchForm> {
       product: _selectedProduct!,
       quantity: int.parse(_quantityController.text),
       startTime: _startTime!,
-      endTime: _endTime!,
+      endTime: _startTime!,
       line: _selectedLine!,
       operatorName: _operatorController.text,
       images: [],

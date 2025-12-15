@@ -24,7 +24,9 @@ class ProductionBatchModel extends ProductionBatchEntity {
       product: json['product'] as String,
       quantity: json['quantity'] as int,
       startTime: (json['startTime'] as Timestamp).toDate(),
-      endTime: (json['endTime'] as Timestamp).toDate(),
+      endTime: json['endTime'] == null
+          ? null
+          : (json['endTime'] as Timestamp).toDate(),
       line: json['line'] as String,
       operatorName: json['operatorName'] as String,
       images: List<String>.from(json['images'] as List),
@@ -42,7 +44,7 @@ class ProductionBatchModel extends ProductionBatchEntity {
       'product': product,
       'quantity': quantity,
       'startTime': Timestamp.fromDate(startTime),
-      'endTime': Timestamp.fromDate(endTime),
+      'endTime': endTime == null ? null : Timestamp.fromDate(endTime!),
       'line': line,
       'operatorName': operatorName,
       'images': images,

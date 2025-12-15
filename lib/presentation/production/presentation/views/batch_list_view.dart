@@ -15,7 +15,7 @@ class BatchListView extends StatelessWidget {
     final theme = Theme.of(context);
 
     return BlocProvider(
-      create: (_) => getIt<ProductionCubit>()..loadAllBatches(),
+      create: (_) => getIt<ProductionCubit>()..listenToBatchesStream(),
       child: Scaffold(
         backgroundColor: const Color(0xFFF7F9FC),
         appBar: buildAppBar(

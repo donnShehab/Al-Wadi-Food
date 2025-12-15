@@ -18,11 +18,14 @@ class TimeTrackingSection extends StatelessWidget {
         value: DateFormatter.formatDateTime(batch.startTime),
         icon: Icons.access_time,
       ),
-      InfoRow(
+     InfoRow(
         label: "End Time",
-        value: DateFormatter.formatDateTime(batch.endTime),
+        value: batch.endTime == null
+            ? "In progress"
+            : DateFormatter.formatDateTime(batch.endTime!),
         icon: Icons.access_time_filled,
       ),
+
     ]);
   }
 
