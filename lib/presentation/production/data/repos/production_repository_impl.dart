@@ -40,6 +40,19 @@ class ProductionRepositoryImpl implements ProductionRepository {
     }
   }
 
+@override
+  Future<Either<String, void>> deleteBatch(String batchId) async {
+    try {
+      await _firestoreService.deleteDocument(
+        AppConstants.batchesCollection,
+        batchId,
+      );
+      return const Right(null);
+    } catch (e) {
+      return Left('Failed to delete batch');
+    }
+  }
+
   @override
   Future<Either<String, ProductionBatchEntity>> getBatchById(
     String batchId,

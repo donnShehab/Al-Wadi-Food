@@ -142,6 +142,7 @@
 //     );
 //   }
 // }
+import 'package:alwadi_food/presentation/qc/presentation/views/qc_history_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -179,7 +180,7 @@ class AppRouter {
   static const String KbatchDetailsView = '/batch-details';
 
   static const String KqCPendingListView = '/qc-pending';
-
+  static const String KQCHistoryView = '/qc-history';
   static const String KdashboardView = '/dashboard';
   static const String KtraceabilityView = '/traceability';
   static const String KuserManagementView = '/users';
@@ -235,6 +236,16 @@ class AppRouter {
         path: KqCPendingListView,
         pageBuilder: (context, state) =>
             fadeUp(state, const QCPendingListView()),
+      ),
+      GoRoute(
+        path: '$KQCHistoryView/:batchId',
+        pageBuilder: (context, state) {
+          final batchId = state.pathParameters['batchId']!;
+          return buildFadeSlidePage(
+            state: state,
+            child: QCHistoryView(batchId: batchId),
+          );
+        },
       ),
 
       /// -------- MANAGER --------

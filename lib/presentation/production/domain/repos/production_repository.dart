@@ -8,6 +8,8 @@ abstract class ProductionRepository {
     ProductionBatchEntity batch,
     List<File> images,
   );
+  // delete batch
+  Future<Either<String, void>> deleteBatch(String batchId);
   // get batch by id
   Future<Either<String, ProductionBatchEntity>> getBatchById(String batchId);
   // get all batches

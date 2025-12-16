@@ -27,6 +27,34 @@ class ProductionCubit extends Cubit<ProductionState> {
           emit(const ProductionSuccess('Batch created successfully')),
     );
   }
+  // Future<void> deleteBatch(String batchId) async {
+  //   emit(const ProductionLoading());
+
+  //   final result = await _productionRepository.deleteBatch(batchId);
+
+  //   result.fold(
+  //     ifLeft: (error) => emit(ProductionError(error)),
+  //     ifRight: (_) =>
+  //         emit(const ProductionSuccess('Batch deleted successfully')),
+  //   );
+  // }
+  Future<void> deleteBatch(String batchId) async {
+    emit(const ProductionLoading());
+    final result = await _productionRepository.deleteBatch(batchId);
+
+    result.fold(
+      ifLeft: (e) => emit(ProductionError(e)),
+      ifRight: (_) async {
+        final batchesResult = await _productionRepository.getAllBatches();
+        batchesResult.fold(
+          ifLeft: (e) => emit(ProductionError(e)),
+          ifRight: (batches) => emit(ProductionBatchesLoaded(batches)),
+        );
+      },
+    );
+  }
+
+
 // Future<void> closeBatch(ProductionBatchEntity batch) async {
 //     emit(const ProductionLoading());
 
@@ -45,29 +73,47 @@ class ProductionCubit extends Cubit<ProductionState> {
 //     );
 //   }
 
-
-Future<void> closeBatch(String batchId) async {
+Future<void> closeBatch(ProductionBatchEntity batch) async {
     emit(const ProductionLoading());
 
-    final result = await _productionRepository.updateBatchStatus(
-      batchId,
-      AppConstants.statusWaitingQC,
+    final updatedBatch = batch.copyWith(
+      status: AppConstants.statusWaitingQC,
+      endTime: DateTime.now(), // ⏱️ وقت الإغلاق الحقيقي
+      updatedAt: DateTime.now(),
     );
+
+    final result = await _productionRepository.updateBatch(updatedBatch);
 
     result.fold(
       ifLeft: (e) => emit(ProductionError(e)),
-      ifRight: (_) async {
-        await _productionRepository.updateBatch(
-          (state as ProductionBatchLoaded).batch.copyWith(
-            endTime: DateTime.now(), // ✅ هنا الحليييي
-            updatedAt: DateTime.now(),
-          ),
-        );
-
+      ifRight: (_) {
         emit(const ProductionSuccess('Batch closed successfully'));
       },
     );
   }
+
+// Future<void> closeBatch(String batchId) async {
+//     emit(const ProductionLoading());
+
+//     final result = await _productionRepository.updateBatchStatus(
+//       batchId,
+//       AppConstants.statusWaitingQC,
+//     );
+
+//     result.fold(
+//       ifLeft: (e) => emit(ProductionError(e)),
+//       ifRight: (_) async {
+//         await _productionRepository.updateBatch(
+//           (state as ProductionBatchLoaded).batch.copyWith(
+//             endTime: DateTime.now(),  
+//             updatedAt: DateTime.now(),
+//           ),
+//         );
+
+//         emit(const ProductionSuccess('Batch closed successfully'));
+//       },
+//     );
+//   }
   /// جلب كل الـ Batches
   Future<void> loadAllBatches() async {
     emit(const ProductionLoading());
