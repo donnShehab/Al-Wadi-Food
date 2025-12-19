@@ -78,37 +78,42 @@ class HomeRoleSections extends StatelessWidget {
   }
 
   // ================= QC =================
-
-  Widget _qcSection(BuildContext context) {
+Widget _qcSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         StaggeredSlideFade(
           index: 0,
           delay: const Duration(milliseconds: 100),
-          offsetY: 20,          child: _sectionTitle('Quality Control Module')),
+          offsetY: 20,
+          child: _sectionTitle('Quality Control'),
+        ),
+
+        /// 🧠 QC Dashboard (المدخل الرئيسي)
         StaggeredSlideFade(
-           index: 1,
+          index: 1,
           delay: const Duration(milliseconds: 220),
           offsetY: 26,
           child: HomeNavigationCard(
-            title: 'Pending QC',
-            subtitle: 'Batches waiting for inspection',
-            icon: Icons.assignment,
+            title: 'QC Dashboard',
+            subtitle: 'Overview of inspections & performance',
+            icon: Icons.dashboard_customize,
             color: LightModeColors.lightTertiary,
-            route: AppRouter.KqCPendingListView,
+            route: '/qc-dashboard',
           ),
         ),
+
+        /// 🕒 Pending QC
         StaggeredSlideFade(
-           index: 2,
+          index: 2,
           delay: const Duration(milliseconds: 340),
           offsetY: 26,
           child: HomeNavigationCard(
-            title: 'All Batches',
-            subtitle: 'View all production batches',
-            icon: Icons.inventory_2,
+            title: 'Pending Inspections',
+            subtitle: 'Batches waiting for QC',
+            icon: Icons.assignment,
             color: LightModeColors.lightSecondary,
-            route: AppRouter.KbatchListView,
+            route: AppRouter.KqCPendingListView,
           ),
         ),
       ],

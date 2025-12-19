@@ -77,6 +77,7 @@ import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart'
 import 'package:alwadi_food/presentation/production/data/repos/production_repository_impl.dart';
 import 'package:alwadi_food/presentation/production/domain/repos/production_repository.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_cubit.dart';
+import 'package:alwadi_food/presentation/qc/cubit/qc_dashboard/qc_dashboard_cubit.dart';
 import 'package:alwadi_food/presentation/qc/data/repos/qc_repository_impl.dart';
 import 'package:alwadi_food/presentation/qc/domain/repos/qc_repository.dart';
 import 'package:alwadi_food/presentation/settings/cubit/app_settings_cubit.dart';
@@ -146,6 +147,12 @@ getIt.registerFactory<QCCubit>(
       getIt<ProductionRepository>(),
       getIt<AuthRepository>(),
     ),
+  );
+
+  // QC Dashboard Cubit
+  getIt.registerFactory<QCDashboardCubit>(
+    () =>
+        QCDashboardCubit(getIt<ProductionRepository>(), getIt<QCRepository>()),
   );
 
   getIt.registerFactory<AppSettingsCubit>(

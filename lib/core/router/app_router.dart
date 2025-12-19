@@ -141,6 +141,7 @@
 //   }
 // }
 
+import 'package:alwadi_food/presentation/qc/presentation/views/qc_dashboard_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_history_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_inspection_view.dart';
 import 'package:flutter/material.dart';
@@ -178,6 +179,7 @@ class AppRouter {
   static const String KcreateBatchView = '/create-batch';
   static const String KbatchListView = '/batches';
   static const String KbatchDetailsView = '/batch-details';
+static const String KQCDashboardView = '/qc-dashboard';
 
   static const String KqCPendingListView = '/qc-pending';
   static const String KQCHistoryView = '/qc-history';
@@ -258,6 +260,11 @@ class AppRouter {
         },
       ),
 
+      /// -------- QC --------
+   GoRoute(
+        path: KQCDashboardView,
+        pageBuilder: (context, state) => fadeUp(state, const QCDashboardView()),
+      ),
       /// -------- MANAGER --------
       GoRoute(
         path: KdashboardView,
