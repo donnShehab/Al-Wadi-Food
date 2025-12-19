@@ -1,5 +1,3 @@
-
-
 // import 'package:alwadi_food/presentation/auth/presentaion/signin/views/signin_view.dart';
 // import 'package:alwadi_food/presentation/auth/presentaion/signup/views/signup_view.dart';
 // import 'package:alwadi_food/presentation/home/presentation/views/home_view.dart';
@@ -142,7 +140,9 @@
 //     );
 //   }
 // }
+
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_history_view.dart';
+import 'package:alwadi_food/presentation/qc/presentation/views/qc_inspection_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -174,7 +174,7 @@ class AppRouter {
   static const String KloginView = '/login';
   static const String KSignup = '/signup';
   static const String KhomeView = '/home';
-
+  static const String KQCInspectionView = '/qc-inspection';
   static const String KcreateBatchView = '/create-batch';
   static const String KbatchListView = '/batches';
   static const String KbatchDetailsView = '/batch-details';
@@ -244,6 +244,16 @@ class AppRouter {
           return buildFadeSlidePage(
             state: state,
             child: QCHistoryView(batchId: batchId),
+          );
+        },
+      ),
+      GoRoute(
+        path: '$KQCInspectionView/:batchId',
+        pageBuilder: (context, state) {
+          final batchId = state.pathParameters['batchId']!;
+          return buildFadeSlidePage(
+            state: state,
+            child: QCInspectionView(batchId: batchId),
           );
         },
       ),

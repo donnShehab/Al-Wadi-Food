@@ -59,6 +59,7 @@
 //   getIt.registerFactory(() => UserManagementCubit(getIt()));
 //   getIt.registerFactory(() => TraceabilityCubit(getIt(), getIt()));
 // }
+
 import 'package:alwadi_food/core/services/preferences_service.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
 import 'package:alwadi_food/presentation/auth/data/repos/auth_repository_impl.dart';

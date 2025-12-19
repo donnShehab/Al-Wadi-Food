@@ -30,7 +30,7 @@ class QCInspectionBodyBlocConsumer extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return QCInspectionBody(
+        return QCInspectionViewBody(
           batchId: batchId,
           isLoading: state is QCLoading,
         );

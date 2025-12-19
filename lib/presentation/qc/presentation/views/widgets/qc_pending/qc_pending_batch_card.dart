@@ -1,3 +1,4 @@
+import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:alwadi_food/theme.dart';
@@ -19,7 +20,10 @@ class QCPendingBatchCard extends StatelessWidget {
         title: Text(batch.product),
         subtitle: Text('${batch.quantity} units • ${batch.line}'),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () => context.push('/qc-inspection/${batch.batchId}'),
+        onTap: () {
+          context.push('${AppRouter.KQCInspectionView}/${batch.batchId}');
+        },
+       
       ),
     );
   }

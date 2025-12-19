@@ -4,21 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:alwadi_food/presentation/widgets/loading_overlay.dart';
 import 'package:alwadi_food/theme.dart';
 
-class QCInspectionBody extends StatefulWidget {
+class QCInspectionViewBody extends StatefulWidget {
   final String batchId;
   final bool isLoading;
 
-  const QCInspectionBody({
+  const QCInspectionViewBody({
     super.key,
     required this.batchId,
     required this.isLoading,
   });
 
   @override
-  State<QCInspectionBody> createState() => _QCInspectionBodyState();
+  State<QCInspectionViewBody> createState() => _QCInspectionViewBodyState();
 }
 
-class _QCInspectionBodyState extends State<QCInspectionBody> {
+class _QCInspectionViewBodyState extends State<QCInspectionViewBody> {
   final _formKey = GlobalKey<FormState>();
   final List<File> _images = [];
   bool _passed = true;

@@ -3,10 +3,10 @@ import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_histor
 import 'package:flutter/material.dart';
 import 'package:alwadi_food/theme.dart';
 
-class QCHistoryBody extends StatelessWidget {
+class QCHistoryViewBody extends StatelessWidget {
   final List<QCResultEntity> results;
 
-  const QCHistoryBody({super.key, required this.results});
+  const QCHistoryViewBody({super.key, required this.results});
 
   @override
   Widget build(BuildContext context) {

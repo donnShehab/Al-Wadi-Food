@@ -46,7 +46,7 @@ class ProductionInfoSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: theme.colorScheme.primary.withOpacity(0.10)),
         boxShadow: [
-          BoxShadow(
+          BoxShadow(   
             color: Colors.black.withOpacity(0.04),
             blurRadius: 8,
             offset: const Offset(0, 3),

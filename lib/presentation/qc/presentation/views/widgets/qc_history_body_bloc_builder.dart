@@ -15,7 +15,7 @@ class QCHistoryBodyBlocBuilder extends StatelessWidget {
         if (state is QCLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is QCResultsLoaded) {
-          return QCHistoryBody(results: state.results);
+          return QCHistoryViewBody(results: state.results);
         } else if (state is QCError) {
           return Center(child: Text(state.message));
         }
@@ -24,4 +24,3 @@ class QCHistoryBodyBlocBuilder extends StatelessWidget {
     );
   }
 }
-
