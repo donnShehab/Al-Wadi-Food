@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:alwadi_food/core/constants/app_constants.dart';
-import 'package:alwadi_food/generated/intl/messages_en.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart';
 import 'package:alwadi_food/presentation/production/domain/repos/production_repository.dart';
+import 'package:alwadi_food/presentation/qc/domain/entites/qc_measurements_entity.dart';
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
 import 'package:alwadi_food/presentation/qc/domain/repos/qc_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,24 +16,75 @@ class QCCubit extends Cubit<QCState> {
 
   QCCubit(this._qcRepository, this._productionRepository, this._authRepository)
     : super(const QCInitial());
-
-  Future<void> createQCResult(
-    QCResultEntity qcResult,
-    List<File> images,
-    String batchId,
-    String newStatus,
-  ) async {
+Future<void> createQCResult({
+    required String batchId,
+    required bool passed,
+      required QCMeasurementsEntity measurements,
+    String? failureReason,
+    required List<File> images,
+  }) async {
     emit(const QCLoading());
-    final result = await _qcRepository.createQCResult(qcResult, images);
 
-    result.fold(
-      ifLeft: (failure) => emit(QCError(failure.message)),
-      ifRight: (_) async {
-        await _productionRepository.updateBatchStatus(batchId, newStatus);
-        emit(const QCSuccess('QC inspection completed'));
-      },
-    );
+    try {
+      // ❗ reject لازم يكون معه سبب
+      if (!passed && (failureReason == null || failureReason.isEmpty)) {
+        emit(const QCError('Failure reason is required'));
+        return;
+      }
+
+      final userId = _authRepository.getCurrentUserId();
+      if (userId == null) {
+        emit(const QCError('User not authenticated'));
+        return;
+      }
+
+      final userEither = await _authRepository.getCurrentUser();
+
+      await userEither.fold(
+        ifLeft: (failure) async {
+          emit(QCError(failure.message));
+          return;
+        },
+        ifRight: (user) async {
+          final qcResult = QCResultEntity(
+            inspectionId: DateTime.now().millisecondsSinceEpoch.toString(),
+            batchId: batchId,
+            inspectorId: user.uid,
+            inspectorName: user.name,
+            temperature: 0,
+            weight: 0,
+            color: '',
+            packaging: '',
+            moisture: 0,
+            texture: '',
+            tasteTest: null,
+            notes: '',
+            images: const [],
+            result: passed
+                ? AppConstants.qcResultPass
+                : AppConstants.qcResultFail,
+            failureReason: failureReason,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
+
+
+          await _qcRepository.createQCResult(qcResult, images);
+
+          await _productionRepository.updateBatchStatus(
+            batchId,
+            passed ? AppConstants.statusPassed : AppConstants.statusFailed,
+          );
+
+          emit(const QCSuccess('QC inspection completed successfully'));
+          return;
+        },
+      );
+    } catch (e) {
+      emit(QCError(e.toString()));
+    }
   }
+
 
   Future<void> loadQCResultsByBatchId(String batchId) async {
     emit(const QCLoading());

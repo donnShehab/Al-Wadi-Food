@@ -94,28 +94,37 @@ Widget _qcSection(BuildContext context) {
           index: 1,
           delay: const Duration(milliseconds: 220),
           offsetY: 26,
+          // child: HomeNavigationCard(
+          //   title: 'QC Dashboard',
+          //   subtitle: 'Overview of inspections & performance',
+          //   icon: Icons.dashboard_customize,
+          //   color: LightModeColors.lightTertiary,
+          //   route: '/qc-dashboard',
+          // ),
           child: HomeNavigationCard(
-            title: 'QC Dashboard',
-            subtitle: 'Overview of inspections & performance',
-            icon: Icons.dashboard_customize,
-            color: LightModeColors.lightTertiary,
-            route: '/qc-dashboard',
-          ),
+  title: 'QC Dashboard',
+  subtitle: 'Overview of inspections & workload',
+  icon: Icons.dashboard_outlined,
+  color: LightModeColors.lightPrimary,
+  route: AppRouter.KQCDashboardView,
+),
+
+          
         ),
 
         /// 🕒 Pending QC
-        StaggeredSlideFade(
-          index: 2,
-          delay: const Duration(milliseconds: 340),
-          offsetY: 26,
-          child: HomeNavigationCard(
-            title: 'Pending Inspections',
-            subtitle: 'Batches waiting for QC',
-            icon: Icons.assignment,
-            color: LightModeColors.lightSecondary,
-            route: AppRouter.KqCPendingListView,
-          ),
-        ),
+        // StaggeredSlideFade(
+        //   index: 2,
+        //   delay: const Duration(milliseconds: 340),
+        //   offsetY: 26,
+        //   child: HomeNavigationCard(
+        //     title: 'Pending Inspections',
+        //     subtitle: 'Batches waiting for QC',
+        //     icon: Icons.assignment,
+        //     color: LightModeColors.lightSecondary,
+        //     route: AppRouter.KqCPendingListView,
+        //   ),
+        // ),
       ],
     );
   }

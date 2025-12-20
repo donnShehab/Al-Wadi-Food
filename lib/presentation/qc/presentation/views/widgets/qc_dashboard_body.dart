@@ -1,225 +1,111 @@
+import 'package:alwadi_food/presentation/qc/cubit/qc_dashboard/qc_dashboard_cubit.dart';
+import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_dashboard/qc_action_card.dart';
+import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_dashboard/qc_hint_card.dart';
+import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_dashboard/qc_stat_card.dart';
+import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_dashboard/recent_qc_activity_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:alwadi_food/theme.dart';
+import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
 
 class QCDashboardBody extends StatelessWidget {
   final int pendingCount;
   final int passedToday;
   final int failedToday;
+  final List<QCResultEntity> recentResults;
 
   const QCDashboardBody({
     super.key,
     required this.pendingCount,
     required this.passedToday,
     required this.failedToday,
+    required this.recentResults,
   });
 
   @override
   Widget build(BuildContext context) {
-    final maxValue = (passedToday > failedToday ? passedToday : failedToday)
-        .clamp(1, 999);
-
-    return Padding(
+    return SingleChildScrollView(
       padding: AppSpacing.paddingLg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// 🔹 Title
           Text(
-            'Quality Control Overview',
+            'Quality Control Command Center',
             style: Theme.of(context).textTheme.headlineSmall?.semiBold,
           ),
-
           const SizedBox(height: 20),
 
-          /// 🔹 Stats Cards
+          // Stats
           Row(
             children: [
-              _StatCard(
+              QCStatCard(
                 title: 'Pending QC',
                 value: pendingCount,
-                color: Colors.orange,
                 icon: Icons.hourglass_bottom,
+                iconColor: Colors.orange,
               ),
               const SizedBox(width: 12),
-              _StatCard(
+              QCStatCard(
                 title: 'Passed Today',
                 value: passedToday,
-                color: Colors.green,
                 icon: Icons.check_circle,
+                iconColor: Colors.green,
               ),
               const SizedBox(width: 12),
-              _StatCard(
+              QCStatCard(
                 title: 'Failed Today',
                 value: failedToday,
-                color: Colors.red,
                 icon: Icons.cancel,
+                iconColor: Colors.red,
               ),
             ],
           ),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 28),
 
-          /// 🔹 TODAY CHART
-          Text(
-            'Today QC Trend',
-            style: Theme.of(context).textTheme.titleMedium?.semiBold,
-          ),
-          const SizedBox(height: 16),
+          // Action card
+          // QCActionCard(
+          //   pendingCount: pendingCount,
+          //   onStart: pendingCount == 0
+          //       ? null
+          //       : () => context.push(AppRouter.KqCPendingListView),
+          // ),
+QCActionCard(
+            pendingCount: pendingCount,
+            onStart: pendingCount == 0
+                ? null
+                : () async {
+                    final result = await context.push(
+                      AppRouter.KqCPendingListView,
+                    );
 
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _ChartBar(
-                  label: 'Passed',
-                  value: passedToday,
-                  maxValue: maxValue,
-                  color: Colors.green,
-                ),
-                const SizedBox(width: 24),
-                _ChartBar(
-                  label: 'Failed',
-                  value: failedToday,
-                  maxValue: maxValue,
-                  color: Colors.red,
-                ),
-              ],
-            ),
+                    if (result == true && context.mounted) {
+                      context.read<QCDashboardCubit>().loadDashboard();
+                    }
+                  },
           ),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 18),
 
-          /// 🔹 Hint / UX message
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.blue.withOpacity(0.3)),
-            ),
-            child: Row(
-              children: const [
-                Icon(Icons.info_outline, color: Colors.blue),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Start inspections from "Pending QC" to keep production moving smoothly.',
-                  ),
-                ),
-              ],
-            ),
+          // Hint
+          const QCHintCard(
+            text:
+                'Inspections should be completed promptly to avoid production delays.',
           ),
-        ],
-      ),
-    );
-  }
-}
 
-/// ================= STAT CARD =================
-
-class _StatCard extends StatelessWidget {
-  final String title;
-  final int value;
-  final Color color;
-  final IconData icon;
-
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.color,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+          if (recentResults.isNotEmpty) ...[
+            const SizedBox(height: 28),
+            RecentQCActivityList(results: recentResults),
+          ] else ...[
+            const SizedBox(height: 28),
+            Text(
+              'No recent QC activity yet.',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
-            Text(
-              '$value',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: color,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// ================= CHART BAR =================
-
-class _ChartBar extends StatelessWidget {
-  final String label;
-  final int value;
-  final int maxValue;
-  final Color color;
-
-  const _ChartBar({
-    required this.label,
-    required this.value,
-    required this.maxValue,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final heightFactor = value / maxValue;
-
-    return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
-            height: 140 * heightFactor,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value.toString(),
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(label),
         ],
       ),
     );

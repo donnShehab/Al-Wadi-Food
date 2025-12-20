@@ -20,8 +20,8 @@
 //         ),
 //         title: Text(batch.product),
 //         subtitle: Text('${batch.quantity} units • ${batch.line}'),
-//         trailing: 
-        
+//         trailing:
+
 //         const Icon(Icons.arrow_forward_ios, size: 16),
 //         onTap: () {
 //           if (batch.status != AppConstants.statusWaitingQC) {
@@ -39,9 +39,12 @@
 //     );
 //   }
 // }
+
 import 'package:alwadi_food/core/constants/app_constants.dart';
 import 'package:alwadi_food/core/router/app_router.dart';
+import 'package:alwadi_food/presentation/qc/cubit/qc_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:alwadi_food/theme.dart';
 
@@ -75,20 +78,26 @@ class QCPendingBatchCard extends StatelessWidget {
             const Icon(Icons.arrow_forward_ios, size: 16),
           ],
         ),
-
-        onTap: () {
-          /// ❌ حماية: لا Inspection إلا إذا Waiting QC
-          if (batch.status != AppConstants.statusWaitingQC) {
+        onTap: () async{
+          // ✅ إذا تم فحصه مسبقًا
+          if (batch.status == AppConstants.statusPassed ||
+              batch.status == AppConstants.statusFailed) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('This batch is not ready for QC inspection'),
+                content: Text('This batch has already been inspected'),
               ),
             );
-            return;
+            return; // ⛔ لا تدخل صفحة الفحص
           }
 
-          context.push('${AppRouter.KQCInspectionView}/${batch.batchId}');
-        },
+          // ✅ فقط إذا كان بانتظار QC
+final result = await context.push(
+  '${AppRouter.KQCInspectionView}/${batch.batchId}',
+);
+
+if (result == true && context.mounted) {
+  context.read<QCCubit>().loadPendingBatches();
+}        },
       ),
     );
   }

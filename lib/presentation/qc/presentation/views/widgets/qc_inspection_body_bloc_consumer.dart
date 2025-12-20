@@ -1,4 +1,5 @@
 import 'package:alwadi_food/presentation/qc/cubit/qc_cubit.dart';
+import 'package:alwadi_food/presentation/qc/cubit/qc_dashboard/qc_dashboard_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,10 +17,18 @@ class QCInspectionBodyBlocConsumer extends StatelessWidget {
     return BlocConsumer<QCCubit, QCState>(
       listener: (context, state) {
         if (state is QCSuccess) {
+           // ✅ 1. حدّث Pending QC List فورًا
+            context.read<QCCubit>().loadPendingBatches();
+          try {
+              // ✅ 2. حدّث Dashboard 
+            context.read<QCDashboardCubit>().loadDashboard();
+          } catch (_) {}
+
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
-          context.pop();
+
+          context.pop(true);
         } else if (state is QCError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
