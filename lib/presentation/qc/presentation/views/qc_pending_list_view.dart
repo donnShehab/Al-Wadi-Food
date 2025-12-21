@@ -1,5 +1,5 @@
 import 'package:alwadi_food/presentation/qc/cubit/qc_cubit.dart';
-import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_pending_list_view_body_bloc_consumer.dart';
+import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_pending/qc_pending_list_view_body_bloc_consumer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alwadi_food/core/di/injection.dart';

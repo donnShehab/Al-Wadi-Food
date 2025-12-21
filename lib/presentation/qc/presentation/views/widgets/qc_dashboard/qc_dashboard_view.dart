@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_dashboard_body_bloc_builder.dart';
+import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_dashboard/qc_dashboard_body_bloc_builder.dart';
 
 class QCDashboardView extends StatelessWidget {
   const QCDashboardView({super.key});

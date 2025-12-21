@@ -72,25 +72,28 @@ class ProductionCubit extends Cubit<ProductionState> {
 //           emit(const ProductionSuccess('Batch closed successfully')),
 //     );
 //   }
-
 Future<void> closeBatch(ProductionBatchEntity batch) async {
     emit(const ProductionLoading());
 
-    final updatedBatch = batch.copyWith(
+    final updated = batch.copyWith(
+      endTime: DateTime.now(),
       status: AppConstants.statusWaitingQC,
-      endTime: DateTime.now(), // ⏱️ وقت الإغلاق الحقيقي
       updatedAt: DateTime.now(),
     );
 
-    final result = await _productionRepository.updateBatch(updatedBatch);
+    final updateEither = await _productionRepository.updateBatch(updated);
 
-    result.fold(
-      ifLeft: (e) => emit(ProductionError(e)),
+    updateEither.fold(
+      ifLeft: (failure) {
+        emit(ProductionError(failure));
+      },
       ifRight: (_) {
-        emit(const ProductionSuccess('Batch closed successfully'));
+        emit(const ProductionSuccess('Batch closed and sent to QC'));
       },
     );
   }
+
+
 
 // Future<void> closeBatch(String batchId) async {
 //     emit(const ProductionLoading());

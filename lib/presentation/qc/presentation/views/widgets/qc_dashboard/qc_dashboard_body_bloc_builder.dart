@@ -1,9 +1,9 @@
 import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_dashboard/qc_dashboard_skeleton.dart';
+import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_dashboard/qc_dashboard_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_dashboard/qc_dashboard_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_dashboard/qc_dashboard_state.dart';
-import 'qc_dashboard_body.dart';
 
 class QCDashboardBodyBlocBuilder extends StatelessWidget {
   const QCDashboardBodyBlocBuilder({super.key});
