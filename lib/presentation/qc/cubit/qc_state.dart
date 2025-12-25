@@ -1,5 +1,7 @@
 import 'package:alwadi_food/presentation/production/domain/entities/production_batch_entity.dart';
+import 'package:alwadi_food/presentation/qc/domain/entites/qc_recommendation_entity.dart';
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
+import 'package:alwadi_food/presentation/qc/domain/entites/qc_trend_day_entity.dart';
 import 'package:equatable/equatable.dart';
 
 sealed class QCState extends Equatable {
@@ -54,16 +56,25 @@ class QCDashboardLoaded extends QCState {
   final int passedToday;
   final int failedToday;
   final List<QCResultEntity> recentResults;
-  final String riskLevel; // low / medium / high
-  final List<String> alerts; // messages
+
+  /// QC Trend
+  final List<QCTrendDayEntity> trend;
+
+  final String riskLevel;
+  final List<String> alerts;
+
+  // Auti recommendations
+  final List<QCRecommendation> recommendations;
 
   const QCDashboardLoaded({
     required this.pendingCount,
     required this.passedToday,
     required this.failedToday,
     required this.recentResults,
+    required this.trend,
     required this.riskLevel,
     required this.alerts,
+    required this.recommendations,
   });
 
   int get totalToday => passedToday + failedToday;
@@ -76,7 +87,9 @@ class QCDashboardLoaded extends QCState {
     passedToday,
     failedToday,
     recentResults,
+    trend,
     riskLevel,
     alerts,
+    recommendations,
   ];
 }

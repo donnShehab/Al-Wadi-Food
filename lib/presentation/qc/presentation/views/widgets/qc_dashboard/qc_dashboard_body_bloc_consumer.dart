@@ -17,7 +17,9 @@ class QCDashboardBodyConsumer extends StatelessWidget {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
-          
+
+          /// refresh dashboard automatically
+          context.read<QCCubit>().loadQCDashboard();
         }
       },
       builder: (context, state) {
@@ -44,6 +46,10 @@ class QCDashboardBodyConsumer extends StatelessWidget {
             passedToday: state.passedToday,
             failedToday: state.failedToday,
             recentResults: state.recentResults,
+            riskLevel: state.riskLevel,
+            alerts: state.alerts,
+            trend: state.trend,
+            recommendations: state.recommendations,
           );
         }
 
