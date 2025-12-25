@@ -1,5 +1,4 @@
 import 'package:alwadi_food/presentation/qc/cubit/qc_cubit.dart';
-import 'package:alwadi_food/presentation/qc/cubit/qc_dashboard/qc_dashboard_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +20,7 @@ class QCInspectionBodyBlocConsumer extends StatelessWidget {
             context.read<QCCubit>().loadPendingBatches();
           try {
               // ✅ 2. حدّث Dashboard 
-            context.read<QCDashboardCubit>().loadDashboard();
+            context.read<QCCubit>().loadQCDashboard();
           } catch (_) {}
 
           ScaffoldMessenger.of(

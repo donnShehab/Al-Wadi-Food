@@ -48,3 +48,35 @@ class QCError extends QCState {
   @override
   List<Object?> get props => [message];
 }
+
+class QCDashboardLoaded extends QCState {
+  final int pendingCount;
+  final int passedToday;
+  final int failedToday;
+  final List<QCResultEntity> recentResults;
+  final String riskLevel; // low / medium / high
+  final List<String> alerts; // messages
+
+  const QCDashboardLoaded({
+    required this.pendingCount,
+    required this.passedToday,
+    required this.failedToday,
+    required this.recentResults,
+    required this.riskLevel,
+    required this.alerts,
+  });
+
+  int get totalToday => passedToday + failedToday;
+
+  double get passRate => totalToday == 0 ? 0 : (passedToday / totalToday) * 100;
+
+  @override
+  List<Object?> get props => [
+    pendingCount,
+    passedToday,
+    failedToday,
+    recentResults,
+    riskLevel,
+    alerts,
+  ];
+}

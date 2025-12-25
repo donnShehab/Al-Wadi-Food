@@ -13,12 +13,9 @@ class QCInspectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<QCCubit>(),
-      child: Scaffold(
-        appBar: AppBar(title: const Text('QC Inspection')),
-        body: QCInspectionBodyBlocConsumer(batchId: batchId),
-      ),
+    return Scaffold(
+      appBar: AppBar(title: const Text('QC Inspection')),
+      body: QCInspectionBodyBlocConsumer(batchId: batchId),
     );
   }
 }

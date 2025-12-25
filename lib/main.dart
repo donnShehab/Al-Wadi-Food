@@ -3,6 +3,7 @@ import 'package:alwadi_food/core/localization/app_localizations.dart';
 import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
 import 'package:alwadi_food/presentation/home/cubit/home_cubit.dart';
+import 'package:alwadi_food/presentation/qc/cubit/qc_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_dashboard/qc_dashboard_cubit.dart';
 import 'package:alwadi_food/presentation/settings/cubit/app_settings_cubit.dart';
 import 'package:alwadi_food/presentation/settings/cubit/app_settings_state.dart';
@@ -32,9 +33,11 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthCubit>(
           create: (_) => getIt<AuthCubit>()..checkAuthStatus(),
         ),
-        BlocProvider<QCDashboardCubit>(
-          create: (_) => getIt<QCDashboardCubit>()..loadDashboard(),
-        ),
+        // BlocProvider<QCDashboardCubit>(
+        //   create: (_) => getIt<QCDashboardCubit>()..loadDashboard(),
+        // ),
+        BlocProvider(create: (_) => getIt<QCCubit>()..loadQCDashboard()),
+  
         BlocProvider<AppSettingsCubit>(
           create: (_) => getIt<AppSettingsCubit>()..load(),
         ),

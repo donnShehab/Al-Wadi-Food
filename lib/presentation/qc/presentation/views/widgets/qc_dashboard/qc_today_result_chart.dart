@@ -13,36 +13,53 @@ class QCTodayResultChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final maxValue = (passed > failed ? passed : failed).clamp(1, 999);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'QC Results Today',
-          style: Theme.of(context).textTheme.titleMedium?.semiBold,
-        ),
-        const SizedBox(height: AppSpacing.md),
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "QC Results Today",
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 16),
 
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            _bar(
-              label: 'Passed',
-              value: passed,
-              maxValue: maxValue,
-              color: Colors.green,
-            ),
-            const SizedBox(width: 24),
-            _bar(
-              label: 'Failed',
-              value: failed,
-              maxValue: maxValue,
-              color: Colors.red,
-            ),
-          ],
-        ),
-      ],
+          Row(
+            children: [
+              _bar(
+                label: "Passed",
+                value: passed,
+                maxValue: maxValue,
+                color: Colors.green,
+              ),
+              const SizedBox(width: 20),
+              _bar(
+                label: "Failed",
+                value: failed,
+                maxValue: maxValue,
+                color: Colors.red,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -52,25 +69,23 @@ class QCTodayResultChart extends StatelessWidget {
     required int maxValue,
     required Color color,
   }) {
-    final heightFactor = value / maxValue;
+    final rawHeight = (value / maxValue) * 120;
+    final safeHeight = rawHeight < 14 ? 14.0 : rawHeight; // ✅ Minimum Height
 
     return Expanded(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
-            height: 140 * heightFactor,
+            duration: const Duration(milliseconds: 450),
+            curve: Curves.easeOutCubic,
+            height: safeHeight,
             decoration: BoxDecoration(
-              color: color,
+              color: color.withOpacity(0.8),
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            value.toString(),
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          const SizedBox(height: 10),
+          Text("$value", style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           Text(label),
         ],

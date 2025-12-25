@@ -1,10 +1,8 @@
-
-
+import 'package:alwadi_food/presentation/qc/presentation/views/qc_dashboard_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_pending_list_view.dart';
-import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_dashboard/qc_dashboard_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_details/qc_details_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_history/qc_history_view.dart';
-import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_inspection/qc_inspection_view.dart';
+import 'package:alwadi_food/presentation/qc/presentation/views/qc_inspection_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,8 +19,6 @@ import 'package:alwadi_food/presentation/settings/views/settings_view.dart';
 import 'package:alwadi_food/presentation/production/presentation/views/create_batch_view.dart';
 import 'package:alwadi_food/presentation/production/presentation/views/batch_list_view.dart';
 import 'package:alwadi_food/presentation/production/presentation/views/batch_details_view.dart';
-
-/// ---------- QC ----------
 
 /// ---------- MANAGER ----------
 import 'package:alwadi_food/presentation/manager/presentation/views/dashboard_view.dart';
