@@ -4,6 +4,7 @@ import 'package:alwadi_food/presentation/auth/data/repos/auth_repository_impl.da
 import 'package:alwadi_food/presentation/auth/data/repos/user_repository_impl.dart';
 import 'package:alwadi_food/presentation/auth/data/services/firebase_auth_service.dart';
 import 'package:alwadi_food/presentation/auth/data/services/firestore_service.dart';
+import 'package:alwadi_food/presentation/auth/data/services/qc_pdf_report_service.dart';
 import 'package:alwadi_food/presentation/auth/data/services/storage_service.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/user_repository.dart';
@@ -16,8 +17,11 @@ import 'package:alwadi_food/presentation/production/data/repos/production_reposi
 import 'package:alwadi_food/presentation/production/domain/repos/production_repository.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_dashboard/qc_dashboard_cubit.dart';
+import 'package:alwadi_food/presentation/qc/cubit/qc_reports/qc_reports_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_review/qc_batch_review_cubit.dart';
+import 'package:alwadi_food/presentation/qc/data/repos/qc_reports_repository_impl.dart';
 import 'package:alwadi_food/presentation/qc/data/repos/qc_repository_impl.dart';
+import 'package:alwadi_food/presentation/qc/domain/repos/qc_reports_repository.dart';
 import 'package:alwadi_food/presentation/qc/domain/repos/qc_repository.dart';
 import 'package:alwadi_food/presentation/settings/cubit/app_settings_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -59,6 +63,19 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<QCRepository>(
     () => QCRepositoryImpl(getIt<FirestoreService>(), getIt<StorageService>()),
   );
+    getIt.registerLazySingleton<QCReportsRepository>(
+    () => QCReportsRepositoryImpl(
+      getIt<FirestoreService>(),
+      getIt<StorageService>(),
+      getIt<AuthRepository>(),
+      getIt<QCRepository>(),
+      getIt<QCPdfReportService>(),
+    ),
+  );
+  // ======================
+  // QC PDF Service
+  // ======================
+  getIt.registerLazySingleton(() => QCPdfReportService());
 
   // ======================
   // Cubits
@@ -112,4 +129,9 @@ Future<void> setupDependencies() async {
     () =>
         TraceabilityCubit(getIt<ProductionRepository>(), getIt<QCRepository>()),
   );
+  
+  // ======================
+  // QC Reports Cubit
+  // ======================
+  getIt.registerFactory(() => QCReportsCubit(getIt<QCReportsRepository>()));
 }

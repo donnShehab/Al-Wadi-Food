@@ -13,6 +13,9 @@ class AppConstants {
   // QC Result
   static const String qcResultPass = 'pass';
   static const String qcResultFail = 'fail';
+  // QC Reports
+  static const String qcReportsCollection = "qc_reports";
+  static const String qcReportsPath = "qc_reports";
 
   // Product Types
   static const List<String> productTypes = [
