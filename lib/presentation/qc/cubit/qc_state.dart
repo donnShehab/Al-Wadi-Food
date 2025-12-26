@@ -1,4 +1,5 @@
 import 'package:alwadi_food/presentation/production/domain/entities/production_batch_entity.dart';
+import 'package:alwadi_food/presentation/qc/domain/entites/qc_alert_entity.dart';
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_recommendation_entity.dart';
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_trend_day_entity.dart';
@@ -57,16 +58,21 @@ class QCDashboardLoaded extends QCState {
   final int failedToday;
   final List<QCResultEntity> recentResults;
 
-  /// QC Trend
   final List<QCTrendDayEntity> trend;
 
   final String riskLevel;
-  final List<String> alerts;
 
-  // Auti recommendations
+  /// ✅ alerts as entities
+  final List<QCAlertEntity> alerts;
+
   final List<QCRecommendation> recommendations;
 
-  const QCDashboardLoaded({
+  /// ✅ optional all results if needed by analytics
+  final List<QCResultEntity> allResults;
+    final List<ProductionBatchEntity> allBatches;
+
+
+  const QCDashboardLoaded( {
     required this.pendingCount,
     required this.passedToday,
     required this.failedToday,
@@ -75,6 +81,8 @@ class QCDashboardLoaded extends QCState {
     required this.riskLevel,
     required this.alerts,
     required this.recommendations,
+    required this.allResults,
+    required this.allBatches,
   });
 
   int get totalToday => passedToday + failedToday;
@@ -91,5 +99,7 @@ class QCDashboardLoaded extends QCState {
     riskLevel,
     alerts,
     recommendations,
+    allResults,
+    allBatches,
   ];
 }

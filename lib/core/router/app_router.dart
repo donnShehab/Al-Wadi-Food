@@ -1,3 +1,4 @@
+import 'package:alwadi_food/presentation/qc/presentation/views/qc_command_center_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_dashboard_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_pending_list_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_details/qc_details_view.dart';
@@ -116,10 +117,12 @@ class AppRouter {
       ),
 
       /// -------- QC --------
-      GoRoute(
+   GoRoute(
         path: KQCDashboardView,
-        pageBuilder: (context, state) => fadeUp(state, const QCDashboardView()),
+        pageBuilder: (context, state) =>
+            fadeUp(state, const QCCommandCenterView()),
       ),
+
         GoRoute(
         path: KQCDetailsView,
         pageBuilder: (context, state) {

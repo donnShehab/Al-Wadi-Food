@@ -5,6 +5,7 @@ class QCResultModel extends QCResultEntity {
   const QCResultModel({
     required super.inspectionId,
     required super.batchId,
+    required super.productionLine,
     required super.inspectorId,
     required super.inspectorName,
     required super.temperature,
@@ -25,6 +26,7 @@ class QCResultModel extends QCResultEntity {
   QCResultModel copyWith({
     String? inspectionId,
     String? batchId,
+    String? productionLine,
     String? inspectorId,
     String? inspectorName,
     double? temperature,
@@ -44,6 +46,7 @@ class QCResultModel extends QCResultEntity {
     return QCResultModel(
       inspectionId: inspectionId ?? this.inspectionId,
       batchId: batchId ?? this.batchId,
+      productionLine: productionLine ?? this.productionLine, 
       inspectorId: inspectorId ?? this.inspectorId,
       inspectorName: inspectorName ?? this.inspectorName,
       temperature: temperature ?? this.temperature,
@@ -61,11 +64,13 @@ class QCResultModel extends QCResultEntity {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
   factory QCResultModel.fromJson(Map<String, dynamic> json) => QCResultModel(
     inspectionId: json['inspectionId'] as String,
     batchId: json['batchId'] as String,
+    productionLine: json['productionLine'] as String? ?? "Unknown", 
     inspectorId: json['inspectorId'] as String,
-    inspectorName: json['inspectorName'] as String ,
+    inspectorName: json['inspectorName'] as String,
     temperature: (json['temperature'] as num).toDouble(),
     weight: (json['weight'] as num).toDouble(),
     color: json['color'] as String,
@@ -84,6 +89,7 @@ class QCResultModel extends QCResultEntity {
   Map<String, dynamic> toJson() => {
     'inspectionId': inspectionId,
     'batchId': batchId,
+    'productionLine': productionLine, 
     'inspectorId': inspectorId,
     'inspectorName': inspectorName,
     'temperature': temperature,
@@ -104,6 +110,7 @@ class QCResultModel extends QCResultEntity {
   factory QCResultModel.fromEntity(QCResultEntity entity) => QCResultModel(
     inspectionId: entity.inspectionId,
     batchId: entity.batchId,
+    productionLine: entity.productionLine, 
     inspectorId: entity.inspectorId,
     inspectorName: entity.inspectorName,
     temperature: entity.temperature,
