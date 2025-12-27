@@ -18,21 +18,6 @@ class StorageService {
     }
   }
 
-  // ✅ NEW: Upload bytes (PDF / reports)
-  Future<String> uploadBytes(String path, Uint8List bytes) async {
-    try {
-      final ref = _storage.ref().child(path);
-      final uploadTask = await ref.putData(
-        bytes,
-        SettableMetadata(contentType: "application/pdf"),
-      );
-      return await uploadTask.ref.getDownloadURL();
-    } catch (e) {
-      debugPrint('StorageService.uploadBytes error: $e');
-      rethrow;
-    }
-  }
-
   // Upload multiple files
   Future<List<String>> uploadFiles(String basePath, List<File> files) async {
     try {
@@ -45,6 +30,21 @@ class StorageService {
       return urls;
     } catch (e) {
       debugPrint('StorageService.uploadFiles error: $e');
+      rethrow;
+    }
+  }
+
+  // ✅ Upload PDF bytes
+  Future<String> uploadBytes(String path, Uint8List bytes) async {
+    try {
+      final ref = _storage.ref().child(path);
+      final uploadTask = await ref.putData(
+        bytes,
+        SettableMetadata(contentType: "application/pdf"),
+      );
+      return await uploadTask.ref.getDownloadURL();
+    } catch (e) {
+      debugPrint('StorageService.uploadBytes error: $e');
       rethrow;
     }
   }

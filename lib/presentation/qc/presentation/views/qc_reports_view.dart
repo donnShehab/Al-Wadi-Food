@@ -4,14 +4,13 @@ import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_report
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 class QCReportsView extends StatelessWidget {
   const QCReportsView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<QCReportsCubit>(),
+      create: (_) => getIt<QCReportsCubit>()..loadRecentReports(),
       child: const QCReportsViewBody(),
     );
   }

@@ -21,12 +21,12 @@ class QCReportEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-    reportId,
-    title,
-    pdfUrl,
-    weekStart,
-    weekEnd,
-    createdAt,
-    createdBy,
-  ];
+        reportId,
+        title,
+        pdfUrl,
+        weekStart,
+        weekEnd,
+        createdAt,
+        createdBy,
+      ];
 }

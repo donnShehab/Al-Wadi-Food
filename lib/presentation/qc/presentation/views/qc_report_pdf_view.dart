@@ -11,8 +11,8 @@ class QCReportPdfView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: true,
       ),
       body: SfPdfViewer.network(pdfUrl),
     );

@@ -17,10 +17,13 @@ import 'package:alwadi_food/presentation/production/data/repos/production_reposi
 import 'package:alwadi_food/presentation/production/domain/repos/production_repository.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_dashboard/qc_dashboard_cubit.dart';
+import 'package:alwadi_food/presentation/qc/cubit/qc_leaderboard/qc_leaderboard_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_reports/qc_reports_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_review/qc_batch_review_cubit.dart';
+import 'package:alwadi_food/presentation/qc/data/repos/qc_leaderboard_repository_impl.dart';
 import 'package:alwadi_food/presentation/qc/data/repos/qc_reports_repository_impl.dart';
 import 'package:alwadi_food/presentation/qc/data/repos/qc_repository_impl.dart';
+import 'package:alwadi_food/presentation/qc/domain/repos/qc_leaderboard_repository.dart';
 import 'package:alwadi_food/presentation/qc/domain/repos/qc_reports_repository.dart';
 import 'package:alwadi_food/presentation/qc/domain/repos/qc_repository.dart';
 import 'package:alwadi_food/presentation/settings/cubit/app_settings_cubit.dart';
@@ -71,6 +74,9 @@ Future<void> setupDependencies() async {
       getIt<QCRepository>(),
       getIt<QCPdfReportService>(),
     ),
+  );
+  getIt.registerLazySingleton<QCLeaderboardRepository>(
+    () => QCLeaderboardRepositoryImpl(getIt<QCRepository>()),
   );
   // ======================
   // QC PDF Service
@@ -129,7 +135,7 @@ Future<void> setupDependencies() async {
     () =>
         TraceabilityCubit(getIt<ProductionRepository>(), getIt<QCRepository>()),
   );
-  
+  getIt.registerFactory(() => QCLeaderboardCubit(getIt<QCLeaderboardRepository>()));
   // ======================
   // QC Reports Cubit
   // ======================
