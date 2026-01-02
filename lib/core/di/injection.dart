@@ -4,14 +4,24 @@ import 'package:alwadi_food/presentation/auth/data/repos/auth_repository_impl.da
 import 'package:alwadi_food/presentation/auth/data/repos/user_repository_impl.dart';
 import 'package:alwadi_food/presentation/auth/data/services/firebase_auth_service.dart';
 import 'package:alwadi_food/presentation/auth/data/services/firestore_service.dart';
+import 'package:alwadi_food/presentation/auth/data/services/manager_dashboard_firestore_ds.dart';
+import 'package:alwadi_food/presentation/auth/data/services/manager_kpi_list_firestore_ds.dart';
 import 'package:alwadi_food/presentation/auth/data/services/qc_pdf_report_service.dart';
 import 'package:alwadi_food/presentation/auth/data/services/storage_service.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/user_repository.dart';
 import 'package:alwadi_food/presentation/home/cubit/home_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/dashboard_cubit.dart';
+import 'package:alwadi_food/presentation/manager/cubit/manager_dashboard/manager_dashboard_cubit.dart';
+import 'package:alwadi_food/presentation/manager/cubit/manager_dashboard/manager_filtered_inspections_cubit.dart';
+import 'package:alwadi_food/presentation/manager/cubit/manager_kpi_list/manager_kpi_list_cubit.dart';
+import 'package:alwadi_food/presentation/manager/cubit/manager_nav/manager_nav_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/traceability_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/user_management_cubit.dart';
+import 'package:alwadi_food/presentation/manager/data/repo/manager_dashboard_repo_impl.dart';
+import 'package:alwadi_food/presentation/manager/data/repo/manager_kpi_repo_impl.dart';
+import 'package:alwadi_food/presentation/manager/domain/repo/manager_dashboard_repo.dart';
+import 'package:alwadi_food/presentation/manager/domain/repo/manager_kpi_repo.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart';
 import 'package:alwadi_food/presentation/production/data/repos/production_repository_impl.dart';
 import 'package:alwadi_food/presentation/production/domain/repos/production_repository.dart';
@@ -27,6 +37,7 @@ import 'package:alwadi_food/presentation/qc/domain/repos/qc_leaderboard_reposito
 import 'package:alwadi_food/presentation/qc/domain/repos/qc_reports_repository.dart';
 import 'package:alwadi_food/presentation/qc/domain/repos/qc_repository.dart';
 import 'package:alwadi_food/presentation/settings/cubit/app_settings_cubit.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 
@@ -37,6 +48,10 @@ Future<void> setupDependencies() async {
   // Services
   // ======================
   getIt.registerLazySingleton(() => FirebaseAuth.instance);
+  getIt.registerLazySingleton(
+    () => FirebaseFirestore.instance,
+  ); // ✅ FirebaseFirestore
+
   getIt.registerLazySingleton(() => FirebaseAuthService());
   getIt.registerLazySingleton(() => FirestoreService());
   getIt.registerLazySingleton(() => StorageService());
@@ -66,7 +81,8 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<QCRepository>(
     () => QCRepositoryImpl(getIt<FirestoreService>(), getIt<StorageService>()),
   );
-    getIt.registerLazySingleton<QCReportsRepository>(
+
+  getIt.registerLazySingleton<QCReportsRepository>(
     () => QCReportsRepositoryImpl(
       getIt<FirestoreService>(),
       getIt<StorageService>(),
@@ -75,9 +91,11 @@ Future<void> setupDependencies() async {
       getIt<QCPdfReportService>(),
     ),
   );
+
   getIt.registerLazySingleton<QCLeaderboardRepository>(
     () => QCLeaderboardRepositoryImpl(getIt<QCRepository>()),
   );
+
   // ======================
   // QC PDF Service
   // ======================
@@ -87,23 +105,21 @@ Future<void> setupDependencies() async {
   // Cubits
   // ======================
 
-  // 🔴 HomeCubit = Singleton (المهم)
+  /// ✅ HomeCubit Singleton
   getIt.registerLazySingleton<HomeCubit>(
     () => HomeCubit(getIt<ProductionRepository>()),
   );
 
-  // AuthCubit = Factory (طبيعي)
+  /// ✅ AuthCubit Factory
   getIt.registerFactory<AuthCubit>(
-    () => AuthCubit(
-      getIt<AuthRepository>(),
-      getIt<HomeCubit>(), // 👈 نفس الـ HomeCubit دائمًا
-    ),
+    () => AuthCubit(getIt<AuthRepository>(), getIt<HomeCubit>()),
   );
 
   getIt.registerFactory<ProductionCubit>(
     () =>
         ProductionCubit(getIt<ProductionRepository>(), getIt<AuthRepository>()),
   );
+
   getIt.registerFactory<QCCubit>(
     () => QCCubit(
       getIt<QCRepository>(),
@@ -112,9 +128,8 @@ Future<void> setupDependencies() async {
     ),
   );
 
-  // QC Dashboard Cubit
   getIt.registerFactory(() => QCDashboardCubit(getIt(), getIt()));
-  // qc review
+
   getIt.registerFactory<QCBatchReviewCubit>(
     () => QCBatchReviewCubit(getIt<ProductionRepository>()),
   );
@@ -135,9 +150,50 @@ Future<void> setupDependencies() async {
     () =>
         TraceabilityCubit(getIt<ProductionRepository>(), getIt<QCRepository>()),
   );
-  getIt.registerFactory(() => QCLeaderboardCubit(getIt<QCLeaderboardRepository>()));
-  // ======================
-  // QC Reports Cubit
-  // ======================
+
+  getIt.registerFactory(
+    () => QCLeaderboardCubit(getIt<QCLeaderboardRepository>()),
+  );
+
   getIt.registerFactory(() => QCReportsCubit(getIt<QCReportsRepository>()));
+
+  // ======================
+  // ✅ MANAGER SECTION (VERY IMPORTANT)
+  // ======================
+
+  /// ✅ Dashboard Firestore DataSource
+  getIt.registerLazySingleton(
+    () => ManagerDashboardFirestoreDataSource(getIt<FirebaseFirestore>()),
+  );
+
+  /// ✅ KPI List Firestore DataSource (THIS FIXES YOUR ERROR ✅🔥)
+  getIt.registerLazySingleton(
+    () => ManagerKpiListFirestoreDataSource(getIt<FirebaseFirestore>()),
+  );
+
+  /// ✅ Dashboard Repo
+  getIt.registerLazySingleton<ManagerDashboardRepo>(
+    () =>
+        ManagerDashboardRepoImpl(getIt<ManagerDashboardFirestoreDataSource>()),
+  );
+
+  /// ✅ KPI Repo
+  getIt.registerLazySingleton<ManagerKpiRepo>(
+    () => ManagerKpiRepoImpl(getIt<ManagerDashboardFirestoreDataSource>()),
+  );
+
+  /// ✅ Dashboard Cubit
+  getIt.registerFactory(
+    () => ManagerDashboardCubit(getIt<ManagerDashboardRepo>()),
+  );
+
+  /// ✅ Bottom Navigation Cubit
+  getIt.registerFactory(() => ManagerNavCubit());
+
+  /// ✅ KPI List Cubit
+  getIt.registerFactory(
+    () => ManagerKpiListCubit(getIt<ManagerKpiListFirestoreDataSource>()),
+  );
+  getIt.registerFactory(() => ManagerFilteredInspectionsCubit(getIt()));
+
 }

@@ -1,14 +1,9 @@
-import 'package:equatable/equatable.dart';
-
-class QCResultEntity extends Equatable {
+class QCResultEntity {
   final String inspectionId;
   final String batchId;
-
-  final String productionLine; 
-
+  final String productionLine;
   final String inspectorId;
   final String inspectorName;
-
   final double temperature;
   final double weight;
   final String color;
@@ -23,10 +18,15 @@ class QCResultEntity extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  /// ✅ NEW
+  final String? productType;
+  final String? line;
+  final List<String>? batchImages;
+
   const QCResultEntity({
     required this.inspectionId,
     required this.batchId,
-    required this.productionLine, 
+    required this.productionLine,
     required this.inspectorId,
     required this.inspectorName,
     required this.temperature,
@@ -42,27 +42,10 @@ class QCResultEntity extends Equatable {
     this.failureReason,
     required this.createdAt,
     required this.updatedAt,
-  });
 
-  @override
-  List<Object?> get props => [
-    inspectionId,
-    batchId,
-    productionLine, 
-    inspectorId,
-    inspectorName,
-    temperature,
-    weight,
-    color,
-    packaging,
-    moisture,
-    texture,
-    tasteTest,
-    notes,
-    images,
-    result,
-    failureReason,
-    createdAt,
-    updatedAt,
-  ];
+    /// ✅ NEW
+    this.productType,
+    this.line,
+    this.batchImages,
+  });
 }

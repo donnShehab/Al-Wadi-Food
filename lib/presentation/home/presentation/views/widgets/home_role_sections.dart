@@ -130,65 +130,31 @@ Widget _qcSection(BuildContext context) {
   }
 
   // ================= MANAGER =================
-
-  Widget _managerSection(BuildContext context) {
+Widget _managerSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         StaggeredSlideFade(
-           index: 0,
+          index: 0,
           delay: const Duration(milliseconds: 100),
           offsetY: 20,
-          child: _sectionTitle('Manager Dashboard')),
+          child: _sectionTitle('Manager Module'),
+        ),
+
         StaggeredSlideFade(
-           index: 1,
+          index: 1,
           delay: const Duration(milliseconds: 220),
           offsetY: 26,
           child: HomeNavigationCard(
-            title: 'Dashboard',
-            subtitle: 'Analytics and insights',
-            icon: Icons.dashboard,
+            title: 'Manager Control Center',
+            subtitle: 'Dashboard • Alerts • Reports • Traceability • More',
+            icon: Icons.space_dashboard_rounded,
             color: LightModeColors.lightPrimary,
-            route: AppRouter.KdashboardView,
-          ),
-        ),
-        StaggeredSlideFade(
-           index: 2,
-          delay: const Duration(milliseconds: 340),
-          offsetY: 26,
-          child: HomeNavigationCard(
-            title: 'Traceability',
-            subtitle: 'Full batch tracking',
-            icon: Icons.track_changes,
-            color: LightModeColors.lightSecondary,
-            route: AppRouter.KtraceabilityView,
-          ),
-        ),
-        StaggeredSlideFade(
-           index: 3,
-          delay: const Duration(milliseconds: 460),
-          offsetY: 26,
-          child: HomeNavigationCard(
-            title: 'User Management',
-            subtitle: 'Manage users and roles',
-            icon: Icons.people,
-            color: LightModeColors.lightTertiary,
-            route: AppRouter.KuserManagementView,
-          ),
-        ),
-        StaggeredSlideFade(
-           index: 4,
-          delay: const Duration(milliseconds: 680),
-          offsetY: 26,
-          child: HomeNavigationCard(
-            title: 'All Batches',
-            subtitle: 'View all production batches',
-            icon: Icons.view_list,
-            color: LightModeColors.lightSuccess,
-            route: AppRouter.KbatchListView,
+            route: AppRouter.KManagerMainView, // ✅ أهم تعديل
           ),
         ),
       ],
     );
   }
+
 }

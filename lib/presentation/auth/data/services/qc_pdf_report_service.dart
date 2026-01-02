@@ -293,7 +293,7 @@ class QCPdfReportService {
   pw.Widget _buildExecutiveSummaryCards({
     required int total,
     required int passed,
-    required int failed,gi
+    required int failed,
     required double passRate,
     required String riskLevel,
   }) {

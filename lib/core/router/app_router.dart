@@ -1,3 +1,11 @@
+import 'package:alwadi_food/presentation/manager/presentation/views/manager_dashboard_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/manager_high_risk_alerts_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/manager_inspections_today_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/manager_main_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/manager_production_today_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_action/manager_action_needed_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_dashboard/manager_filtered_inspections_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_dashboard/worst_line_today_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_command_center_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_dashboard_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_pending_list_view.dart';
@@ -22,9 +30,6 @@ import 'package:alwadi_food/presentation/production/presentation/views/batch_lis
 import 'package:alwadi_food/presentation/production/presentation/views/batch_details_view.dart';
 
 /// ---------- MANAGER ----------
-import 'package:alwadi_food/presentation/manager/presentation/views/dashboard_view.dart';
-import 'package:alwadi_food/presentation/manager/presentation/views/traceability_view.dart';
-import 'package:alwadi_food/presentation/manager/presentation/views/user_management_view.dart';
 
 class AppRouter {
   // ================= ROUTE NAMES =================
@@ -40,11 +45,22 @@ class AppRouter {
 
   static const String KqCPendingListView = '/qc-pending';
   static const String KQCHistoryView = '/qc-history';
-  static const String KdashboardView = '/dashboard';
+  // static const String KdashboardView = '/dashboard';
   static const String KtraceabilityView = '/traceability';
   static const String KuserManagementView = '/users';
   static const String KQCDetailsView = "/kqcdetailsview";
   static const String KsettingsView = '/settings';
+  static const String KManagerDashboardView = "/manager-dashboard";
+  static const String KManagerMainView = "/manager-main";
+static const KManagerFilteredInspectionsView =
+      "/manager_filtered_inspections";
+  // ✅ Manager KPI Routes
+  static const String KManagerProductionTodayView = "/manager-production-today";
+  static const String KManagerInspectionsTodayView =
+      "/manager-inspections-today";
+  static const String KManagerHighRiskAlertsView = "/manager-high-risk-alerts";
+static const KWorstLineTodayView = "/worst-line-today";
+static const String KManagerActionNeededView = "/manager/action-needed";
 
   // ================= ROUTER =================
   static final GoRouter router = GoRouter(
@@ -96,14 +112,13 @@ class AppRouter {
         pageBuilder: (context, state) =>
             fadeUp(state, const QCPendingListView()),
       ),
-  GoRoute(
+      GoRoute(
         path: '/qc-history/:batchId',
         builder: (context, state) {
           final batchId = state.pathParameters['batchId']!;
           return QCHistoryView(batchId: batchId);
         },
       ),
-
 
       GoRoute(
         path: '$KQCInspectionView/:batchId',
@@ -117,13 +132,13 @@ class AppRouter {
       ),
 
       /// -------- QC --------
-   GoRoute(
+      GoRoute(
         path: KQCDashboardView,
         pageBuilder: (context, state) =>
             fadeUp(state, const QCCommandCenterView()),
       ),
 
-        GoRoute(
+      GoRoute(
         path: KQCDetailsView,
         pageBuilder: (context, state) {
           final inspectionId = state.pathParameters['inspectionId']!;
@@ -134,28 +149,83 @@ class AppRouter {
           );
         },
       ),
-  
+
       /// -------- MANAGER --------
       GoRoute(
-        path: KdashboardView,
-        pageBuilder: (context, state) => fadeUp(state, const DashboardView()),
+        path: KManagerDashboardView,
+        pageBuilder: (context, state) =>
+            fadeUp(state, const ManagerDashboardView()),
       ),
       GoRoute(
-        path: KtraceabilityView,
-        pageBuilder: (context, state) =>
-            fadeUp(state, const TraceabilityView()),
+        path: KManagerMainView,
+        pageBuilder: (context, state) => fadeUp(state, const ManagerMainView()),
       ),
+
+      // GoRoute(
+      //   path: KtraceabilityView,
+      //   pageBuilder: (context, state) =>
+      //       fadeUp(state, const TraceabilityView()),
+      // ),
+      // GoRoute(
+      //   path: KuserManagementView,
+      //   pageBuilder: (context, state) =>
+      //       fadeUp(state, const UserManagementView()),
+      // ),
+      /// ✅ Manager Production Today
       GoRoute(
-        path: KuserManagementView,
+        path: KManagerProductionTodayView,
         pageBuilder: (context, state) =>
-            fadeUp(state, const UserManagementView()),
+            fadeUp(state, const ManagerProductionTodayView()),
       ),
+
+      /// ✅ Manager Inspections Today
+      GoRoute(
+        path: KManagerInspectionsTodayView,
+        pageBuilder: (context, state) =>
+            fadeUp(state, const ManagerInspectionsTodayView()),
+      ),
+
+      /// ✅ Manager High Risk Alerts
+      GoRoute(
+        path: KManagerHighRiskAlertsView,
+        pageBuilder: (context, state) =>
+            fadeUp(state, const ManagerHighRiskAlertsView()),
+      ),
+
 
       /// -------- SETTINGS --------
       GoRoute(
         path: KsettingsView,
         pageBuilder: (context, state) => fadeUp(state, const SettingsView()),
       ),
+
+     
+      GoRoute(
+        path: KManagerFilteredInspectionsView,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+
+          return ManagerFilteredInspectionsView(
+            title: extra["title"],
+            filterType: extra["filterType"],
+            filterValue: extra["filterValue"],
+          );
+        },
+      ),
+
+GoRoute(
+        path: KWorstLineTodayView,
+        builder: (context, state) {
+          final line = state.extra as String;
+          return WorstLineTodayView(lineName: line);
+        },
+      ),
+GoRoute(
+        path: KManagerActionNeededView,
+        pageBuilder: (context, state) =>
+            fadeUp(state, const ManagerActionNeededView()),
+      ),
+
     ],
   );
 

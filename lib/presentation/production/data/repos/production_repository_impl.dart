@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:alwadi_food/presentation/auth/data/services/firestore_service.dart';
 import 'package:alwadi_food/presentation/auth/data/services/storage_service.dart';
 import 'package:alwadi_food/core/constants/app_constants.dart';
@@ -14,25 +15,41 @@ class ProductionRepositoryImpl implements ProductionRepository {
   final StorageService _storageService;
 
   ProductionRepositoryImpl(this._firestoreService, this._storageService);
-
-  @override
+@override
   Future<Either<String, ProductionBatchEntity>> createBatch(
     ProductionBatchEntity batch,
     List<File> images,
   ) async {
     try {
+      // ✅ 1) Upload images to Firebase Storage
       final imageUrls = await _storageService.uploadFiles(
         '${AppConstants.batchImagesPath}/${batch.batchId}',
         images,
       );
+
+      // ✅ 2) Build model and keep list of images
       final batchModel = ProductionBatchModel.fromEntity(
         batch,
       ).copyWith(images: imageUrls);
+
+      // ✅ 3) Save to Firestore
+      final json = batchModel.toJson();
+
+      // ✅ FIX 1: store productType for Manager UI
+      json['productType'] = batch.product;
+
+      // ✅ Thumbnail for Manager (first image)
+      json['imageUrl'] = imageUrls.isNotEmpty ? imageUrls.first : null;
+
+      // ✅ keep images always
+      json['images'] = imageUrls;
+
       await _firestoreService.createDocument(
         AppConstants.batchesCollection,
         batch.batchId,
-        batchModel.toJson(),
+        json,
       );
+
       return Right(batchModel);
     } catch (e) {
       log('createBatch error: $e');
@@ -40,7 +57,7 @@ class ProductionRepositoryImpl implements ProductionRepository {
     }
   }
 
-@override
+  @override
   Future<Either<String, void>> deleteBatch(String batchId) async {
     try {
       await _firestoreService.deleteDocument(
@@ -191,7 +208,7 @@ class ProductionRepositoryImpl implements ProductionRepository {
               .toList(),
         );
   }
-  
+
   @override
   Future<int> getTotalBatchesCount() async {
     try {

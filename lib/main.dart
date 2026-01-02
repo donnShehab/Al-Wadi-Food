@@ -1,5 +1,6 @@
 import 'package:alwadi_food/core/di/injection.dart';
 import 'package:alwadi_food/core/localization/app_localizations.dart';
+import 'package:alwadi_food/core/migrations/qc_results_migration.dart';
 import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
 import 'package:alwadi_food/presentation/home/cubit/home_cubit.dart';
@@ -7,6 +8,7 @@ import 'package:alwadi_food/presentation/qc/cubit/qc_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_dashboard/qc_dashboard_cubit.dart';
 import 'package:alwadi_food/presentation/settings/cubit/app_settings_cubit.dart';
 import 'package:alwadi_food/presentation/settings/cubit/app_settings_state.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -17,6 +19,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await setupDependencies();
+    await QcResultsMigration(FirebaseFirestore.instance).runMigration();
 
   runApp(const MyApp());
 }
