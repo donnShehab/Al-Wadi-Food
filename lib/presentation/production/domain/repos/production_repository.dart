@@ -32,4 +32,5 @@ abstract class ProductionRepository {
   Future<int> getPassedQCount();
   // get issues count
   Future<int> getIssuesCount();
+
 }

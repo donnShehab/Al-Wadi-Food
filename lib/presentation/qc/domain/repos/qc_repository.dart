@@ -16,4 +16,8 @@ abstract class QCRepository {
   );
 
   Future<Either<Failure, List<QCResultEntity>>> getAllQCResults();
+  Future<List<QCResultEntity>> getResultsByBatchId(String batchId);
+  //  Future<Either<Failure, List<QCResultEntity>>> getQCResultsByBatchId(
+  //     String batchId,
+  //   );
 }

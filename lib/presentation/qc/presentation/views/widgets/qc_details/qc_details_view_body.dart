@@ -6,6 +6,7 @@ import 'qc_details_header.dart';
 import 'qc_details_measurements_card.dart';
 import 'qc_details_images_section.dart';
 import 'qc_details_decision_card.dart';
+import 'qc_details_resolve_history_card.dart';
 
 class QCDetailsViewBody extends StatelessWidget {
   final QCResultEntity result;
@@ -29,6 +30,10 @@ class QCDetailsViewBody extends StatelessWidget {
           const SizedBox(height: 24),
 
           QCDetailsDecisionCard(result: result),
+          const SizedBox(height: 18),
+
+          /// ✅ NEW Resolve History Card
+          QCDetailsResolveHistoryCard(result: result),
         ],
       ),
     );

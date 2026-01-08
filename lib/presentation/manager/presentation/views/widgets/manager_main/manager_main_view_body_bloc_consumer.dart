@@ -1,6 +1,10 @@
 import 'package:alwadi_food/presentation/manager/cubit/manager_nav/manager_nav_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/manager_nav/manager_nav_state.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/manager_dashboard_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_action/manager_action_needed_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/reports/reports_center_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/trace/traceability_center_view.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/trace/traceability_center_view_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,10 +15,10 @@ class ManagerMainViewBodyBlocConsumer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      const ManagerDashboardView(), // ✅ Tab 0 Dashboard (صفحتك الجاهزة)
-      const _PlaceholderPage(title: "Alerts & Risks"), // 🚧 Tab 1
-      const _PlaceholderPage(title: "Reports Center"), // 🚧 Tab 2
-      const _PlaceholderPage(title: "Traceability"), // 🚧 Tab 3
+      const ManagerDashboardView(), // ✅ Tab 0 Dashboard
+      const ManagerActionNeededView(), // ✅ Tab 1 Action Needed (NEW)
+      const ReportsCenterView(), // 🚧 Tab 2
+      const TraceabilityCenterView(), // 🚧 Tab 3
       const _PlaceholderPage(title: "More (Users/Performance)"), // 🚧 Tab 4
     ];
 
@@ -44,10 +48,13 @@ class ManagerMainViewBodyBlocConsumer extends StatelessWidget {
                   icon: Icon(Icons.dashboard_rounded),
                   label: "Dashboard",
                 ),
+
+                /// ✅ NEW: Action Needed
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.warning_amber_rounded),
-                  label: "Alerts",
+                  icon: Icon(Icons.task_alt_rounded),
+                  label: "Action Needed",
                 ),
+
                 BottomNavigationBarItem(
                   icon: Icon(Icons.picture_as_pdf_rounded),
                   label: "Reports",
@@ -69,7 +76,7 @@ class ManagerMainViewBodyBlocConsumer extends StatelessWidget {
   }
 }
 
-/// مؤقتة لحد ما نبني صفحات Alerts/Reports/Traceability
+/// مؤقتة لحد ما نبني صفحات Reports/Traceability
 class _PlaceholderPage extends StatelessWidget {
   final String title;
   const _PlaceholderPage({required this.title});

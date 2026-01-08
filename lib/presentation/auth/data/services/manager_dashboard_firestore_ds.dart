@@ -8,15 +8,16 @@ class ManagerDashboardFirestoreDataSource {
 
   ManagerDashboardFirestoreDataSource(this.firestore);
 
+  // ============================================================
+  // ✅ DASHBOARD MAIN
+  // ============================================================
   Future<ManagerDashboardEntity> fetchDashboard() async {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
-    // ✅ Trend first (7 days)
     final trend = await fetchQCTrendLast7Days();
 
-    /// ✅ 1) Get Production batches today
     final batchesSnap = await firestore
         .collection(AppConstants.batchesCollection)
         .where(
@@ -27,7 +28,6 @@ class ManagerDashboardFirestoreDataSource {
         .get();
 
     final batches = batchesSnap.docs.map((e) => e.data()).toList();
-
     final productionToday = batches.length;
 
     final unitsToday = batches.fold<int>(
@@ -39,7 +39,6 @@ class ManagerDashboardFirestoreDataSource {
         .where((b) => (b["status"] ?? "") == AppConstants.statusWaitingQC)
         .length;
 
-    /// ✅ 2) Get QC inspections today
     final qcSnap = await firestore
         .collection(AppConstants.qcResultsCollection)
         .where(
@@ -52,24 +51,19 @@ class ManagerDashboardFirestoreDataSource {
     final inspections = qcSnap.docs.map((e) => e.data()).toList();
     final qcInspectionsToday = inspections.length;
 
-    // ✅ FIX PASS/FAIL (supports result/qcResult AND passed bool)
     final int passedCount = inspections.where((i) {
       final result = i["result"] ?? i["qcResult"] ?? "";
       if (result == AppConstants.qcResultPass) return true;
-
       final passedBool = i["passed"];
       if (passedBool is bool && passedBool == true) return true;
-
       return false;
     }).length;
 
     final int failedCount = inspections.where((i) {
       final result = i["result"] ?? i["qcResult"] ?? "";
       if (result == AppConstants.qcResultFail) return true;
-
       final passedBool = i["passed"];
       if (passedBool is bool && passedBool == false) return true;
-
       return false;
     }).length;
 
@@ -77,14 +71,12 @@ class ManagerDashboardFirestoreDataSource {
         ? 0.0
         : (passedCount / qcInspectionsToday) * 100;
 
-    /// ✅ 3) High Risk Alerts (based on temperature/moisture)
     final highRiskAlerts = inspections.where((i) {
       final temp = (i["temperature"] ?? 0).toDouble();
       final moisture = (i["moisture"] ?? 0).toDouble();
       return temp > 10 || moisture > 15;
     }).length;
 
-    /// ✅ 4) worst/best line today (based on batches count)
     final lineStats = <String, Map<String, int>>{};
     for (final b in batches) {
       final line = b["line"] ?? "Unknown";
@@ -100,7 +92,6 @@ class ManagerDashboardFirestoreDataSource {
     final bestLineToday = sortedLines.isEmpty ? "-" : sortedLines.first.key;
     final worstLineToday = sortedLines.isEmpty ? "-" : sortedLines.last.key;
 
-    /// ✅ 5) Most repeated failure reason
     final reasons = <String, int>{};
     for (final i in inspections) {
       final reason = i["failureReason"];
@@ -116,7 +107,6 @@ class ManagerDashboardFirestoreDataSource {
       mostRepeatedFailure = sortedReasons.first.key;
     }
 
-    /// ✅ 6) Best inspector (most inspections)
     final inspectors = <String, int>{};
     for (final i in inspections) {
       final inspector = (i["inspectorName"] ?? "Unknown").toString();
@@ -130,10 +120,9 @@ class ManagerDashboardFirestoreDataSource {
       bestInspector = sortedInspectors.first.key;
     }
 
-    /// ✅ Return Entity
     return ManagerDashboardEntity(
       trend: trend,
-      managerName: "shehab", // لاحقاً من user profile
+      managerName: "shehab",
       managerRole: "Operations Manager",
       today: today,
       productionToday: productionToday,
@@ -149,7 +138,9 @@ class ManagerDashboardFirestoreDataSource {
     );
   }
 
-  /// ✅ NEW: Fetch QC Trend Last 7 Days (PASS/FAIL per day)
+  // ============================================================
+  // ✅ Trend last 7 days
+  // ============================================================
   Future<List<ManagerTrendDayEntity>> fetchQCTrendLast7Days() async {
     final now = DateTime.now();
     final start = DateTime(
@@ -164,7 +155,6 @@ class ManagerDashboardFirestoreDataSource {
         .get();
 
     final data = snap.docs.map((e) => e.data()).toList();
-
     final List<ManagerTrendDayEntity> result = [];
 
     for (int i = 0; i < 7; i++) {
@@ -179,27 +169,22 @@ class ManagerDashboardFirestoreDataSource {
 
       final daily = data.where((item) {
         final createdAt = (item["createdAt"] as Timestamp).toDate();
-        // ✅ FIX: include dayStart boundary
         return !createdAt.isBefore(dayStart) && createdAt.isBefore(dayEnd);
       }).toList();
 
       final passed = daily.where((i) {
         final res = i["result"] ?? i["qcResult"] ?? "";
         if (res == AppConstants.qcResultPass) return true;
-
         final passedBool = i["passed"];
         if (passedBool is bool && passedBool == true) return true;
-
         return false;
       }).length;
 
       final failed = daily.where((i) {
         final res = i["result"] ?? i["qcResult"] ?? "";
         if (res == AppConstants.qcResultFail) return true;
-
         final passedBool = i["passed"];
         if (passedBool is bool && passedBool == false) return true;
-
         return false;
       }).length;
 
@@ -211,6 +196,9 @@ class ManagerDashboardFirestoreDataSource {
     return result;
   }
 
+  // ============================================================
+  // ✅ Today batches list
+  // ============================================================
   Future<List<Map<String, dynamic>>> fetchTodayBatches() async {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
@@ -226,9 +214,12 @@ class ManagerDashboardFirestoreDataSource {
         .orderBy("startTime", descending: true)
         .get();
 
-    return snap.docs.map((e) => {...e.data(), "id": e.id}).toList();
+    return snap.docs.map((e) => {"id": e.id, ...e.data()}).toList();
   }
 
+  // ============================================================
+  // ✅ Today inspections list
+  // ============================================================
   Future<List<Map<String, dynamic>>> fetchTodayInspections() async {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
@@ -244,10 +235,20 @@ class ManagerDashboardFirestoreDataSource {
         .orderBy("createdAt", descending: true)
         .get();
 
-    return snap.docs.map((e) => {...e.data(), "id": e.id}).toList();
+    return snap.docs.map((e) => {"id": e.id, ...e.data()}).toList();
   }
 
-Future<List<Map<String, dynamic>>> fetchHighRiskAlertsToday() async {
+  // ============================================================
+  // ✅ Production Today List
+  // ============================================================
+  Future<List<Map<String, dynamic>>> fetchProductionTodayList() async {
+    return fetchTodayBatches();
+  }
+
+  // ============================================================
+  // ✅ High Risk Alerts Today (UNRESOLVED ONLY)
+  // ============================================================
+  Future<List<Map<String, dynamic>>> fetchHighRiskAlertsToday() async {
     final today = DateTime.now();
     final start = DateTime(today.year, today.month, today.day);
     final end = start.add(const Duration(days: 1));
@@ -256,8 +257,8 @@ Future<List<Map<String, dynamic>>> fetchHighRiskAlertsToday() async {
         .collection(AppConstants.qcResultsCollection)
         .where("createdAt", isGreaterThanOrEqualTo: Timestamp.fromDate(start))
         .where("createdAt", isLessThan: Timestamp.fromDate(end))
-        .where("riskResolved", isEqualTo: false) // ✅ فقط اللي مش محلولة
-        .orderBy("createdAt", descending: true) // ✅ الأحدث أول
+        .where("riskResolved", isEqualTo: false)
+        .orderBy("createdAt", descending: true)
         .get();
 
     final data = snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
@@ -269,24 +270,9 @@ Future<List<Map<String, dynamic>>> fetchHighRiskAlertsToday() async {
     }).toList();
   }
 
-  Future<List<Map<String, dynamic>>> fetchProductionTodayList() async {
-    final today = DateTime.now();
-    final startOfDay = DateTime(today.year, today.month, today.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
-
-    final snap = await firestore
-        .collection(AppConstants.batchesCollection)
-        .where(
-          "startTime",
-          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
-        )
-        .where("startTime", isLessThan: Timestamp.fromDate(endOfDay))
-        .orderBy("startTime", descending: true)
-        .get();
-
-    return snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
-  }
-  /// ✅ 2) Pending QC (waiting_qc)
+  // ============================================================
+  // ✅ Pending QC
+  // ============================================================
   Future<List<Map<String, dynamic>>> fetchPendingBatches() async {
     final snap = await firestore
         .collection(AppConstants.batchesCollection)
@@ -297,7 +283,9 @@ Future<List<Map<String, dynamic>>> fetchHighRiskAlertsToday() async {
     return snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
   }
 
-  /// ✅ 3) Failed Inspections Today
+  // ============================================================
+  // ✅ Failed Inspections Today (UNRESOLVED ONLY)
+  // ============================================================
   Future<List<Map<String, dynamic>>> fetchFailedInspectionsToday() async {
     final today = DateTime.now();
     final start = DateTime(today.year, today.month, today.day);
@@ -307,6 +295,8 @@ Future<List<Map<String, dynamic>>> fetchHighRiskAlertsToday() async {
         .collection(AppConstants.qcResultsCollection)
         .where("createdAt", isGreaterThanOrEqualTo: Timestamp.fromDate(start))
         .where("createdAt", isLessThan: Timestamp.fromDate(end))
+        .where("riskResolved", isEqualTo: false)
+        .orderBy("createdAt", descending: true)
         .get();
 
     final data = snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
@@ -317,22 +307,36 @@ Future<List<Map<String, dynamic>>> fetchHighRiskAlertsToday() async {
     }).toList();
   }
 
-  /// ✅ Mark Risk Resolved
-  Future<void> markAlertResolved({
+  // ============================================================
+  // ✅ Resolve Alert (WITH NOTE + MANAGER NAME)
+  // ============================================================
+ Future<void> markAlertResolved({
     required String inspectionId,
     required String managerId,
+    required String managerName,
+    String? note,
   }) async {
     await firestore
         .collection(AppConstants.qcResultsCollection)
         .doc(inspectionId)
         .update({
           "riskResolved": true,
-          "riskResolvedAt": Timestamp.now(),
-          "riskResolvedBy": managerId,
+
+          // ✅ Save both
+          "resolvedById": managerId,
+          "resolvedByName": managerName,
+
+          "resolvedAt": Timestamp.now(),
+          "resolveNote": note ?? "",
+          "updatedAt": Timestamp.now(),
         });
   }
 
-  /// ✅ Assign QC User
+
+
+   // ============================================================
+  // ✅ Assign QC User
+  // ============================================================
   Future<void> assignQcToAlert({
     required String inspectionId,
     required String qcId,
@@ -345,6 +349,38 @@ Future<List<Map<String, dynamic>>> fetchHighRiskAlertsToday() async {
           "assignedQcId": qcId,
           "assignedQcName": qcName,
           "assignedAt": Timestamp.now(),
+          "updatedAt": Timestamp.now(),
         });
   }
+   // ============================================================
+  // ✅ NEW: Fetch QC Users List (role == qc)
+  // ============================================================
+  Future<List<Map<String, dynamic>>> fetchQcUsers() async {
+    final snap = await firestore
+        .collection(AppConstants.usersCollection)
+        .where("role", isEqualTo: "qc")
+        .get();
+
+    return snap.docs.map((d) => {"uid": d.id, ...d.data()}).toList();
+  }
+
+  // ============================================================
+  // ✅ Resolved High Risk Alerts (HISTORY)
+  // ============================================================
+  Future<List<Map<String, dynamic>>> fetchResolvedHighRiskAlerts() async {
+    final snap = await firestore
+        .collection(AppConstants.qcResultsCollection)
+        .where("riskResolved", isEqualTo: true)
+        .orderBy("resolvedAt", descending: true)
+        .get();
+
+    final data = snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
+
+    return data.where((i) {
+      final temp = (i["temperature"] ?? 0).toDouble();
+      final moisture = (i["moisture"] ?? 0).toDouble();
+      return temp > 10 || moisture > 15;
+    }).toList();
+  }
+
 }

@@ -18,10 +18,25 @@ class QCResultEntity {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  /// ✅ NEW
+  /// ✅ Batch Context
   final String? productType;
   final String? line;
   final List<String>? batchImages;
+
+  /// ✅ Resolve Flow
+  final bool riskResolved;
+
+  /// ✅ NEW (Manager)
+  final String? resolvedById;
+  final String? resolvedByName;
+
+  final DateTime? resolvedAt;
+  final String? resolveNote;
+
+  /// ✅ Assign Flow
+  final String? assignedQcId;
+  final String? assignedQcName;
+  final DateTime? assignedAt;
 
   const QCResultEntity({
     required this.inspectionId,
@@ -43,9 +58,21 @@ class QCResultEntity {
     required this.createdAt,
     required this.updatedAt,
 
-    /// ✅ NEW
+    /// ✅ Batch Context
     this.productType,
     this.line,
     this.batchImages,
+
+    /// ✅ Resolve
+    this.riskResolved = false,
+    this.resolvedById,
+    this.resolvedByName,
+    this.resolvedAt,
+    this.resolveNote,
+
+    /// ✅ Assign
+    this.assignedQcId,
+    this.assignedQcName,
+    this.assignedAt,
   });
 }

@@ -236,6 +236,17 @@ class QCCubit extends Cubit<QCState> {
     );
   }
 
+  Future<void> loadQCResultByInspectionId(String inspectionId) async {
+    emit(const QCLoading());
+
+    final either = await _qcRepository.getQCResultById(inspectionId);
+
+    either.fold(
+      ifLeft: (failure) => emit(QCError(failure.message)),
+      ifRight: (result) => emit(QCResultsLoaded([result])),
+    );
+  }
+
   // ============================================================
   // ✅ Helpers
   // ============================================================

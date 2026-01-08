@@ -22,10 +22,19 @@ class QCResultModel extends QCResultEntity {
     required super.createdAt,
     required super.updatedAt,
 
-    /// ✅ NEW
     super.productType,
     super.line,
     super.batchImages,
+
+    super.riskResolved = false,
+    super.resolvedById,
+    super.resolvedByName,
+    super.resolvedAt,
+    super.resolveNote,
+
+    super.assignedQcId,
+    super.assignedQcName,
+    super.assignedAt,
   });
 
   QCResultModel copyWith({
@@ -48,10 +57,19 @@ class QCResultModel extends QCResultEntity {
     DateTime? createdAt,
     DateTime? updatedAt,
 
-    /// ✅ NEW
     String? productType,
     String? line,
     List<String>? batchImages,
+
+    bool? riskResolved,
+    String? resolvedById,
+    String? resolvedByName,
+    DateTime? resolvedAt,
+    String? resolveNote,
+
+    String? assignedQcId,
+    String? assignedQcName,
+    DateTime? assignedAt,
   }) {
     return QCResultModel(
       inspectionId: inspectionId ?? this.inspectionId,
@@ -73,14 +91,22 @@ class QCResultModel extends QCResultEntity {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
 
-      /// ✅ NEW
       productType: productType ?? this.productType,
       line: line ?? this.line,
       batchImages: batchImages ?? this.batchImages,
+
+      riskResolved: riskResolved ?? this.riskResolved,
+      resolvedById: resolvedById ?? this.resolvedById,
+      resolvedByName: resolvedByName ?? this.resolvedByName,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      resolveNote: resolveNote ?? this.resolveNote,
+
+      assignedQcId: assignedQcId ?? this.assignedQcId,
+      assignedQcName: assignedQcName ?? this.assignedQcName,
+      assignedAt: assignedAt ?? this.assignedAt,
     );
   }
-
-  factory QCResultModel.fromJson(Map<String, dynamic> json) => QCResultModel(
+factory QCResultModel.fromJson(Map<String, dynamic> json) => QCResultModel(
     inspectionId: json['inspectionId'] as String,
     batchId: json['batchId'] as String,
     productionLine: json['productionLine'] as String? ?? "Unknown",
@@ -88,23 +114,40 @@ class QCResultModel extends QCResultEntity {
     inspectorName: json['inspectorName'] as String,
     temperature: (json['temperature'] as num).toDouble(),
     weight: (json['weight'] as num).toDouble(),
-    color: json['color'] as String,
-    packaging: json['packaging'] as String,
+    color: json['color'] as String? ?? "",
+    packaging: json['packaging'] as String? ?? "",
     moisture: (json['moisture'] as num).toDouble(),
-    texture: json['texture'] as String,
+    texture: json['texture'] as String? ?? "",
     tasteTest: json['tasteTest'] as String?,
-    notes: json['notes'] as String,
-    images: List<String>.from(json['images'] as List),
+    notes: json['notes'] as String? ?? "",
+    images: (json['images'] as List?)?.cast<String>() ?? [],
     result: json['result'] as String,
     failureReason: json['failureReason'] as String?,
-    createdAt: (json['createdAt'] as Timestamp).toDate(),
-    updatedAt: (json['updatedAt'] as Timestamp).toDate(),
+    createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
 
-    /// ✅ NEW
     productType: json["productType"]?.toString(),
     line: json["line"]?.toString(),
-    batchImages: (json["batchImages"] as List?)?.cast<String>() ?? [],
+    batchImages: (json["batchImages"] as List?)?.cast<String>(),
+
+    riskResolved: json["riskResolved"] ?? false,
+
+    /// ✅ NEW
+    resolvedById: json["resolvedById"]?.toString(),
+    resolvedByName: json["resolvedByName"]?.toString(),
+
+    resolvedAt: json["resolvedAt"] is Timestamp
+        ? (json["resolvedAt"] as Timestamp).toDate()
+        : null,
+    resolveNote: json["resolveNote"]?.toString(),
+
+    assignedQcId: json["assignedQcId"]?.toString(),
+    assignedQcName: json["assignedQcName"]?.toString(),
+    assignedAt: json["assignedAt"] is Timestamp
+        ? (json["assignedAt"] as Timestamp).toDate()
+        : null,
   );
+
 
   Map<String, dynamic> toJson() => {
     'inspectionId': inspectionId,
@@ -126,10 +169,22 @@ class QCResultModel extends QCResultEntity {
     'createdAt': Timestamp.fromDate(createdAt),
     'updatedAt': Timestamp.fromDate(updatedAt),
 
-    /// ✅ NEW
     'productType': productType,
     'line': line,
     'batchImages': batchImages,
+
+    "riskResolved": riskResolved,
+
+    /// ✅✅ NEW
+    "resolvedById": resolvedById,
+    "resolvedByName": resolvedByName,
+
+    "resolvedAt": resolvedAt == null ? null : Timestamp.fromDate(resolvedAt!),
+    "resolveNote": resolveNote,
+
+    "assignedQcId": assignedQcId,
+    "assignedQcName": assignedQcName,
+    "assignedAt": assignedAt == null ? null : Timestamp.fromDate(assignedAt!),
   };
 
   factory QCResultModel.fromEntity(QCResultEntity entity) => QCResultModel(
@@ -152,9 +207,21 @@ class QCResultModel extends QCResultEntity {
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,
 
-    /// ✅ NEW
     productType: entity.productType,
     line: entity.line,
     batchImages: entity.batchImages,
+
+    riskResolved: entity.riskResolved,
+
+    /// ✅✅ NEW
+    resolvedById: entity.resolvedById,
+    resolvedByName: entity.resolvedByName,
+
+    resolvedAt: entity.resolvedAt,
+    resolveNote: entity.resolveNote,
+
+    assignedQcId: entity.assignedQcId,
+    assignedQcName: entity.assignedQcName,
+    assignedAt: entity.assignedAt,
   );
 }

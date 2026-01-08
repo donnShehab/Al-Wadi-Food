@@ -48,7 +48,7 @@ class QCRepositoryImpl implements QCRepository {
           (batchData?["images"] as List?)?.cast<String>() ?? <String>[];
 
       /// ✅ 3) Build QC model
-      final qcModel = QCResultModel.fromEntity(qcResult).copyWith(
+  final qcModel = QCResultModel.fromEntity(qcResult).copyWith(
         images: imageUrls,
         productType: productType.toString(),
         line: line.toString(),
@@ -68,7 +68,8 @@ class QCRepositoryImpl implements QCRepository {
       return Left(ServerFailure(message: e.toString()));
     }
   }
-  @override
+
+ @override
   Future<Either<Failure, QCResultEntity>> getQCResultById(
     String inspectionId,
   ) async {
@@ -77,14 +78,23 @@ class QCRepositoryImpl implements QCRepository {
         AppConstants.qcResultsCollection,
         inspectionId,
       );
-      if (!doc.exists)
+
+      if (!doc.exists) {
         return Left(ServerFailure(message: 'QC Result not found'));
-      return Right(QCResultModel.fromJson(doc.data() as Map<String, dynamic>));
+      }
+
+      final data = doc.data() as Map<String, dynamic>;
+
+      /// ✅ Inject doc.id into json
+      data["inspectionId"] = doc.id;
+
+      return Right(QCResultModel.fromJson(data));
     } catch (e) {
       debugPrint('QCRepositoryImpl.getQCResultById error: $e');
       return Left(ServerFailure(message: e.toString()));
     }
   }
+
 
   @override
   Future<Either<Failure, List<QCResultEntity>>> getQCResultsByBatchId(
@@ -127,5 +137,11 @@ class QCRepositoryImpl implements QCRepository {
       debugPrint('QCRepositoryImpl.getAllQCResults error: $e');
       return Left(ServerFailure(message: e.toString()));
     }
+  }
+  
+  @override
+  Future<List<QCResultEntity>> getResultsByBatchId(String batchId) {
+    // TODO: implement getResultsByBatchId
+    throw UnimplementedError();
   }
 }

@@ -7,21 +7,32 @@ import 'package:alwadi_food/presentation/auth/data/services/firestore_service.da
 import 'package:alwadi_food/presentation/auth/data/services/manager_dashboard_firestore_ds.dart';
 import 'package:alwadi_food/presentation/auth/data/services/manager_kpi_list_firestore_ds.dart';
 import 'package:alwadi_food/presentation/auth/data/services/qc_pdf_report_service.dart';
+import 'package:alwadi_food/presentation/auth/data/services/reports_excel_service.dart';
+import 'package:alwadi_food/presentation/auth/data/services/reports_pdf_service.dart';
 import 'package:alwadi_food/presentation/auth/data/services/storage_service.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/auth_repository.dart';
 import 'package:alwadi_food/presentation/auth/domain/repos/user_repository.dart';
 import 'package:alwadi_food/presentation/home/cubit/home_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/dashboard_cubit.dart';
+import 'package:alwadi_food/presentation/manager/cubit/manager_action/manager_action_needed_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/manager_dashboard/manager_dashboard_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/manager_dashboard/manager_filtered_inspections_cubit.dart';
+import 'package:alwadi_food/presentation/manager/cubit/manager_history/manager_batch_qc_history_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/manager_kpi_list/manager_kpi_list_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/manager_nav/manager_nav_cubit.dart';
-import 'package:alwadi_food/presentation/manager/cubit/traceability_cubit.dart';
+import 'package:alwadi_food/presentation/manager/cubit/manager_resolved_alerts/manager_resolved_alerts_cubit.dart';
+import 'package:alwadi_food/presentation/manager/cubit/reports/reports_center_cubit.dart';
+import 'package:alwadi_food/presentation/manager/cubit/trace/traceability_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/user_management_cubit.dart';
 import 'package:alwadi_food/presentation/manager/data/repo/manager_dashboard_repo_impl.dart';
 import 'package:alwadi_food/presentation/manager/data/repo/manager_kpi_repo_impl.dart';
 import 'package:alwadi_food/presentation/manager/domain/repo/manager_dashboard_repo.dart';
 import 'package:alwadi_food/presentation/manager/domain/repo/manager_kpi_repo.dart';
+import 'package:alwadi_food/presentation/manager/domain/repo/traceability_repository.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_batch/manager_batch_qc_history_ds.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/reports/reports_center_firestore_ds.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/trace/trace_events_firestore_ds.dart';
+import 'package:alwadi_food/presentation/manager/presentation/views/widgets/trace/trace_events_repo.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart';
 import 'package:alwadi_food/presentation/production/data/repos/production_repository_impl.dart';
 import 'package:alwadi_food/presentation/production/domain/repos/production_repository.dart';
@@ -146,11 +157,6 @@ Future<void> setupDependencies() async {
     () => UserManagementCubit(getIt<UserRepository>()),
   );
 
-  getIt.registerFactory<TraceabilityCubit>(
-    () =>
-        TraceabilityCubit(getIt<ProductionRepository>(), getIt<QCRepository>()),
-  );
-
   getIt.registerFactory(
     () => QCLeaderboardCubit(getIt<QCLeaderboardRepository>()),
   );
@@ -194,6 +200,59 @@ Future<void> setupDependencies() async {
   getIt.registerFactory(
     () => ManagerKpiListCubit(getIt<ManagerKpiListFirestoreDataSource>()),
   );
+  // getIt.registerLazySingleton(() => ManagerDashboardFirestoreDataSource(getIt()));
   getIt.registerFactory(() => ManagerFilteredInspectionsCubit(getIt()));
+  getIt.registerFactory(() => ManagerActionNeededCubit(getIt()));
 
+  /// ✅ Manager Batch QC History DS
+  getIt.registerLazySingleton(
+    () => ManagerBatchQcHistoryFirestoreDs(getIt<FirebaseFirestore>()),
+  );
+
+  /// ✅ Manager Batch QC History Cubit
+  getIt.registerFactory(
+    () => ManagerBatchQcHistoryCubit(getIt<ManagerBatchQcHistoryFirestoreDs>()),
+  );
+
+  /// ✅ Resolved Alerts Cubit (History)
+  getIt.registerFactory(() => ManagerResolvedAlertsCubit(getIt()));
+  // ======================
+  // ✅ REPORTS CENTER
+  // ======================
+
+  // ✅ Firestore DS
+  getIt.registerLazySingleton(
+    () => ReportsCenterFirestoreDataSource(getIt<FirebaseFirestore>()),
+  );
+
+  // ✅ PDF Service
+  getIt.registerLazySingleton(() => ReportsPdfService());
+
+  // ✅ Excel Service
+  getIt.registerLazySingleton(() => ReportsExcelService());
+
+  // ✅ Reports Cubit
+  getIt.registerFactory(
+    () => ReportsCenterCubit(
+      getIt<ReportsCenterFirestoreDataSource>(),
+      getIt<ReportsPdfService>(),
+      getIt<ReportsExcelService>(),
+    ),
+  );
+  // ======================
+  // ✅ TRACEABILITY SECTION
+  // ======================
+
+  getIt.registerLazySingleton<TraceabilityRepository>(
+    () => TraceabilityRepository(getIt<FirebaseFirestore>()),
+  );
+
+  // ✅ Traceability Cubit ✅✅✅
+  getIt.registerFactory<TraceabilityCubit>(
+    () => TraceabilityCubit(
+      getIt<ProductionRepository>(),
+      getIt<QCRepository>(),
+      getIt<TraceabilityRepository>(),
+    ),
+  );
 }

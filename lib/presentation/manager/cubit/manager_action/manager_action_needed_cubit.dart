@@ -22,24 +22,78 @@ class ManagerActionNeededCubit extends Cubit<ManagerActionNeededState> {
         ),
       );
     } catch (e) {
-      emit(ManagerActionNeededError("Failed to load action center"));
+      print("❌ Action center error: $e");
+      emit(ManagerActionNeededError("Failed to load action center: $e"));
     }
   }
 
-  Future<void> resolveAlert(String inspectionId, String managerId) async {
-    await ds.markAlertResolved(
-      inspectionId: inspectionId,
-      managerId: managerId,
-    );
-    await loadActionNeeded();
+  /// ✅ NEW: Fetch QC users list
+  Future<List<Map<String, dynamic>>> fetchQcUsers() async {
+    try {
+      return await ds.fetchQcUsers();
+    } catch (e) {
+      print("❌ Fetch QC users failed: $e");
+      return [];
+    }
   }
 
-  Future<void> assignQc(String inspectionId, String qcId, String qcName) async {
-    await ds.assignQcToAlert(
-      inspectionId: inspectionId,
-      qcId: qcId,
-      qcName: qcName,
+  // ✅ Remove item locally instantly (UI)
+  void removeHighRiskItem(String inspectionId) {
+    if (state is! ManagerActionNeededLoaded) return;
+    final current = state as ManagerActionNeededLoaded;
+
+    final updated = current.highRiskAlerts
+        .where((i) => (i["id"] ?? "").toString() != inspectionId)
+        .toList();
+
+    emit(
+      ManagerActionNeededLoaded(
+        highRiskAlerts: updated,
+        pendingBatches: current.pendingBatches,
+        failedInspections: current.failedInspections,
+      ),
     );
-    await loadActionNeeded();
+  }
+Future<bool> resolveAlert({
+    required String inspectionId,
+    required String managerId,
+    required String managerName,
+    String? note,
+  }) async {
+    try {
+      await ds.markAlertResolved(
+        inspectionId: inspectionId,
+        managerId: managerId,
+        managerName: managerName,
+        note: note,
+      );
+
+      await loadActionNeeded();
+      return true;
+    } catch (e) {
+      print("❌ Resolve failed: $e");
+      return false;
+    }
+  }
+
+
+
+  Future<bool> assignQc({
+    required String inspectionId,
+    required String qcId,
+    required String qcName,
+  }) async {
+    try {
+      await ds.assignQcToAlert(
+        inspectionId: inspectionId,
+        qcId: qcId,
+        qcName: qcName,
+      );
+      await loadActionNeeded();
+      return true;
+    } catch (e) {
+      print("❌ Assign QC failed: $e");
+      return false;
+    }
   }
 }

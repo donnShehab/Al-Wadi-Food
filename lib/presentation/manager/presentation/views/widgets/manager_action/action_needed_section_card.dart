@@ -20,6 +20,8 @@ class ActionNeededSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasItems = children.isNotEmpty;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -36,6 +38,7 @@ class ActionNeededSectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          /// ✅ HEADER
           Row(
             children: [
               CircleAvatar(
@@ -47,7 +50,10 @@ class ActionNeededSectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.w900),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
                 ),
               ),
               Container(
@@ -66,20 +72,46 @@ class ActionNeededSectionCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-          ),
+
+          /// ✅ subtitle
+          if (subtitle.trim().isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+            ),
+          ],
+
           const SizedBox(height: 14),
-          if (children.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                "No items ✅",
-                style: TextStyle(color: Colors.grey.shade600),
+
+          /// ✅ EMPTY CASE
+          if (!hasItems)
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.green.withOpacity(0.15)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: Colors.green.shade600,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "No items ✅",
+                    style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
             )
+          /// ✅ ITEMS CASE (Scrollable if many)
           else
             Column(children: children),
         ],

@@ -23,9 +23,7 @@ class QCDetailsViewBodyBlocConsumer extends StatelessWidget {
         }
 
         if (state is QCResultsLoaded) {
-          final result = state.results.firstWhere(
-            (r) => r.inspectionId == inspectionId,
-          );
+        final result = state.results.first;
 
           return QCDetailsViewBody(result: result);
         }
