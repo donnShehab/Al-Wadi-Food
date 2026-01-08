@@ -3,7 +3,7 @@ class AppConstants {
   static const String roleSupervisor = 'supervisor';
   static const String roleQC = 'qc';
   static const String roleManager = 'manager';
-
+  static const String traceEventsCollection = 'trace_events';
   // Batch Status
   static const String statusInProgress = 'in_progress';
   static const String statusWaitingQC = 'waiting_qc';

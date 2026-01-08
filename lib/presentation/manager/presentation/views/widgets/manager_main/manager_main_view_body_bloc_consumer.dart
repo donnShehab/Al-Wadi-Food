@@ -3,8 +3,8 @@ import 'package:alwadi_food/presentation/manager/cubit/manager_nav/manager_nav_s
 import 'package:alwadi_food/presentation/manager/presentation/views/manager_dashboard_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_action/manager_action_needed_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/reports/reports_center_view.dart';
-import 'package:alwadi_food/presentation/manager/presentation/views/widgets/trace/traceability_center_view.dart';
-import 'package:alwadi_food/presentation/manager/presentation/views/widgets/trace/traceability_center_view_body.dart';
+import 'package:alwadi_food/presentation/manager/traceability/presentation/screens/traceability_center_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,7 +18,9 @@ class ManagerMainViewBodyBlocConsumer extends StatelessWidget {
       const ManagerDashboardView(), // ✅ Tab 0 Dashboard
       const ManagerActionNeededView(), // ✅ Tab 1 Action Needed (NEW)
       const ReportsCenterView(), // 🚧 Tab 2
-      const TraceabilityCenterView(), // 🚧 Tab 3
+      const TraceabilityCenterScreen(
+          standalone: false
+      ), // 🚧 Tab 3
       const _PlaceholderPage(title: "More (Users/Performance)"), // 🚧 Tab 4
     ];
 

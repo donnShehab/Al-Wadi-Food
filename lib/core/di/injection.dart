@@ -22,17 +22,17 @@ import 'package:alwadi_food/presentation/manager/cubit/manager_kpi_list/manager_
 import 'package:alwadi_food/presentation/manager/cubit/manager_nav/manager_nav_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/manager_resolved_alerts/manager_resolved_alerts_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/reports/reports_center_cubit.dart';
-import 'package:alwadi_food/presentation/manager/cubit/trace/traceability_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/user_management_cubit.dart';
 import 'package:alwadi_food/presentation/manager/data/repo/manager_dashboard_repo_impl.dart';
 import 'package:alwadi_food/presentation/manager/data/repo/manager_kpi_repo_impl.dart';
 import 'package:alwadi_food/presentation/manager/domain/repo/manager_dashboard_repo.dart';
 import 'package:alwadi_food/presentation/manager/domain/repo/manager_kpi_repo.dart';
-import 'package:alwadi_food/presentation/manager/domain/repo/traceability_repository.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_batch/manager_batch_qc_history_ds.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/reports/reports_center_firestore_ds.dart';
-import 'package:alwadi_food/presentation/manager/presentation/views/widgets/trace/trace_events_firestore_ds.dart';
-import 'package:alwadi_food/presentation/manager/presentation/views/widgets/trace/trace_events_repo.dart';
+import 'package:alwadi_food/presentation/manager/traceability/cubit/traceability_cubit.dart';
+import 'package:alwadi_food/presentation/manager/traceability/data/datasources/traceability_firestore_ds.dart';
+import 'package:alwadi_food/presentation/manager/traceability/data/repos/traceability_repository_impl.dart';
+import 'package:alwadi_food/presentation/manager/traceability/domain/repos/traceability_repository.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart';
 import 'package:alwadi_food/presentation/production/data/repos/production_repository_impl.dart';
 import 'package:alwadi_food/presentation/production/domain/repos/production_repository.dart';
@@ -239,20 +239,15 @@ Future<void> setupDependencies() async {
       getIt<ReportsExcelService>(),
     ),
   );
-  // ======================
-  // ✅ TRACEABILITY SECTION
-  // ======================
+  
+  // ================= TRACEABILITY (NEW MODULE) =================
+  getIt.registerLazySingleton(() => TraceabilityFirestoreDataSource(getIt()));
+  getIt.registerLazySingleton<TraceabilityRepository>(() => TraceabilityRepositoryImpl(
+        ds: getIt<TraceabilityFirestoreDataSource>(),
+        productionRepo: getIt(), // uses your existing ProductionRepository
+        qcRepo: getIt(),         // uses your existing QCRepository
+      ));
 
-  getIt.registerLazySingleton<TraceabilityRepository>(
-    () => TraceabilityRepository(getIt<FirebaseFirestore>()),
-  );
-
-  // ✅ Traceability Cubit ✅✅✅
-  getIt.registerFactory<TraceabilityCubit>(
-    () => TraceabilityCubit(
-      getIt<ProductionRepository>(),
-      getIt<QCRepository>(),
-      getIt<TraceabilityRepository>(),
-    ),
-  );
+  getIt.registerFactory(() => TraceabilityCubit(getIt<TraceabilityRepository>()));
+  
 }

@@ -8,7 +8,7 @@ import 'package:alwadi_food/presentation/manager/presentation/views/widgets/mana
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_dashboard/manager_filtered_inspections_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_dashboard/worst_line_today_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_resolved_history/manager_resolved_alerts_history_view.dart';
-import 'package:alwadi_food/presentation/manager/presentation/views/widgets/trace/traceability_center_view.dart';
+import 'package:alwadi_food/presentation/manager/traceability/presentation/screens/traceability_center_screen.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_command_center_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_dashboard_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_pending_list_view.dart';
@@ -66,7 +66,7 @@ static const KWorstLineTodayView = "/worst-line-today";
 static const String KManagerActionNeededView = "/manager/action-needed";
 static const String KManagerBatchDetailsView = "/manager/batch-details";
 static const KManagerResolvedAlertsHistoryView = "/resolved-alerts-history";
-static const KTraceabilityCenterView = "/traceability-center-view";
+static const String KTraceabilityCenterView = "/traceability-center-view";
   // ================= ROUTER =================
   static final GoRouter router = GoRouter(
     initialLocation: KsplashView,
@@ -242,10 +242,21 @@ GoRoute(
         path: AppRouter.KManagerResolvedAlertsHistoryView,
         builder: (_, __) => const ManagerResolvedAlertsHistoryView(),
       ),
+      // GoRoute(
+      //   path: KTraceabilityCenterView,
+      //   pageBuilder: (context, state) =>
+      //       fadeUp(state, const TraceabilityCenterView()),
+      // ),
       GoRoute(
         path: KTraceabilityCenterView,
-        pageBuilder: (context, state) =>
-            fadeUp(state, const TraceabilityCenterView()),
+        pageBuilder: (context, state) {
+          // Optional deep-link: /traceability-center-view?batchId=xxx
+          final batchId = state.uri.queryParameters['batchId'];
+          return fadeUp(
+            state,
+            TraceabilityCenterScreen(initialBatchId: batchId, standalone: true),
+          );
+        },
       ),
     ],
   );
