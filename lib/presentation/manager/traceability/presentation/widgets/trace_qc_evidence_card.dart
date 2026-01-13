@@ -1,11 +1,11 @@
+import 'package:alwadi_food/presentation/manager/traceability/domain/entities/trace_qc_result_entity.dart';
 import 'package:alwadi_food/presentation/manager/traceability/presentation/widgets/trace_image_gallery.dart';
 import 'package:alwadi_food/presentation/manager/traceability/presentation/widgets/trace_measurements_grid.dart';
-import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
 import 'package:alwadi_food/theme.dart';
 import 'package:flutter/material.dart';
 
 class TraceQcEvidenceCard extends StatelessWidget {
-  final QCResultEntity qc;
+  final TraceQcResultEntity qc;
 
   const TraceQcEvidenceCard({super.key, required this.qc});
 
@@ -15,13 +15,6 @@ class TraceQcEvidenceCard extends StatelessWidget {
 
     final isFail = qc.result.toLowerCase() == 'fail';
     final color = isFail ? scheme.error : Colors.green;
-
-    // Attempt to normalize measurements:
-    // If your QCResultEntity already has fields, map them here.
-    // Otherwise fallback to qc.toJson-like if available.
-    final Map<String, dynamic> measurements = _extractMeasurements(qc);
-
-    final List<String> images = _extractImages(qc);
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -40,12 +33,6 @@ class TraceQcEvidenceCard extends StatelessWidget {
       child: ExpansionTile(
         tilePadding: AppSpacing.paddingMd,
         childrenPadding: AppSpacing.paddingMd,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
-        collapsedShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
         title: Row(
           children: [
             Container(
@@ -77,22 +64,13 @@ class TraceQcEvidenceCard extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                "Inspection: ${qc.inspectionId}",
+                "QC by ${qc.qcOfficerName}",
                 style: Theme.of(context).textTheme.titleMedium?.bold,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Text(
-            "Inspector: ${qc.inspectorName}",
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: scheme.onSurface.withOpacity(0.65),
-            ),
-          ),
         ),
         children: [
           if (isFail && (qc.failureReason ?? '').trim().isNotEmpty) ...[
@@ -134,62 +112,18 @@ class TraceQcEvidenceCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
           ],
-
           Text(
             "Measurements",
             style: Theme.of(context).textTheme.titleMedium?.bold,
           ),
           const SizedBox(height: 8),
-          TraceMeasurementsGrid(measurements: measurements),
-
+          TraceMeasurementsGrid(measurements: qc.measurements),
           const SizedBox(height: AppSpacing.md),
           Text("Images", style: Theme.of(context).textTheme.titleMedium?.bold),
           const SizedBox(height: 8),
-          TraceImageGallery(imageUrls: images),
+          TraceImageGallery(imageUrls: qc.images),
         ],
       ),
     );
-  }
-
-  Map<String, dynamic> _extractMeasurements(QCResultEntity qc) {
-    // Best-effort mapping without breaking your existing entity.
-    // If your QCResultEntity has a 'measurements' map, use it.
-    try {
-      final dynamic v = (qc as dynamic).measurements;
-      if (v is Map<String, dynamic>) return v;
-      if (v is Map) return v.map((k, val) => MapEntry("$k", val));
-    } catch (_) {}
-
-    // Otherwise build a small map from common fields if present.
-    final m = <String, dynamic>{};
-    void addIfExists(String key, String fieldName) {
-      try {
-        final dynamic v = (qc as dynamic).__getattribute__(fieldName);
-        if (v != null) m[key] = v;
-      } catch (_) {}
-    }
-
-    addIfExists("Temperature", "temperature");
-    addIfExists("Weight", "weight");
-    addIfExists("Moisture", "moisture");
-    addIfExists("pH", "ph");
-    addIfExists("Packaging", "packaging");
-    addIfExists("Texture", "texture");
-
-    return m;
-  }
-
-  List<String> _extractImages(QCResultEntity qc) {
-    try {
-      final dynamic v = (qc as dynamic).images;
-      if (v is List) return v.whereType<String>().toList();
-    } catch (_) {}
-
-    try {
-      final dynamic v = (qc as dynamic).imageUrls;
-      if (v is List) return v.whereType<String>().toList();
-    } catch (_) {}
-
-    return const [];
   }
 }

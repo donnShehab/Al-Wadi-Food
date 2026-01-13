@@ -1,10 +1,10 @@
+import 'package:alwadi_food/presentation/manager/traceability/domain/entities/trace_qc_result_entity.dart';
 import 'package:alwadi_food/presentation/manager/traceability/presentation/widgets/trace_qc_evidence_card.dart';
-import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
 import 'package:alwadi_food/theme.dart';
 import 'package:flutter/material.dart';
 
 class TraceQcEvidenceSection extends StatelessWidget {
-  final List<QCResultEntity> qcResults;
+  final List<TraceQcResultEntity> qcResults;
 
   const TraceQcEvidenceSection({super.key, required this.qcResults});
 

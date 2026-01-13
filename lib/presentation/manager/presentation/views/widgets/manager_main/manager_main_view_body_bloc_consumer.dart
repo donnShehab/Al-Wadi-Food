@@ -4,31 +4,42 @@ import 'package:alwadi_food/presentation/manager/presentation/views/manager_dash
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_action/manager_action_needed_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/reports/reports_center_view.dart';
 import 'package:alwadi_food/presentation/manager/traceability/presentation/screens/traceability_center_screen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ManagerMainViewBodyBlocConsumer extends StatelessWidget {
+class ManagerMainViewBodyBlocConsumer extends StatefulWidget {
   final ThemeData theme;
   const ManagerMainViewBodyBlocConsumer({super.key, required this.theme});
 
   @override
-  Widget build(BuildContext context) {
-    final pages = [
-      const ManagerDashboardView(), // ✅ Tab 0 Dashboard
-      const ManagerActionNeededView(), // ✅ Tab 1 Action Needed (NEW)
-      const ReportsCenterView(), // 🚧 Tab 2
-      const TraceabilityCenterScreen(
-          standalone: false
-      ), // 🚧 Tab 3
-      const _PlaceholderPage(title: "More (Users/Performance)"), // 🚧 Tab 4
-    ];
+  State<ManagerMainViewBodyBlocConsumer> createState() =>
+      _ManagerMainViewBodyBlocConsumerState();
+}
 
+class _ManagerMainViewBodyBlocConsumerState
+    extends State<ManagerMainViewBodyBlocConsumer> {
+  // ✅ Important: keep pages as fields so they are not recreated every build
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = const [
+      ManagerDashboardView(), // Tab 0
+      ManagerActionNeededView(), // Tab 1
+      ReportsCenterView(), // Tab 2
+      TraceabilityCenterScreen(standalone: false), // Tab 3
+      _PlaceholderPage(title: "More (Users/Performance)"), // Tab 4
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<ManagerNavCubit, ManagerNavState>(
       builder: (context, state) {
         return Scaffold(
-          body: pages[state.index],
-
+          // ✅ This keeps pages alive and prevents dispose/recreate
+          body: IndexedStack(index: state.index, children: _pages),
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
               boxShadow: [
@@ -43,20 +54,17 @@ class ManagerMainViewBodyBlocConsumer extends StatelessWidget {
               currentIndex: state.index,
               onTap: (i) => context.read<ManagerNavCubit>().changeTab(i),
               type: BottomNavigationBarType.fixed,
-              selectedItemColor: theme.colorScheme.primary,
+              selectedItemColor: widget.theme.colorScheme.primary,
               unselectedItemColor: Colors.grey,
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.dashboard_rounded),
                   label: "Dashboard",
                 ),
-
-                /// ✅ NEW: Action Needed
                 BottomNavigationBarItem(
                   icon: Icon(Icons.task_alt_rounded),
                   label: "Action Needed",
                 ),
-
                 BottomNavigationBarItem(
                   icon: Icon(Icons.picture_as_pdf_rounded),
                   label: "Reports",

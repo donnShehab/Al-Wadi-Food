@@ -25,4 +25,17 @@ class TraceFallbacks {
     // If no images exist, return null safely.
     return null;
   }
+
+  /// Human friendly time-ago string for manager screens.
+  /// Example: "3m ago", "2h ago", "Yesterday", "5d ago".
+  static String formatTimeAgo(DateTime dateTime) {
+    final now = DateTime.now();
+    final diff = now.difference(dateTime);
+
+    if (diff.inSeconds < 60) return '${diff.inSeconds}s ago';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays == 1) return 'Yesterday';
+    return '${diff.inDays}d ago';
+  }
 }

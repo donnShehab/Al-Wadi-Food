@@ -1,7 +1,11 @@
 import 'package:equatable/equatable.dart';
 
 class TraceSearchResultEntity extends Equatable {
-  final String batchId;
+  /// ✅ Firestore doc.id (used for loading batch doc)
+  final String docId;
+
+  /// ✅ batchId field (used for linking events/qc + displayed to manager)
+  final String batchCode;
 
   final String product;
   final String line;
@@ -11,11 +15,11 @@ class TraceSearchResultEntity extends Equatable {
   final int? quantity;
   final DateTime? createdAt;
 
-  /// A simple indicator for manager UX (0..N)
   final int riskScore;
 
   const TraceSearchResultEntity({
-    required this.batchId,
+    required this.docId,
+    required this.batchCode,
     required this.product,
     required this.line,
     required this.status,
@@ -27,7 +31,8 @@ class TraceSearchResultEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-    batchId,
+    docId,
+    batchCode,
     product,
     line,
     status,

@@ -5,7 +5,9 @@ import 'package:alwadi_food/theme.dart';
 import 'package:flutter/material.dart';
 
 class TraceResultCard extends StatelessWidget {
-  final String batchId;
+  /// ✅ هذا هو المعروض للمدير
+  final String batchCode;
+
   final String product;
   final String line;
   final String status;
@@ -19,7 +21,7 @@ class TraceResultCard extends StatelessWidget {
 
   const TraceResultCard({
     super.key,
-    required this.batchId,
+    required this.batchCode,
     required this.product,
     required this.line,
     required this.status,
@@ -133,7 +135,7 @@ class TraceResultCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "Line: $line • Batch: $batchId",
+                    "Line: $line • Batch: $batchCode",
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: scheme.onSurface.withOpacity(0.65),
                     ),

@@ -5,11 +5,8 @@ class TraceDashboardEntity extends Equatable {
   final int passedCount;
   final int failedCount;
   final int waitingQcCount;
+  final double passRate; // 0..100
 
-  /// 0..100
-  final double passRate;
-
-  /// Latest alerts titles for quick manager glance
   final List<String> latestAlerts;
 
   const TraceDashboardEntity({

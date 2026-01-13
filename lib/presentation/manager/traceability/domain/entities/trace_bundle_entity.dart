@@ -1,37 +1,35 @@
-import 'package:alwadi_food/presentation/manager/traceability/domain/entities/trace_event_entity.dart';
-import 'package:alwadi_food/presentation/production/domain/entities/production_batch_entity.dart';
-import 'package:alwadi_food/presentation/qc/domain/entites/qc_result_entity.dart';
 import 'package:equatable/equatable.dart';
+import 'trace_batch_entity.dart';
+import 'trace_event_entity.dart';
+import 'trace_qc_result_entity.dart';
 
 class TraceBundleEntity extends Equatable {
-  final ProductionBatchEntity batch;
+  final TraceBatchEntity batch;
   final List<TraceEventEntity> events;
-  final List<QCResultEntity> qcResults;
-
-  /// Derived flags for Manager UX
-  final bool isFailed;
-  final bool isWaitingQc;
-  final bool hasQcEvidence;
-  final bool isTimelineEmpty;
+  final List<TraceQcResultEntity> qcResults;
 
   const TraceBundleEntity({
     required this.batch,
     required this.events,
     required this.qcResults,
-    required this.isFailed,
-    required this.isWaitingQc,
-    required this.hasQcEvidence,
-    required this.isTimelineEmpty,
   });
 
+  bool get isFailed => batch.status == 'failed';
+  bool get isWaitingQc => batch.status == 'waiting_qc';
+
+  /// ✅ Add copyWith so cubit can do optimistic updates safely
+  TraceBundleEntity copyWith({
+    TraceBatchEntity? batch,
+    List<TraceEventEntity>? events,
+    List<TraceQcResultEntity>? qcResults,
+  }) {
+    return TraceBundleEntity(
+      batch: batch ?? this.batch,
+      events: events ?? this.events,
+      qcResults: qcResults ?? this.qcResults,
+    );
+  }
+
   @override
-  List<Object?> get props => [
-    batch,
-    events,
-    qcResults,
-    isFailed,
-    isWaitingQc,
-    hasQcEvidence,
-    isTimelineEmpty,
-  ];
+  List<Object?> get props => [batch, events, qcResults];
 }

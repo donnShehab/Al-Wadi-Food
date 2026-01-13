@@ -53,11 +53,24 @@ class _TraceabilitySearchTabState extends State<TraceabilitySearchTab> {
           Expanded(
             child: BlocBuilder<TraceabilityCubit, TraceabilityState>(
               builder: (context, state) {
-                if (state.status == TraceabilityViewStatus.loading ||
-                    state.status == TraceabilityViewStatus.searching) {
+                if (state.status == TraceabilityViewStatus.searching) {
                   return const TraceLoadingState(
                     title: "Searching batches...",
                     subtitle: "Filtering by your query and recent batches.",
+                  );
+                }
+
+                if (state.status == TraceabilityViewStatus.error) {
+                  return TraceEmptyState(
+                    icon: Icons.error_rounded,
+                    title: "Search failed",
+                    subtitle: state.error ?? "Unknown error",
+                    action: OutlinedButton.icon(
+                      onPressed: () =>
+                          context.read<TraceabilityCubit>().search(),
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: const Text("Retry"),
+                    ),
                   );
                 }
 
@@ -65,16 +78,20 @@ class _TraceabilitySearchTabState extends State<TraceabilitySearchTab> {
                   return TraceEmptyState(
                     icon: Icons.search_off_rounded,
                     title: "No results",
-                    subtitle:
-                        "Try searching by Batch ID, Product, or Line.\nTip: leave search empty to browse latest batches.",
+                    subtitle: "Try a different keyword or clear filters.",
                     action: OutlinedButton.icon(
                       onPressed: () {
-                        _controller.clear();
                         context.read<TraceabilityCubit>().updateQuery('');
+                        context.read<TraceabilityCubit>().updateStatusFilter(
+                          'All',
+                        );
+                        context.read<TraceabilityCubit>().updateLineFilter(
+                          'All',
+                        );
                         context.read<TraceabilityCubit>().search();
                       },
-                      icon: const Icon(Icons.refresh_rounded),
-                      label: const Text("Show latest batches"),
+                      icon: const Icon(Icons.clear_all_rounded),
+                      label: const Text("Clear filters"),
                     ),
                   );
                 }
@@ -85,8 +102,9 @@ class _TraceabilitySearchTabState extends State<TraceabilitySearchTab> {
                       const SizedBox(height: AppSpacing.md),
                   itemBuilder: (_, i) {
                     final r = state.results[i];
+
                     return TraceResultCard(
-                      batchId: r.batchId,
+                      batchCode: r.batchCode, // display
                       product: r.product,
                       line: r.line,
                       status: r.status,
@@ -96,9 +114,8 @@ class _TraceabilitySearchTabState extends State<TraceabilitySearchTab> {
                       createdAt: r.createdAt,
                       onTap: () async {
                         await context.read<TraceabilityCubit>().openBatch(
-                          r.batchId,
+                          r.docId,
                         );
-                        // Switch to Timeline tab by notifying DefaultTabController in parent screen
                         DefaultTabController.of(context).animateTo(1);
                       },
                     );
@@ -135,7 +152,6 @@ class _FiltersRow extends StatelessWidget {
         final cubit = context.read<TraceabilityCubit>();
 
         Widget drop({
-          required String label,
           required String value,
           required List<String> items,
           required ValueChanged<String?> onChanged,
@@ -169,7 +185,6 @@ class _FiltersRow extends StatelessWidget {
         return Row(
           children: [
             drop(
-              label: "Status",
               value: state.statusFilter,
               items: const [
                 "All",
@@ -186,7 +201,6 @@ class _FiltersRow extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.md),
             drop(
-              label: "Line",
               value: state.lineFilter,
               items: const ["All", "Line A", "Line B", "Line C"],
               onChanged: (v) {

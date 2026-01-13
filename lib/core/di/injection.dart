@@ -241,13 +241,13 @@ Future<void> setupDependencies() async {
   );
   
   // ================= TRACEABILITY (NEW MODULE) =================
-  getIt.registerLazySingleton(() => TraceabilityFirestoreDataSource(getIt()));
-  getIt.registerLazySingleton<TraceabilityRepository>(() => TraceabilityRepositoryImpl(
-        ds: getIt<TraceabilityFirestoreDataSource>(),
-        productionRepo: getIt(), // uses your existing ProductionRepository
-        qcRepo: getIt(),         // uses your existing QCRepository
-      ));
+getIt.registerLazySingleton(() => TraceabilityFirestoreDataSource(getIt()));
+  getIt.registerLazySingleton<TraceabilityRepository>(
+    () => TraceabilityRepositoryImpl(ds: getIt()),
+  );
+  getIt.registerFactory(
+    () => TraceabilityCubit(getIt<TraceabilityRepository>()),
+  );
 
-  getIt.registerFactory(() => TraceabilityCubit(getIt<TraceabilityRepository>()));
   
 }
