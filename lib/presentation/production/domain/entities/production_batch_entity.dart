@@ -15,12 +15,22 @@ class ProductionBatchEntity extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // ------------------------------
+  // Manager Decision (optional)
+  // ------------------------------
+  /// "approved" | "hold" | "rejected"
+  final String? managerDecisionStatus;
+  final DateTime? managerDecisionAt;
+  final String? managerDecisionById;
+  final String? managerDecisionByName;
+  final String? managerDecisionNote;
+
   const ProductionBatchEntity({
     required this.batchId,
     required this.product,
     required this.quantity,
     required this.startTime,
-     this.endTime,
+    this.endTime,
     required this.line,
     required this.operatorName,
     required this.images,
@@ -29,6 +39,13 @@ class ProductionBatchEntity extends Equatable {
     required this.createdBy,
     required this.createdAt,
     required this.updatedAt,
+
+    // Manager Decision
+    this.managerDecisionStatus,
+    this.managerDecisionAt,
+    this.managerDecisionById,
+    this.managerDecisionByName,
+    this.managerDecisionNote,
   });
 
   ProductionBatchEntity copyWith({
@@ -45,6 +62,12 @@ class ProductionBatchEntity extends Equatable {
     String? createdBy,
     DateTime? createdAt,
     DateTime? updatedAt,
+
+    String? managerDecisionStatus,
+    DateTime? managerDecisionAt,
+    String? managerDecisionById,
+    String? managerDecisionByName,
+    String? managerDecisionNote,
   }) {
     return ProductionBatchEntity(
       batchId: batchId ?? this.batchId,
@@ -60,23 +83,36 @@ class ProductionBatchEntity extends Equatable {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+
+      managerDecisionStatus:
+          managerDecisionStatus ?? this.managerDecisionStatus,
+      managerDecisionAt: managerDecisionAt ?? this.managerDecisionAt,
+      managerDecisionById: managerDecisionById ?? this.managerDecisionById,
+      managerDecisionByName:
+          managerDecisionByName ?? this.managerDecisionByName,
+      managerDecisionNote: managerDecisionNote ?? this.managerDecisionNote,
     );
   }
 
   @override
   List<Object?> get props => [
-        batchId,
-        product,
-        quantity,
-        startTime,
-        endTime,
-        line,
-        operatorName,
-        images,
-        notes,
-        status,
-        createdBy,
-        createdAt,
-        updatedAt,
-      ];
+    batchId,
+    product,
+    quantity,
+    startTime,
+    endTime,
+    line,
+    operatorName,
+    images,
+    notes,
+    status,
+    createdBy,
+    createdAt,
+    updatedAt,
+    managerDecisionStatus,
+    managerDecisionAt,
+    managerDecisionById,
+    managerDecisionByName,
+    managerDecisionNote,
+  ];
 }

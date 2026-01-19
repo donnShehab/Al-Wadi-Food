@@ -1,8 +1,9 @@
+
 import 'package:flutter/material.dart';
 
 class ReportsExportTab extends StatelessWidget {
-  final Future<bool> Function() onExportPdf;
-  final Future<bool> Function() onExportExcel;
+  final VoidCallback onExportPdf;
+  final VoidCallback onExportExcel;
 
   const ReportsExportTab({
     super.key,
@@ -14,76 +15,25 @@ class ReportsExportTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Export Reports",
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          "Generate official reports for management (PDF/Excel).",
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey.shade600,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 24),
-
         _exportCard(
           context,
-          title: "Export PDF (Official Report)",
-          subtitle:
-              "Includes charts + summary + insights. Best for printing & sharing.",
+          title: "Export PDF Report",
+          subtitle: "Summary, charts and insights in one document.",
           icon: Icons.picture_as_pdf_rounded,
-          color: scheme.error,
-          onTap: () async {
-            _snack(context, "Generating PDF...");
-            final ok = await onExportPdf();
-            _snack(
-              context,
-              ok ? "✅ PDF exported successfully" : "❌ Failed",
-              success: ok,
-            );
-          },
+          color: Colors.redAccent,
+          onTap: onExportPdf,
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 18),
         _exportCard(
           context,
-          title: "Export Excel (Data Sheet)",
-          subtitle:
-              "Best for analysis & calculations. Contains all inspections table.",
+          title: "Export Excel Sheet",
+          subtitle: "Full inspection records for analysis.",
           icon: Icons.table_chart_rounded,
-          color: scheme.secondary,
-          onTap: () async {
-            _snack(context, "Generating Excel...");
-            final ok = await onExportExcel();
-            _snack(
-              context,
-              ok ? "✅ Excel exported successfully" : "❌ Failed",
-              success: ok,
-            );
-          },
-        ),
-
-        const SizedBox(height: 22),
-
-        Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: scheme.primary.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: scheme.primary.withOpacity(0.15)),
-          ),
-          child: Text(
-            "💡 Tip: PDF is best for management meetings. Excel is best for QC manager analysis.",
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
-          ),
+          color: Colors.green,
+          onTap: onExportExcel,
         ),
       ],
     );
@@ -97,34 +47,38 @@ class ReportsExportTab extends StatelessWidget {
     required Color color,
     required VoidCallback onTap,
   }) {
+    final scheme = Theme.of(context).colorScheme;
+
     return InkWell(
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(22),
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          color: Theme.of(context).colorScheme.surface,
-          border: Border.all(color: Colors.grey.withOpacity(0.12)),
+          borderRadius: BorderRadius.circular(22),
+          gradient: LinearGradient(
+            colors: [scheme.surface, scheme.surface.withOpacity(0.85)],
+          ),
+          border: Border.all(color: color.withOpacity(0.25)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+              color: color.withOpacity(0.20),
+              blurRadius: 14,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
                 color: color.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(icon, color: color),
+              child: Icon(icon, size: 28, color: color),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 18),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,27 +93,16 @@ class ReportsExportTab extends StatelessWidget {
                   Text(
                     subtitle,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey.shade600,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
+                      color: scheme.onSurface.withOpacity(0.65),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 10),
             const Icon(Icons.arrow_forward_ios_rounded, size: 16),
           ],
         ),
-      ),
-    );
-  }
-
-  void _snack(BuildContext context, String msg, {bool success = true}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        backgroundColor: success ? Colors.green : Colors.red,
-        duration: const Duration(seconds: 2),
       ),
     );
   }

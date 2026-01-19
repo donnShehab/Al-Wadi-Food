@@ -16,6 +16,13 @@ class ProductionBatchModel extends ProductionBatchEntity {
     required super.createdBy,
     required super.createdAt,
     required super.updatedAt,
+
+    // Manager Decision (optional)
+    super.managerDecisionStatus,
+    super.managerDecisionAt,
+    super.managerDecisionById,
+    super.managerDecisionByName,
+    super.managerDecisionNote,
   });
 
   factory ProductionBatchModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +42,15 @@ class ProductionBatchModel extends ProductionBatchEntity {
       createdBy: json['createdBy'] as String,
       createdAt: (json['createdAt'] as Timestamp).toDate(),
       updatedAt: (json['updatedAt'] as Timestamp).toDate(),
+
+      // Manager Decision (optional)
+      managerDecisionStatus: json['managerDecisionStatus'] as String?,
+      managerDecisionAt: json['managerDecisionAt'] == null
+          ? null
+          : (json['managerDecisionAt'] as Timestamp).toDate(),
+      managerDecisionById: json['managerDecisionById'] as String?,
+      managerDecisionByName: json['managerDecisionByName'] as String?,
+      managerDecisionNote: json['managerDecisionNote'] as String?,
     );
   }
 
@@ -53,6 +69,15 @@ class ProductionBatchModel extends ProductionBatchEntity {
       'createdBy': createdBy,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
+
+      // Manager Decision (optional)
+      'managerDecisionStatus': managerDecisionStatus,
+      'managerDecisionAt': managerDecisionAt == null
+          ? null
+          : Timestamp.fromDate(managerDecisionAt!),
+      'managerDecisionById': managerDecisionById,
+      'managerDecisionByName': managerDecisionByName,
+      'managerDecisionNote': managerDecisionNote,
     };
   }
 
@@ -71,6 +96,12 @@ class ProductionBatchModel extends ProductionBatchEntity {
       createdBy: entity.createdBy,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
+
+      managerDecisionStatus: entity.managerDecisionStatus,
+      managerDecisionAt: entity.managerDecisionAt,
+      managerDecisionById: entity.managerDecisionById,
+      managerDecisionByName: entity.managerDecisionByName,
+      managerDecisionNote: entity.managerDecisionNote,
     );
   }
 
@@ -88,6 +119,12 @@ class ProductionBatchModel extends ProductionBatchEntity {
     String? createdBy,
     DateTime? createdAt,
     DateTime? updatedAt,
+
+    String? managerDecisionStatus,
+    DateTime? managerDecisionAt,
+    String? managerDecisionById,
+    String? managerDecisionByName,
+    String? managerDecisionNote,
   }) {
     return ProductionBatchModel(
       batchId: batchId ?? this.batchId,
@@ -103,6 +140,14 @@ class ProductionBatchModel extends ProductionBatchEntity {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+
+      managerDecisionStatus:
+          managerDecisionStatus ?? this.managerDecisionStatus,
+      managerDecisionAt: managerDecisionAt ?? this.managerDecisionAt,
+      managerDecisionById: managerDecisionById ?? this.managerDecisionById,
+      managerDecisionByName:
+          managerDecisionByName ?? this.managerDecisionByName,
+      managerDecisionNote: managerDecisionNote ?? this.managerDecisionNote,
     );
   }
 }

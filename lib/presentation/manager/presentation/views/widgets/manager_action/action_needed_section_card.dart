@@ -20,100 +20,78 @@ class ActionNeededSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasItems = children.isNotEmpty;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// ✅ HEADER
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 18,
-                backgroundColor: color.withOpacity(0.12),
-                child: Icon(icon, color: color, size: 20),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 14,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                  letterSpacing: -0.5,
                 ),
               ),
+            ),
+            if (count > 0)
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
-                  vertical: 5,
+                  vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(999),
+                  color: color,
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   "$count",
-                  style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ],
-          ),
-
-          /// ✅ subtitle
-          if (subtitle.trim().isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Text(
-              subtitle,
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-            ),
           ],
+        ),
+        Text(
+          subtitle,
+          style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+        ),
+        const SizedBox(height: 12),
+        if (children.isEmpty)
+          _buildEmptyState()
+        else
+          Column(children: children),
+      ],
+    );
+  }
 
-          const SizedBox(height: 14),
-
-          /// ✅ EMPTY CASE
-          if (!hasItems)
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.06),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.green.withOpacity(0.15)),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle,
-                    color: Colors.green.shade600,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    "No items ✅",
-                    style: TextStyle(
-                      color: Colors.green.shade700,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          /// ✅ ITEMS CASE (Scrollable if many)
-          else
-            Column(children: children),
+  Widget _buildEmptyState() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.check_circle_outline,
+            color: Colors.green.withOpacity(0.2),
+            size: 40,
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            "Completed",
+            style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );

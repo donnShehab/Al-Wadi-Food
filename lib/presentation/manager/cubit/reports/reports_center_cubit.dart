@@ -11,7 +11,7 @@ class ReportsCenterCubit extends Cubit<ReportsCenterState> {
   final ReportsExcelService excelService;
 
   ReportsCenterCubit(this.ds, this.pdfService, this.excelService)
-      : super(ReportsCenterInitial());
+    : super(ReportsCenterInitial());
 
   ReportsRange _currentRange = ReportsRange.today;
 
@@ -55,7 +55,7 @@ class ReportsCenterCubit extends Cubit<ReportsCenterState> {
   }
 
   // ============================================================
-  // ✅ Export FULL PDF
+  // ✅ OLD / STABLE PDF EXPORT (RESTORED)
   // ============================================================
   Future<bool> exportPdf() async {
     if (state is! ReportsCenterLoaded) return false;
@@ -85,14 +85,13 @@ class ReportsCenterCubit extends Cubit<ReportsCenterState> {
   }
 
   // ============================================================
-  // ✅ Export Excel
+  // ✅ Excel Export (UNCHANGED)
   // ============================================================
   Future<bool> exportExcel() async {
     if (state is! ReportsCenterLoaded) return false;
 
     try {
       final loaded = state as ReportsCenterLoaded;
-
       final inspections = await ds.fetchInspections(loaded.range);
 
       final file = await excelService.generateSummaryExcel(
@@ -101,15 +100,7 @@ class ReportsCenterCubit extends Cubit<ReportsCenterState> {
         inspections: inspections,
       );
 
-      print("✅ Excel saved at: ${file.path}");
-
-      final opened = await excelService.openFile(file);
-
-      if (!opened) {
-        print("⚠️ Excel file generated but could not be opened.");
-      }
-
-      return opened;
+      return await excelService.openFile(file);
     } catch (e) {
       print("❌ Excel export error: $e");
       return false;

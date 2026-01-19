@@ -216,16 +216,38 @@ Future<void> setupDependencies() async {
 
   /// ✅ Resolved Alerts Cubit (History)
   getIt.registerFactory(() => ManagerResolvedAlertsCubit(getIt()));
+
+
+  // add injection for Traceability Feature this is import import 'package:alwadi_food/presentation/manager/traceability/cubit/traceability_cubit.dart';
+// import 'package:alwadi_food/presentation/manager/traceability/data/datasources/traceability_firestore_ds.dart';
+// import 'package:alwadi_food/presentation/manager/traceability/data/repos/traceability_repository_impl.dart';
+// import 'package:alwadi_food/presentation/manager/traceability/domain/repos/traceability_repository.dart';
+
   // ======================
+  // ✅ TRACEABILITY FEATURE
+  // ======================
+
+  // Firestore DS
+  getIt.registerLazySingleton(
+    () => TraceabilityFirestoreDataSource(getIt<FirebaseFirestore>()),
+  );
+
+
+  // Cubit
+  getIt.registerFactory(
+    () => TraceabilityCubit(getIt<TraceabilityRepository>()),
+  );
+
+ // ======================
   // ✅ REPORTS CENTER
   // ======================
 
-  // ✅ Firestore DS
+  // Firestore DS
   getIt.registerLazySingleton(
     () => ReportsCenterFirestoreDataSource(getIt<FirebaseFirestore>()),
   );
 
-  // ✅ PDF Service
+  // ✅ PDF Service (OLD / STABLE)
   getIt.registerLazySingleton(() => ReportsPdfService());
 
   // ✅ Excel Service
@@ -239,15 +261,7 @@ Future<void> setupDependencies() async {
       getIt<ReportsExcelService>(),
     ),
   );
-  
-  // ================= TRACEABILITY (NEW MODULE) =================
-getIt.registerLazySingleton(() => TraceabilityFirestoreDataSource(getIt()));
-  getIt.registerLazySingleton<TraceabilityRepository>(
-    () => TraceabilityRepositoryImpl(ds: getIt()),
-  );
-  getIt.registerFactory(
-    () => TraceabilityCubit(getIt<TraceabilityRepository>()),
-  );
+
 
   
 }

@@ -1,5 +1,8 @@
+import 'package:alwadi_food/presentation/animations/pressable_card.dart';
+import 'package:alwadi_food/presentation/animations/staggered_fade_slide_item.dart';
 import 'package:flutter/material.dart';
 import 'package:alwadi_food/presentation/manager/domain/entities/reports_line_comparison_entity.dart';
+
 
 enum PassRateSortType { passRate, highRisk, total }
 
@@ -24,12 +27,10 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
 
     final scheme = Theme.of(context).colorScheme;
 
-    // ✅ Filter by search query
     final filtered = widget.lines
         .where((l) => l.lineName.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    // ✅ Sort logic
     filtered.sort((a, b) {
       switch (sortType) {
         case PassRateSortType.passRate:
@@ -41,34 +42,32 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
       }
     });
 
-    if (filtered.isEmpty) {
-      return _emptyState(context);
-    }
+    if (filtered.isEmpty) return _emptyState(context);
 
     final best = filtered.first;
     final worst = filtered.last;
-
-    // ✅ default show top 8 unless expanded
     final visible = expanded ? filtered : filtered.take(8).toList();
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         color: scheme.surface,
-        border: Border.all(color: scheme.outline.withOpacity(0.12)),
+        border: Border.all(color: scheme.outline.withOpacity(0.14)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ HEADER
+          // =====================================================
+          // HEADER
+          // =====================================================
           Row(
             children: [
               Icon(Icons.bar_chart_rounded, color: scheme.primary, size: 22),
@@ -81,12 +80,12 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                 ),
               ),
-
-              // ✅ Sort dropdown
               _sortDropdown(context),
             ],
           ),
+
           const SizedBox(height: 6),
+
           Text(
             "Corporate ranking overview for production line performance.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -97,49 +96,42 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
 
           const SizedBox(height: 14),
 
-          // ✅ SEARCH BAR
           _searchBar(context),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
 
-          // ✅ LIST VIEW (Virtualized)
+          // =====================================================
+          // LIST (ANIMATED ENTRIES)
+          // =====================================================
           SizedBox(
-            height: expanded ? 520 : 420, // ✅ controlled height
+            height: expanded ? 520 : 420,
             child: ListView.builder(
-              itemCount: visible.length,
               physics: const BouncingScrollPhysics(),
+              itemCount: visible.length,
               itemBuilder: (context, index) {
                 final l = visible[index];
-                final rank = index + 1;
-
                 final isBest = l.lineName == best.lineName;
                 final isWorst = l.lineName == worst.lineName;
 
-                final percent = (l.passRate.clamp(0, 100)) / 100;
-
-                final barColor = _smartColor(
-                  scheme,
-                  l.passRate,
-                  isBest: isBest,
-                  isWorst: isWorst,
-                );
-
-                return _lineCard(
-                  context,
-                  line: l,
-                  rank: rank,
-                  isBest: isBest,
-                  isWorst: isWorst,
-                  percent: percent,
-                  barColor: barColor,
+                return StaggeredSlideFade(
+                  index: index,
+                  delay: Duration(milliseconds: index * 70),
+                  child: PressableScale(
+                    child: _lineCard(
+                      context,
+                      line: l,
+                      rank: index + 1,
+                      isBest: isBest,
+                      isWorst: isWorst,
+                    ),
+                  ),
                 );
               },
             ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
 
-          // ✅ Expand / Collapse Button
           if (filtered.length > 8)
             Align(
               alignment: Alignment.centerRight,
@@ -161,9 +153,8 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
               ),
             ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
 
-          // ✅ Footer insight
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
@@ -180,7 +171,6 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
                     "Tip: Improve the WORST line first — it raises overall factory performance quickly.",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: scheme.onSurface,
                     ),
                   ),
                 ),
@@ -192,97 +182,28 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
     );
   }
 
-  // ============================================================
-  // ✅ Sort Dropdown
-  // ============================================================
-  Widget _sortDropdown(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: scheme.surfaceContainerHighest.withOpacity(0.35),
-        border: Border.all(color: scheme.outline.withOpacity(0.12)),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<PassRateSortType>(
-          value: sortType,
-          icon: Icon(Icons.keyboard_arrow_down_rounded, color: scheme.primary),
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: scheme.onSurface,
-          ),
-          onChanged: (v) => setState(() => sortType = v!),
-          items: const [
-            DropdownMenuItem(
-              value: PassRateSortType.passRate,
-              child: Text("Pass Rate"),
-            ),
-            DropdownMenuItem(
-              value: PassRateSortType.highRisk,
-              child: Text("High Risk"),
-            ),
-            DropdownMenuItem(
-              value: PassRateSortType.total,
-              child: Text("Total"),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // ✅ Search Bar
-  // ============================================================
-  Widget _searchBar(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return TextField(
-      onChanged: (v) => setState(() => query = v),
-      style: Theme.of(
-        context,
-      ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
-      decoration: InputDecoration(
-        hintText: "Search line...",
-        hintStyle: TextStyle(color: scheme.onSurface.withOpacity(0.5)),
-        prefixIcon: Icon(Icons.search_rounded, color: scheme.primary),
-        filled: true,
-        fillColor: scheme.surfaceContainerHighest.withOpacity(0.25),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide(color: scheme.outline.withOpacity(0.12)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide(color: scheme.outline.withOpacity(0.12)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide(color: scheme.primary.withOpacity(0.35)),
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // ✅ Line Card
-  // ============================================================
+  // =========================================================
+  // LINE CARD (Animated Progress)
+  // =========================================================
   Widget _lineCard(
     BuildContext context, {
     required ReportsLineComparisonEntity line,
     required int rank,
     required bool isBest,
     required bool isWorst,
-    required double percent,
-    required Color barColor,
   }) {
     final scheme = Theme.of(context).colorScheme;
+    final percent = (line.passRate.clamp(0, 100)) / 100;
+    final barColor = _smartColor(
+      scheme,
+      line.passRate,
+      isBest: isBest,
+      isWorst: isWorst,
+    );
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: isBest
@@ -296,19 +217,15 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
       ),
       child: Column(
         children: [
-          // ✅ Title Row
           Row(
             children: [
               _rankBadge(rank, scheme),
               const SizedBox(width: 8),
-
               if (isBest) _tag("BEST", Colors.green),
               if (isWorst) _tag("WORST", Colors.redAccent),
               if (line.highRisk >= 5 && !isBest && !isWorst)
                 _tag("RISK", Colors.orange),
-              if (isBest || isWorst || line.highRisk >= 5)
-                const SizedBox(width: 8),
-
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   line.lineName,
@@ -330,20 +247,28 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
 
           const SizedBox(height: 12),
 
-          // ✅ Progress bar
-          ClipRRect(
-            borderRadius: BorderRadius.circular(999),
-            child: LinearProgressIndicator(
-              value: percent,
-              minHeight: 12,
-              backgroundColor: scheme.surfaceContainerHighest.withOpacity(0.45),
-              valueColor: AlwaysStoppedAnimation<Color>(barColor),
-            ),
+          // ✅ Animated progress
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: percent),
+            duration: const Duration(milliseconds: 850),
+            curve: Curves.easeOutCubic,
+            builder: (context, v, _) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(999),
+                child: LinearProgressIndicator(
+                  value: v,
+                  minHeight: 12,
+                  backgroundColor: scheme.surfaceContainerHighest.withOpacity(
+                    0.45,
+                  ),
+                  valueColor: AlwaysStoppedAnimation<Color>(barColor),
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 10),
 
-          // ✅ Stats row
           Row(
             children: [
               _miniInfo(
@@ -367,9 +292,9 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
     );
   }
 
-  // ============================================================
-  // ✅ Rank Badge
-  // ============================================================
+  // =========================================================
+  // HELPERS
+  // =========================================================
   Widget _rankBadge(int rank, ColorScheme scheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -389,26 +314,6 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
     );
   }
 
-  // ============================================================
-  // ✅ Smart Color Mapping
-  // ============================================================
-  Color _smartColor(
-    ColorScheme scheme,
-    double passRate, {
-    required bool isBest,
-    required bool isWorst,
-  }) {
-    if (isBest) return Colors.green;
-    if (isWorst) return Colors.redAccent;
-
-    if (passRate >= 90) return Colors.green;
-    if (passRate >= 70) return scheme.secondary;
-    return Colors.redAccent;
-  }
-
-  // ============================================================
-  // ✅ Tag
-  // ============================================================
   Widget _tag(String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -428,9 +333,19 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
     );
   }
 
-  // ============================================================
-  // ✅ Mini Info Row
-  // ============================================================
+  Color _smartColor(
+    ColorScheme scheme,
+    double passRate, {
+    required bool isBest,
+    required bool isWorst,
+  }) {
+    if (isBest) return Colors.green;
+    if (isWorst) return Colors.redAccent;
+    if (passRate >= 90) return Colors.green;
+    if (passRate >= 70) return scheme.secondary;
+    return Colors.redAccent;
+  }
+
   Widget _miniInfo(
     BuildContext context, {
     required String label,
@@ -465,17 +380,66 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
     );
   }
 
-  // ============================================================
-  // ✅ Empty state
-  // ============================================================
+  Widget _searchBar(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return TextField(
+      onChanged: (v) => setState(() => query = v),
+      decoration: InputDecoration(
+        hintText: "Search line...",
+        prefixIcon: Icon(Icons.search_rounded, color: scheme.primary),
+        filled: true,
+        fillColor: scheme.surfaceContainerHighest.withOpacity(0.25),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: scheme.outline.withOpacity(0.12)),
+        ),
+      ),
+    );
+  }
+
+  Widget _sortDropdown(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: scheme.surfaceContainerHighest.withOpacity(0.35),
+        border: Border.all(color: scheme.outline.withOpacity(0.12)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<PassRateSortType>(
+          value: sortType,
+          onChanged: (v) => setState(() => sortType = v!),
+          items: const [
+            DropdownMenuItem(
+              value: PassRateSortType.passRate,
+              child: Text("Pass Rate"),
+            ),
+            DropdownMenuItem(
+              value: PassRateSortType.highRisk,
+              child: Text("High Risk"),
+            ),
+            DropdownMenuItem(
+              value: PassRateSortType.total,
+              child: Text("Total"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _emptyState(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
         color: scheme.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: scheme.outline.withOpacity(0.12)),
+        border: Border.all(color: scheme.outline.withOpacity(0.14)),
       ),
       child: Row(
         children: [

@@ -1,12 +1,16 @@
 import 'package:alwadi_food/presentation/auth/data/services/manager_dashboard_firestore_ds.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'manager_action_needed_state.dart';
 
 class ManagerActionNeededCubit extends Cubit<ManagerActionNeededState> {
   final ManagerDashboardFirestoreDataSource ds;
 
+  static final ValueNotifier<int> pendingCountNotifier = ValueNotifier<int>(0);
+
   ManagerActionNeededCubit(this.ds) : super(ManagerActionNeededInitial());
 
+  // ✅ تحميل البيانات وإصلاح خطأ الـ lastUpdated
   Future<void> loadActionNeeded() async {
     emit(ManagerActionNeededLoading());
     try {
@@ -14,47 +18,24 @@ class ManagerActionNeededCubit extends Cubit<ManagerActionNeededState> {
       final pending = await ds.fetchPendingBatches();
       final failed = await ds.fetchFailedInspectionsToday();
 
+      pendingCountNotifier.value =
+          highRisk.length + pending.length + failed.length;
+
       emit(
         ManagerActionNeededLoaded(
           highRiskAlerts: highRisk,
           pendingBatches: pending,
           failedInspections: failed,
+          lastUpdated: DateTime.now(),
         ),
       );
     } catch (e) {
-      print("❌ Action center error: $e");
-      emit(ManagerActionNeededError("Failed to load action center: $e"));
+      emit(ManagerActionNeededError(e.toString()));
     }
   }
 
-  /// ✅ NEW: Fetch QC users list
-  Future<List<Map<String, dynamic>>> fetchQcUsers() async {
-    try {
-      return await ds.fetchQcUsers();
-    } catch (e) {
-      print("❌ Fetch QC users failed: $e");
-      return [];
-    }
-  }
-
-  // ✅ Remove item locally instantly (UI)
-  void removeHighRiskItem(String inspectionId) {
-    if (state is! ManagerActionNeededLoaded) return;
-    final current = state as ManagerActionNeededLoaded;
-
-    final updated = current.highRiskAlerts
-        .where((i) => (i["id"] ?? "").toString() != inspectionId)
-        .toList();
-
-    emit(
-      ManagerActionNeededLoaded(
-        highRiskAlerts: updated,
-        pendingBatches: current.pendingBatches,
-        failedInspections: current.failedInspections,
-      ),
-    );
-  }
-Future<bool> resolveAlert({
+  // ✅ حل التنبيه (Resolve)
+  Future<bool> resolveAlert({
     required String inspectionId,
     required String managerId,
     required String managerName,
@@ -67,18 +48,20 @@ Future<bool> resolveAlert({
         managerName: managerName,
         note: note,
       );
-
       await loadActionNeeded();
       return true;
     } catch (e) {
-      print("❌ Resolve failed: $e");
       return false;
     }
   }
 
+  // ✅ جلب مستخدمي الـ QC
+  Future<List<Map<String, dynamic>>> fetchQcUsers() async {
+    return await ds.fetchQcUsers();
+  }
 
-
-  Future<bool> assignQc({
+  // ✅ تعيين موظف QC
+  Future<void> assignQc({
     required String inspectionId,
     required String qcId,
     required String qcName,
@@ -90,10 +73,8 @@ Future<bool> resolveAlert({
         qcName: qcName,
       );
       await loadActionNeeded();
-      return true;
     } catch (e) {
-      print("❌ Assign QC failed: $e");
-      return false;
+      debugPrint("Error assigning QC: $e");
     }
   }
 }
