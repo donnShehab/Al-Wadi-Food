@@ -1,9 +1,12 @@
+import 'package:alwadi_food/core/di/injection.dart';
 import 'package:alwadi_food/presentation/manager/cubit/manager_nav/manager_nav_cubit.dart';
 import 'package:alwadi_food/presentation/manager/cubit/manager_nav/manager_nav_state.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/manager_dashboard_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_action/manager_action_needed_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/reports/reports_center_view.dart';
+import 'package:alwadi_food/presentation/manager/traceability/cubit/traceability_cubit.dart';
 import 'package:alwadi_food/presentation/manager/traceability/presentation/screens/traceability_center_screen.dart';
+import 'package:alwadi_food/presentation/manager/traceability_v3/presentation/views/traceability_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,11 +27,11 @@ class _ManagerMainViewBodyBlocConsumerState
   @override
   void initState() {
     super.initState();
-    _pages = const [
+    _pages = [
       ManagerDashboardView(), // Tab 0
       ManagerActionNeededView(), // Tab 1
       ReportsCenterView(), // Tab 2
-      TraceabilityCenterScreen(standalone: false), // Tab 3
+      TraceabilityView(rootNodeId: ''),//Tab 3
       _PlaceholderPage(title: "More (Users/Performance)"), // Tab 4
     ];
   }

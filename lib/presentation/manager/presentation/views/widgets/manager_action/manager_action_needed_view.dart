@@ -42,9 +42,9 @@ class ManagerActionNeededView extends StatelessWidget {
             }
 
             return ManagerActionNeededViewBody(
-              lastUpdated: lastUpdated,
-              onRefreshTap: () =>
-                  context.read<ManagerActionNeededCubit>().loadActionNeeded(),
+              // lastUpdated: lastUpdated,
+              // onRefreshTap: () =>
+              //     context.read<ManagerActionNeededCubit>().loadActionNeeded(),
             );
           },
         ),

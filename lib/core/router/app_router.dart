@@ -1,3 +1,4 @@
+import 'package:alwadi_food/core/di/injection.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/manager_dashboard_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/manager_high_risk_alerts_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/manager_inspections_today_view.dart';
@@ -8,7 +9,9 @@ import 'package:alwadi_food/presentation/manager/presentation/views/widgets/mana
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_dashboard/manager_filtered_inspections_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_dashboard/worst_line_today_view.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/manager_resolved_history/manager_resolved_alerts_history_view.dart';
+import 'package:alwadi_food/presentation/manager/traceability/cubit/traceability_cubit.dart';
 import 'package:alwadi_food/presentation/manager/traceability/presentation/screens/traceability_center_screen.dart';
+import 'package:alwadi_food/presentation/manager/traceability_v3/presentation/views/traceability_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_command_center_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_dashboard_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_pending_list_view.dart';
@@ -16,6 +19,7 @@ import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_detail
 import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_history/qc_history_view.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/qc_inspection_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 /// ---------- AUTH ----------
@@ -67,6 +71,7 @@ static const String KManagerActionNeededView = "/manager/action-needed";
 static const String KManagerBatchDetailsView = "/manager/batch-details";
 static const KManagerResolvedAlertsHistoryView = "/resolved-alerts-history";
 static const String KTraceabilityCenterView = "/traceability-center-view";
+static const String KTraceabilityView = "/traceability-view";
   // ================= ROUTER =================
   static final GoRouter router = GoRouter(
     initialLocation: KsplashView,
@@ -247,15 +252,24 @@ GoRoute(
       //   pageBuilder: (context, state) =>
       //       fadeUp(state, const TraceabilityCenterView()),
       // ),
-      GoRoute(
-        path: KTraceabilityCenterView,
-        pageBuilder: (context, state) {
-          // Optional deep-link: /traceability-center-view?batchId=xxx
-          final batchId = state.uri.queryParameters['batchId'];
-          return fadeUp(
-            state,
-            TraceabilityCenterScreen(initialBatchId: batchId, standalone: true),
-          );
+      // GoRoute(
+      //   path: KTraceabilityCenterView,
+      //   pageBuilder: (context, state) {
+      //     // Optional deep-link: /traceability-center-view?batchId=xxx
+      //     final batchId = state.uri.queryParameters['batchId'];
+      //     return fadeUp(
+      //       state,
+      //       TraceabilityCenterScreen(initialBatchId: batchId, standalone: true),
+      //     );
+      //   },
+      // ),
+    GoRoute(
+        path: KTraceabilityView,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          final rootNodeId = extra['rootNodeId'] as String;
+          // ✅ نرسل الـ Widget فقط، وهو سيتكفل بالباقي
+          return TraceabilityView(rootNodeId: rootNodeId);
         },
       ),
     ],
