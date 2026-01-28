@@ -17,8 +17,8 @@ class QCAssignSelectorDialog {
           builder: (ctx, setState) {
             void filter(String query) {
               final q = query.toLowerCase().trim();
-              setState(() {
-                filtered = qcUsers.where((u) {
+            setState(() {
+              filtered = qcUsers.where((u) {
                   final name = (u["name"] ?? "").toString().toLowerCase();
                   return name.contains(q);
                 }).toList();

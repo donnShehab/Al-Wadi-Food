@@ -244,69 +244,72 @@ class ManagerDashboardFirestoreDataSource {
   Future<List<Map<String, dynamic>>> fetchProductionTodayList() async {
     return fetchTodayBatches();
   }
+// ============================================================
+// ✅ High Risk Alerts (historical, unresolved only)
+// ============================================================
+Future<List<Map<String, dynamic>>> fetchHighRiskAlertsToday({
+  int limit = 50,
+}) async {
+  final snap = await firestore
+      .collection(AppConstants.qcResultsCollection)
+      // ✅ Removed "today" filters (historical)
+      .where("riskResolved", isEqualTo: false)
+      .orderBy("createdAt", descending: true)
+      .limit(limit)
+      .get();
 
+  final list = snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
+
+  // ✅ High risk rule (same logic as dashboard)
+  final highRisk = list.where((i) {
+    final temp = (i["temperature"] ?? 0);
+    final moisture = (i["moisture"] ?? 0);
+
+    final t = (temp is num) ? temp.toDouble() : double.tryParse("$temp") ?? 0.0;
+    final m = (moisture is num)
+        ? moisture.toDouble()
+        : double.tryParse("$moisture") ?? 0.0;
+
+    return t > 10 || m > 15;
+  }).toList();
+
+  return _enrichInspectionsWithBatchData(highRisk);
+}
+// ==============================
+  // ✅ Pending / Waiting QC Batches (historical)
   // ============================================================
-  // ✅ High Risk Alerts Today (UNRESOLVED ONLY)
-  // ============================================================
-  Future<List<Map<String, dynamic>>> fetchHighRiskAlertsToday() async {
-    final today = DateTime.now();
-    final start = DateTime(today.year, today.month, today.day);
-    final end = start.add(const Duration(days: 1));
-
-    final snap = await firestore
-        .collection(AppConstants.qcResultsCollection)
-        .where("createdAt", isGreaterThanOrEqualTo: Timestamp.fromDate(start))
-        .where("createdAt", isLessThan: Timestamp.fromDate(end))
-        .where("riskResolved", isEqualTo: false)
-        .orderBy("createdAt", descending: true)
-        .get();
-
-    final data = snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
-
-    return data.where((i) {
-      final temp = (i["temperature"] ?? 0).toDouble();
-      final moisture = (i["moisture"] ?? 0).toDouble();
-      return temp > 10 || moisture > 15;
-    }).toList();
-  }
-
-  // ============================================================
-  // ✅ Pending QC
-  // ============================================================
-  Future<List<Map<String, dynamic>>> fetchPendingBatches() async {
+  Future<List<Map<String, dynamic>>> fetchPendingBatches({
+    int limit = 50,
+  }) async {
     final snap = await firestore
         .collection(AppConstants.batchesCollection)
         .where("status", isEqualTo: AppConstants.statusWaitingQC)
         .orderBy("startTime", descending: true)
+        .limit(limit)
         .get();
 
     return snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
   }
 
+  //// ============================================================
+  // ✅ Failed Inspections (historical, unresolved only)
   // ============================================================
-  // ✅ Failed Inspections Today (UNRESOLVED ONLY)
-  // ============================================================
-  Future<List<Map<String, dynamic>>> fetchFailedInspectionsToday() async {
-    final today = DateTime.now();
-    final start = DateTime(today.year, today.month, today.day);
-    final end = start.add(const Duration(days: 1));
-
+    Future<List<Map<String, dynamic>>> fetchFailedInspectionsToday({
+    int limit = 50,
+  }) async {
     final snap = await firestore
         .collection(AppConstants.qcResultsCollection)
-        .where("createdAt", isGreaterThanOrEqualTo: Timestamp.fromDate(start))
-        .where("createdAt", isLessThan: Timestamp.fromDate(end))
-        .where("riskResolved", isEqualTo: false)
+        // ✅ Removed "today" filters
+        .where("result", isEqualTo: AppConstants.qcResultFail)
         .orderBy("createdAt", descending: true)
+        .limit(limit)
         .get();
 
-    final data = snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
-
-    return data.where((i) {
-      final result = (i["result"] ?? "").toString();
-      return result == AppConstants.qcResultFail;
-    }).toList();
+    final inspections = snap.docs
+        .map((d) => {"id": d.id, ...d.data()})
+        .toList();
+    return _enrichInspectionsWithBatchData(inspections);
   }
-
   // ============================================================
   // ✅ Resolve Alert (WITH NOTE + MANAGER NAME)
   // ============================================================
@@ -321,11 +324,8 @@ class ManagerDashboardFirestoreDataSource {
         .doc(inspectionId)
         .update({
           "riskResolved": true,
-
-          // ✅ Save both
           "resolvedById": managerId,
           "resolvedByName": managerName,
-
           "resolvedAt": Timestamp.now(),
           "resolveNote": note ?? "",
           "updatedAt": Timestamp.now(),
@@ -333,11 +333,10 @@ class ManagerDashboardFirestoreDataSource {
   }
 
 
-
    // ============================================================
   // ✅ Assign QC User
   // ============================================================
-  Future<void> assignQcToAlert({
+ Future<void> assignQcToAlert({
     required String inspectionId,
     required String qcId,
     required String qcName,
@@ -355,7 +354,7 @@ class ManagerDashboardFirestoreDataSource {
    // ============================================================
   // ✅ NEW: Fetch QC Users List (role == qc)
   // ============================================================
-  Future<List<Map<String, dynamic>>> fetchQcUsers() async {
+ Future<List<Map<String, dynamic>>> fetchQcUsers() async {
     final snap = await firestore
         .collection(AppConstants.usersCollection)
         .where("role", isEqualTo: "qc")
@@ -380,6 +379,81 @@ class ManagerDashboardFirestoreDataSource {
       final temp = (i["temperature"] ?? 0).toDouble();
       final moisture = (i["moisture"] ?? 0).toDouble();
       return temp > 10 || moisture > 15;
+    }).toList();
+  }
+   // ============================================================
+  // ✅ Approved / Passed Batches (historical)
+  // ============================================================
+ Future<List<Map<String, dynamic>>> fetchApprovedBatches({
+    int limit = 50,
+  }) async {
+    final snap = await firestore
+        .collection(AppConstants.batchesCollection)
+        .where("status", isEqualTo: AppConstants.statusPassed)
+        .orderBy("startTime", descending: true)
+        .limit(limit)
+        .get();
+
+    return snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
+  }
+
+
+  // ============================================================
+  // ✅ Blocked / Archived Batches (historical)
+  // ============================================================
+  Future<List<Map<String, dynamic>>> fetchBlockedBatches({
+    int limit = 50,
+  }) async {
+    final snap = await firestore
+        .collection(AppConstants.batchesCollection)
+        .where("status", isEqualTo: AppConstants.statusBlocked)
+        .orderBy("startTime", descending: true)
+        .limit(limit)
+        .get();
+
+    return snap.docs.map((d) => {"id": d.id, ...d.data()}).toList();
+  }
+  Future<List<Map<String, dynamic>>> _enrichInspectionsWithBatchData(
+    List<Map<String, dynamic>> inspections,
+  ) async {
+    final batchIds = <String>{};
+    for (final i in inspections) {
+      final bid = (i["batchId"] ?? "").toString().trim();
+      if (bid.isNotEmpty) batchIds.add(bid);
+    }
+
+    final batchDocs = <String, Map<String, dynamic>>{};
+    await Future.wait(
+      batchIds.map((bid) async {
+        final snap = await firestore
+            .collection(AppConstants.batchesCollection)
+            .doc(bid)
+            .get();
+        if (snap.exists && snap.data() != null) {
+          batchDocs[bid] = snap.data()!;
+        }
+      }),
+    );
+
+    return inspections.map((i) {
+      final bid = (i["batchId"] ?? "").toString().trim();
+      final b = batchDocs[bid];
+
+      // Merge batch fields to inspection item (so UI has imageUrl/product/line)
+      return {
+        ...i,
+        "batchId": bid,
+        if (b != null) ...{
+          "product": b["product"],
+          "productType": b["productType"],
+          "line": b["line"],
+          "productionLine": b["productionLine"],
+          "imageUrl": b["imageUrl"], // ✅ key fix for failed images
+          "quantity": b["quantity"],
+          "startTime": b["startTime"],
+          "status": b["status"], // optional
+        },
+      };
     }).toList();
   }
 

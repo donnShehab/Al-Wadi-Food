@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'manager_action_needed_state.dart';
 
+// ✅ Use the new DataSource file (recommended)
+
 class ManagerActionNeededCubit extends Cubit<ManagerActionNeededState> {
   final ManagerDashboardFirestoreDataSource ds;
 
@@ -10,31 +12,35 @@ class ManagerActionNeededCubit extends Cubit<ManagerActionNeededState> {
 
   ManagerActionNeededCubit(this.ds) : super(ManagerActionNeededInitial());
 
-  // ✅ تحميل البيانات وإصلاح خطأ الـ lastUpdated
-  Future<void> loadActionNeeded() async {
+  Future<void> loadActionNeeded({int limit = 100}) async {
     emit(ManagerActionNeededLoading());
     try {
-      final highRisk = await ds.fetchHighRiskAlertsToday();
-      final pending = await ds.fetchPendingBatches();
-      final failed = await ds.fetchFailedInspectionsToday();
+      final results = await Future.wait([
+        ds.fetchPendingBatches(limit: limit),
+        ds.fetchFailedInspectionsToday(limit: limit),
+        ds.fetchApprovedBatches(limit: limit),
+        ds.fetchBlockedBatches(limit: limit),
+        ds.fetchHighRiskAlertsToday(limit: limit),
+      ]);
 
-      pendingCountNotifier.value =
-          highRisk.length + pending.length + failed.length;
-
-      emit(
-        ManagerActionNeededLoaded(
-          highRiskAlerts: highRisk,
-          pendingBatches: pending,
-          failedInspections: failed,
-          lastUpdated: DateTime.now(),
-        ),
+      final loaded = ManagerActionNeededLoaded(
+        lastUpdated: DateTime.now(),
+        pendingBatches: results[0] as List<Map<String, dynamic>>,
+        failedInspections: results[1] as List<Map<String, dynamic>>,
+        approvedBatches: results[2] as List<Map<String, dynamic>>,
+        blockedBatches: results[3] as List<Map<String, dynamic>>,
+        highRiskAlerts: results[4] as List<Map<String, dynamic>>,
       );
+
+      pendingCountNotifier.value = loaded.pendingCount;
+
+      emit(loaded);
     } catch (e) {
       emit(ManagerActionNeededError(e.toString()));
     }
   }
 
-  // ✅ حل التنبيه (Resolve)
+  // ✅ Resolve Alert
   Future<bool> resolveAlert({
     required String inspectionId,
     required String managerId,
@@ -50,17 +56,17 @@ class ManagerActionNeededCubit extends Cubit<ManagerActionNeededState> {
       );
       await loadActionNeeded();
       return true;
-    } catch (e) {
+    } catch (_) {
       return false;
     }
   }
 
-  // ✅ جلب مستخدمي الـ QC
+  // ✅ Fetch QC Users
   Future<List<Map<String, dynamic>>> fetchQcUsers() async {
     return await ds.fetchQcUsers();
   }
 
-  // ✅ تعيين موظف QC
+  // ✅ Assign QC
   Future<void> assignQc({
     required String inspectionId,
     required String qcId,

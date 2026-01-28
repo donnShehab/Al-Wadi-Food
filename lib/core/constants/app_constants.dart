@@ -9,7 +9,7 @@ class AppConstants {
   static const String statusWaitingQC = 'waiting_qc';
   static const String statusPassed = 'passed';
   static const String statusFailed = 'failed';
-
+    static const String statusBlocked = 'blocked';
   // QC Result
   static const String qcResultPass = 'pass';
   static const String qcResultFail = 'fail';

@@ -163,6 +163,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_State.dart';
+import 'package:lottie/lottie.dart';
 
 import '../cubit/traceability_cubit.dart';
 import '../cubit/traceability_state.dart';
@@ -323,6 +324,7 @@ class _TraceabilityViewState extends State<TraceabilityView> {
       ),
     );
   }
+  
 }
 
 class _TraceabilityBatchPicker extends StatelessWidget {
@@ -339,4 +341,34 @@ class _TraceabilityBatchPicker extends StatelessWidget {
       ),
     );
   }
+}
+
+void _showSuccess(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (_) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 140,
+            child: Lottie.asset('assets/lottie/success_check.json'),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            "Recall Executed",
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            "Batch status updated and audit logged.",
+            style: TextStyle(color: Colors.grey.shade700, fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ),
+  );
 }
