@@ -2,6 +2,10 @@
 class Assets {
   Assets._();
   
+  /// Assets for imagesAlwadiLogo
+  /// assets/images/alwadi_logo.png
+  static const String imagesAlwadiLogo = "assets/images/alwadi_logo.png";
+
   /// Assets for imagesAlwadiText
   /// assets/images/alwadi-text.jpg
   static const String imagesAlwadiText = "assets/images/alwadi-text.jpg";
@@ -25,10 +29,6 @@ class Assets {
   /// Assets for imagesIconTrue
   /// assets/images/icon_true.svg
   static const String imagesIconTrue = "assets/images/icon_true.svg";
-
-  /// Assets for imagesLogoAlwadi
-  /// assets/images/logo-alwadi.png
-  static const String imagesLogoAlwadi = "assets/images/logo-alwadi.png";
 
   /// Assets for imagesOnBoardingPageThree
   /// assets/images/on_boarding_page_three.png

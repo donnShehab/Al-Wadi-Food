@@ -2,6 +2,7 @@ import 'package:alwadi_food/core/di/injection.dart';
 import 'package:alwadi_food/core/localization/app_localizations.dart';
 import 'package:alwadi_food/core/migrations/qc_results_migration.dart';
 import 'package:alwadi_food/core/router/app_router.dart';
+import 'package:alwadi_food/presentation/auth/cubit/auth_State.dart';
 import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
 import 'package:alwadi_food/presentation/home/cubit/home_cubit.dart';
 import 'package:alwadi_food/presentation/qc/cubit/qc_cubit.dart';
@@ -19,47 +20,64 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await setupDependencies();
-    await QcResultsMigration(FirebaseFirestore.instance).runMigration();
+
+  // ❌ ممنوع تشغيل migration هنا
+  // await QcResultsMigration(FirebaseFirestore.instance).runMigration();
 
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _migrationStarted = false;
+
+  void _maybeRunMigration(AuthState state) {
+    if (_migrationStarted) return;
+
+    if (state is AuthSuccess) {
+      _migrationStarted = true;
+
+      // ✅ شغّلها بدون ما توقف الـ UI
+      QcResultsMigration(FirebaseFirestore.instance).runMigrationSafe();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<HomeCubit>(create: (_) => getIt<HomeCubit>()),
-
         BlocProvider<AuthCubit>(
           create: (_) => getIt<AuthCubit>()..checkAuthStatus(),
         ),
-        // BlocProvider<QCDashboardCubit>(
-        //   create: (_) => getIt<QCDashboardCubit>()..loadDashboard(),
-        // ),
-        BlocProvider(create: (_) => getIt<QCCubit>()..loadQCDashboard()),
-  
+        BlocProvider(create: (_) => getIt<QCCubit>()),
         BlocProvider<AppSettingsCubit>(
           create: (_) => getIt<AppSettingsCubit>()..load(),
         ),
       ],
-      child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
-        builder: (context, state) {
-          return MaterialApp.router(
-            title: 'AlWadi Smart Factory',
-            debugShowCheckedModeBanner: false,
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: state.themeMode,
-            locale: state.locale,
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [AppLocalizations.delegate],
-
-            routerConfig: AppRouter.router,
-          );
-        },
+      child: BlocListener<AuthCubit, AuthState>(
+        listener: (context, state) => _maybeRunMigration(state),
+        child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
+          builder: (context, state) {
+            return MaterialApp.router(
+              title: 'AlWadi Smart Factory',
+              debugShowCheckedModeBanner: false,
+              theme: lightTheme,
+              darkTheme: darkTheme,
+              themeMode: state.themeMode,
+              locale: state.locale,
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: const [AppLocalizations.delegate],
+              routerConfig: AppRouter.router,
+            );
+          },
+        ),
       ),
     );
   }

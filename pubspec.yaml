@@ -48,7 +48,6 @@ dependencies:
   flutter_staggered_animations: ^1.1.1
   font_awesome_flutter: ^10.9.1
   lottie: ^3.3.0
-  open_filex: ^4.7.0
   
   
 

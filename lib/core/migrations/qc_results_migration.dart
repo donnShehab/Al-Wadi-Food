@@ -1,11 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:alwadi_food/core/constants/app_constants.dart';
 
 class QcResultsMigration {
   final FirebaseFirestore firestore;
 
   QcResultsMigration(this.firestore);
+
+  Future<void> runMigrationSafe() async {
+    // ✅ لا تشغل migration بدون user
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      debugPrint("⚠️ Migration skipped: user not authenticated yet.");
+      return;
+    }
+
+    try {
+      await runMigration();
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        debugPrint(
+          "⚠️ Migration skipped: permission denied (rules/role not ready).",
+        );
+        return;
+      }
+      rethrow;
+    } catch (e) {
+      debugPrint("❌ Migration failed unexpectedly: $e");
+      // لا نرمي exception حتى ما ينهار التطبيق
+    }
+  }
 
   /// ✅ Run once to update old qc_results documents with product info
   Future<void> runMigration() async {
@@ -29,7 +54,6 @@ class QcResultsMigration {
         continue;
       }
 
-      // ✅ If already migrated skip
       if (data.containsKey("productType") && data["productType"] != null) {
         skipped++;
         continue;
@@ -66,15 +90,14 @@ class QcResultsMigration {
             });
 
         updated++;
-        debugPrint("✅ Updated QC Result: ${qcDoc.id}");
       } catch (e) {
         debugPrint("❌ Failed updating ${qcDoc.id}: $e");
         skipped++;
       }
     }
 
-    debugPrint("🎉 Migration Finished!");
-    debugPrint("✅ Updated: $updated");
-    debugPrint("⏭️ Skipped: $skipped");
+    debugPrint(
+      "🎉 Migration Finished! ✅ Updated: $updated ⏭️ Skipped: $skipped",
+    );
   }
 }

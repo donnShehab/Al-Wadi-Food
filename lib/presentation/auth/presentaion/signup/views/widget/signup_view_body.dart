@@ -1,14 +1,16 @@
-
-
 import 'package:alwadi_food/presentation/auth/cubit/auth_State.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:alwadi_food/core/constants/app_constants.dart';
 import 'package:alwadi_food/core/utils/validators.dart';
+import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
+import 'package:alwadi_food/presentation/auth/presentaion/widgets/auth_scaffold.dart';
+import 'package:alwadi_food/presentation/widgets/brand/alwadi_icon.dart';
 import 'package:alwadi_food/presentation/widgets/custom_button.dart';
 import 'package:alwadi_food/presentation/widgets/custom_text_field.dart';
-import 'package:alwadi_food/presentation/auth/cubit/auth_cubit.dart';
+import 'package:alwadi_food/presentation/widgets/surfaces/executive_card.dart';
 import 'package:alwadi_food/theme.dart';
-import 'package:alwadi_food/core/constants/app_constants.dart';
 
 class SignupViewBody extends StatefulWidget {
   const SignupViewBody({super.key});
@@ -24,7 +26,6 @@ class _SignupViewBodyState extends State<SignupViewBody> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  /// 👈 لا يوجد default role
   String? _role;
 
   void _handleSignup(BuildContext context) {
@@ -32,9 +33,9 @@ class _SignupViewBodyState extends State<SignupViewBody> {
     if (!isValid) return;
 
     if (_role == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please select a role')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a role')),
+      );
       return;
     }
 
@@ -42,7 +43,7 @@ class _SignupViewBodyState extends State<SignupViewBody> {
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
-      role: _role!, // آمن 100%
+      role: _role!,
     );
   }
 
@@ -54,50 +55,81 @@ class _SignupViewBodyState extends State<SignupViewBody> {
     super.dispose();
   }
 
+  InputDecoration _roleDecoration(BuildContext context) {
+    final theme = Theme.of(context);
+
+    // This makes the Dropdown match your CustomTextField “premium” style.
+    return InputDecoration(
+      labelText: 'Role *',
+      filled: true,
+      fillColor: theme.colorScheme.surface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(
+          color: theme.colorScheme.onSurface.withOpacity(0.06),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(
+          color: theme.colorScheme.onSurface.withOpacity(0.06),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(
+          color: theme.colorScheme.primary.withOpacity(0.55),
+          width: 1.2,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final loading = context.watch<AuthCubit>().state is AuthLoading;
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: AppSpacing.paddingLg,
+    return AuthScaffold(
+      // Signup is reached from Login, not Splash — so we keep it clean:
+      // No Hero here to avoid tag conflicts and keep navigation stable.
+      heroLogo: const AlwadiIcon(size: 70),
+      title: 'Sign Up',
+      subtitle: 'Create your account',
+      card: ExecutiveCard(
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              /// -------- Name --------
               CustomTextField(
                 controller: _nameController,
                 label: 'Name',
                 validator: (value) =>
                     Validators.validateRequired(value, "Name"),
               ),
+              const SizedBox(height: 18),
 
-              const SizedBox(height: 16),
-
-              /// -------- Email --------
               CustomTextField(
                 controller: _emailController,
                 label: 'Email',
                 validator: Validators.validateEmail,
               ),
+              const SizedBox(height: 18),
 
-              const SizedBox(height: 16),
-
-              /// -------- Password --------
               CustomTextField(
                 controller: _passwordController,
                 label: 'Password',
                 obscureText: true,
                 validator: Validators.validatePassword,
               ),
+              const SizedBox(height: 18),
 
-              const SizedBox(height: 16),
-
-              /// -------- Role --------
               DropdownButtonFormField<String>(
                 value: _role,
-                decoration: const InputDecoration(labelText: 'Role *'),
+                decoration: _roleDecoration(context),
+                isExpanded: true,
+                icon: const Icon(Icons.keyboard_arrow_down_rounded),
                 items: const [
                   DropdownMenuItem(
                     value: AppConstants.roleManager,
@@ -117,9 +149,8 @@ class _SignupViewBodyState extends State<SignupViewBody> {
                 onChanged: (value) => setState(() => _role = value),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 22),
 
-              /// -------- Submit --------
               CustomButton(
                 text: 'Create Account',
                 icon: Icons.person_add,
