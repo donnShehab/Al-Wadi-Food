@@ -1,5 +1,3 @@
-// presentation/widgets/recall_timeline.dart
-
 import 'package:flutter/material.dart';
 
 import '../projections/recall_ui_projection.dart';
@@ -15,12 +13,19 @@ class RecallTimeline extends StatelessWidget {
     final sorted = projection.nodes.toList()
       ..sort((a, b) => a.depth.compareTo(b.depth));
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: sorted.length,
-      itemBuilder: (context, index) {
-        return RecallNodeCard(node: sorted[index]);
-      },
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.94),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Colors.black.withOpacity(0.05)),
+      ),
+      child: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+        itemCount: sorted.length,
+        itemBuilder: (context, index) {
+          return RecallNodeCard(node: sorted[index]);
+        },
+      ),
     );
   }
 }

@@ -1,13 +1,17 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:alwadi_food/theme.dart';
 
 class QCMeasurementImages extends StatefulWidget {
   final List<File> images;
-    final ValueChanged<File> onPickImage;
+  final ValueChanged<File> onPickImage;
 
-  const QCMeasurementImages({super.key, required this.images, required this.onPickImage});
+  const QCMeasurementImages({
+    super.key,
+    required this.images,
+    required this.onPickImage,
+  });
 
   @override
   State<QCMeasurementImages> createState() => _QCMeasurementImagesState();
@@ -20,6 +24,7 @@ class _QCMeasurementImagesState extends State<QCMeasurementImages> {
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
       setState(() {
+        // NOTE: keep existing behavior (mutating the list here).
         widget.images.add(File(picked.path));
       });
     }
@@ -27,42 +32,67 @@ class _QCMeasurementImagesState extends State<QCMeasurementImages> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'QC Evidence Images (Optional)',
-          style: Theme.of(context).textTheme.titleMedium?.semiBold,
-        ),
-        const SizedBox(height: AppSpacing.sm),
+    final theme = Theme.of(context);
 
-        Wrap(
-          spacing: AppSpacing.sm,
-          children: [
-            ...widget.images.map(
-              (img) => ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.file(
-                  img,
-                  width: 90,
-                  height: 90,
-                  fit: BoxFit.cover,
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: [
+        ...widget.images.map(
+          (img) => ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: Stack(
+              children: [
+                Image.file(img, width: 92, height: 92, fit: BoxFit.cover),
+                Positioned(
+                  right: 6,
+                  top: 6,
+                  child: Container(
+                    width: 26,
+                    height: 26,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.35),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.image,
+                      size: 14,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
+              ],
+            ),
+          ),
+        ),
+        InkWell(
+          onTap: _pickImage,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            width: 92,
+            height: 92,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: theme.colorScheme.primary.withOpacity(0.22),
               ),
             ),
-            InkWell(
-              onTap: _pickImage,
-              child: Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.add_a_photo, color: theme.colorScheme.primary),
+                const SizedBox(height: 6),
+                Text(
+                  'Add',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                child: const Icon(Icons.add_a_photo),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ],
     );

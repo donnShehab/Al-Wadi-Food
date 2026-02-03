@@ -3,7 +3,6 @@ import 'package:alwadi_food/presentation/animations/staggered_fade_slide_item.da
 import 'package:flutter/material.dart';
 import 'package:alwadi_food/presentation/manager/domain/entities/reports_line_comparison_entity.dart';
 
-
 enum PassRateSortType { passRate, highRisk, total }
 
 class ReportsLinesPassRateChart extends StatefulWidget {
@@ -49,19 +48,8 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
     final visible = expanded ? filtered : filtered.take(8).toList();
 
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        color: scheme.surface,
-        border: Border.all(color: scheme.outline.withOpacity(0.14)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+      decoration: _executiveCardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -70,14 +58,29 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
           // =====================================================
           Row(
             children: [
-              Icon(Icons.bar_chart_rounded, color: scheme.primary, size: 22),
-              const SizedBox(width: 8),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: scheme.primary.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.black.withOpacity(0.05)),
+                ),
+                child: Icon(
+                  Icons.bar_chart_rounded,
+                  color: scheme.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   "Line Pass Rate Dashboard",
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.2,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
               _sortDropdown(context),
@@ -87,18 +90,32 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
           const SizedBox(height: 6),
 
           Text(
-            "Corporate ranking overview for production line performance.",
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            "Ranking overview for production line performance.",
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: scheme.onSurface.withOpacity(0.65),
               fontWeight: FontWeight.w600,
             ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
 
           _searchBar(context),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
+
+          // quick legend (executive)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _legendPill("Healthy ≥ 90%", const Color(0xFF2E8B57)),
+              _legendPill("Watch 70–89%", scheme.primary),
+              _legendPill("Action < 70%", const Color(0xFFB00020)),
+              _legendPill("Risk tag ≥ 5", const Color(0xFFFF8F00)),
+            ],
+          ),
+
+          const SizedBox(height: 14),
 
           // =====================================================
           // LIST (ANIMATED ENTRIES)
@@ -117,6 +134,7 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
                   index: index,
                   delay: Duration(milliseconds: index * 70),
                   child: PressableScale(
+                    onTap: () {}, // tactile only (no navigation changes)
                     child: _lineCard(
                       context,
                       line: l,
@@ -130,7 +148,7 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
 
           if (filtered.length > 8)
             Align(
@@ -153,24 +171,26 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
               ),
             ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
               color: scheme.primary.withOpacity(0.06),
-              border: Border.all(color: scheme.primary.withOpacity(0.16)),
+              border: Border.all(color: scheme.primary.withOpacity(0.14)),
             ),
             child: Row(
               children: [
-                Icon(Icons.lightbulb_rounded, color: scheme.primary),
+                Icon(Icons.lightbulb_rounded, color: scheme.primary, size: 18),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    "Tip: Improve the WORST line first — it raises overall factory performance quickly.",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    "Executive tip: improve the WORST line first to lift overall performance faster.",
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.w800,
+                      color: Colors.black87,
+                      height: 1.35,
                     ),
                   ),
                 ),
@@ -183,7 +203,7 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
   }
 
   // =========================================================
-  // LINE CARD (Animated Progress)
+  // LINE CARD
   // =========================================================
   Widget _lineCard(
     BuildContext context, {
@@ -194,6 +214,7 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
   }) {
     final scheme = Theme.of(context).colorScheme;
     final percent = (line.passRate.clamp(0, 100)) / 100;
+
     final barColor = _smartColor(
       scheme,
       line.passRate,
@@ -201,19 +222,19 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
       isWorst: isWorst,
     );
 
+    final bgTint = isBest
+        ? const Color(0xFF2E8B57).withOpacity(0.06)
+        : isWorst
+        ? const Color(0xFFB00020).withOpacity(0.05)
+        : Colors.white.withOpacity(0.88);
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: isBest
-            ? Colors.green.withOpacity(0.06)
-            : isWorst
-            ? Colors.redAccent.withOpacity(0.05)
-            : scheme.surface,
-        border: Border.all(
-          color: barColor.withOpacity(isBest || isWorst ? 0.22 : 0.12),
-        ),
+        color: bgTint,
+        border: Border.all(color: Colors.black.withOpacity(0.05)),
       ),
       child: Column(
         children: [
@@ -221,17 +242,18 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
             children: [
               _rankBadge(rank, scheme),
               const SizedBox(width: 8),
-              if (isBest) _tag("BEST", Colors.green),
-              if (isWorst) _tag("WORST", Colors.redAccent),
+              if (isBest) _tag("BEST", const Color(0xFF2E8B57)),
+              if (isWorst) _tag("WORST", const Color(0xFFB00020)),
               if (line.highRisk >= 5 && !isBest && !isWorst)
-                _tag("RISK", Colors.orange),
+                _tag("RISK", const Color(0xFFFF8F00)),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   line.lineName,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black87,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -247,7 +269,6 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
 
           const SizedBox(height: 12),
 
-          // ✅ Animated progress
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: percent),
             duration: const Duration(milliseconds: 850),
@@ -258,9 +279,7 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
                 child: LinearProgressIndicator(
                   value: v,
                   minHeight: 12,
-                  backgroundColor: scheme.surfaceContainerHighest.withOpacity(
-                    0.45,
-                  ),
+                  backgroundColor: Colors.black.withOpacity(0.06),
                   valueColor: AlwaysStoppedAnimation<Color>(barColor),
                 ),
               );
@@ -283,7 +302,7 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
                 label: "High Risk",
                 value: "${line.highRisk}",
                 icon: Icons.warning_amber_rounded,
-                color: line.highRisk > 0 ? Colors.orange : null,
+                color: line.highRisk > 0 ? const Color(0xFFFF8F00) : null,
               ),
             ],
           ),
@@ -318,16 +337,36 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(999),
         color: color.withOpacity(0.12),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withOpacity(0.20)),
       ),
       child: Text(
         text,
         style: TextStyle(
           fontWeight: FontWeight.w900,
           fontSize: 10,
+          letterSpacing: 0.2,
           color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _legendPill(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withOpacity(0.16)),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontWeight: FontWeight.w800,
+          fontSize: 11,
+          color: Colors.black87,
         ),
       ),
     );
@@ -339,11 +378,11 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
     required bool isBest,
     required bool isWorst,
   }) {
-    if (isBest) return Colors.green;
-    if (isWorst) return Colors.redAccent;
-    if (passRate >= 90) return Colors.green;
-    if (passRate >= 70) return scheme.secondary;
-    return Colors.redAccent;
+    if (isBest) return const Color(0xFF2E8B57);
+    if (isWorst) return const Color(0xFFB00020);
+    if (passRate >= 90) return const Color(0xFF2E8B57);
+    if (passRate >= 70) return scheme.primary;
+    return const Color(0xFFB00020);
   }
 
   Widget _miniInfo(
@@ -387,12 +426,28 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
       onChanged: (v) => setState(() => query = v),
       decoration: InputDecoration(
         hintText: "Search line...",
+        hintStyle: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: scheme.onSurface.withOpacity(0.45),
+        ),
         prefixIcon: Icon(Icons.search_rounded, color: scheme.primary),
         filled: true,
-        fillColor: scheme.surfaceContainerHighest.withOpacity(0.25),
+        fillColor: Colors.white.withOpacity(0.70),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide(color: scheme.outline.withOpacity(0.12)),
+          borderSide: BorderSide(color: Colors.black.withOpacity(0.05)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: Colors.black.withOpacity(0.05)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: scheme.primary.withOpacity(0.30)),
         ),
       ),
     );
@@ -405,13 +460,14 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        color: scheme.surfaceContainerHighest.withOpacity(0.35),
-        border: Border.all(color: scheme.outline.withOpacity(0.12)),
+        color: Colors.white.withOpacity(0.70),
+        border: Border.all(color: Colors.black.withOpacity(0.05)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<PassRateSortType>(
           value: sortType,
           onChanged: (v) => setState(() => sortType = v!),
+          icon: Icon(Icons.expand_more_rounded, color: scheme.primary),
           items: const [
             DropdownMenuItem(
               value: PassRateSortType.passRate,
@@ -435,12 +491,8 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
     final scheme = Theme.of(context).colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: scheme.surface,
-        border: Border.all(color: scheme.outline.withOpacity(0.14)),
-      ),
+      padding: const EdgeInsets.all(16),
+      decoration: _executiveCardDecoration(),
       child: Row(
         children: [
           Icon(Icons.search_off_rounded, color: scheme.onSurfaceVariant),
@@ -457,4 +509,19 @@ class _ReportsLinesPassRateChartState extends State<ReportsLinesPassRateChart> {
       ),
     );
   }
+}
+
+BoxDecoration _executiveCardDecoration() {
+  return BoxDecoration(
+    borderRadius: BorderRadius.circular(22),
+    color: Colors.white.withOpacity(0.96),
+    border: Border.all(color: Colors.black.withOpacity(0.05)),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.06),
+        blurRadius: 26,
+        offset: const Offset(0, 16),
+      ),
+    ],
+  );
 }

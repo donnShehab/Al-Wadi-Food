@@ -22,28 +22,37 @@ class QCReportGenerateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final surface = theme.colorScheme.surface;
+    final outline = theme.colorScheme.onSurface.withOpacity(0.06);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: theme.colorScheme.primary.withOpacity(0.12)),
+        border: Border.all(color: outline, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            blurRadius: 16,
+            offset: const Offset(0, 10),
+          ),
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+            spreadRadius: -6,
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 52,
-            height: 52,
+            width: 54,
+            height: 54,
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(16),
+              color: theme.colorScheme.primary.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(18),
             ),
             child: Icon(icon, color: theme.colorScheme.primary, size: 28),
           ),
@@ -55,14 +64,15 @@ class QCReportGenerateCard extends StatelessWidget {
                 Text(
                   title,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   subtitle,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.35,
                   ),
                 ),
               ],
@@ -72,6 +82,8 @@ class QCReportGenerateCard extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: theme.colorScheme.primary,
+              foregroundColor: Colors.white,
+              elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -87,12 +99,16 @@ class QCReportGenerateCard extends StatelessWidget {
                       color: Colors.white,
                     ),
                   )
-                : Text(
-                    buttonText,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.bolt_rounded, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        buttonText,
+                        style: const TextStyle(fontWeight: FontWeight.w800),
+                      ),
+                    ],
                   ),
           ),
         ],

@@ -31,6 +31,15 @@ class _HomeNavigationCardState extends State<HomeNavigationCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // UI-only: executive surface treatment.
+    final surface = theme.colorScheme.surface;
+    final border = theme.colorScheme.onSurface.withOpacity(0.08);
+    final subtitleColor = theme.colorScheme.onSurfaceVariant.withOpacity(0.75);
+    final chevronColor = theme.colorScheme.onSurfaceVariant.withOpacity(0.55);
+
+    final iconBg = widget.color.withOpacity(_pressed ? 0.18 : 0.14);
+    final iconBorder = widget.color.withOpacity(0.28);
+
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: (d) {
@@ -38,58 +47,67 @@ class _HomeNavigationCardState extends State<HomeNavigationCard> {
         context.push(widget.route);
       },
       onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        curve: Curves.easeOut,
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(20),
-        transform: Matrix4.identity()..scale(_pressed ? 0.97 : 1.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: widget.color.withOpacity(0.25)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(_pressed ? 0.05 : 0.12),
-              blurRadius: _pressed ? 4 : 12,
-              offset: Offset(0, _pressed ? 2 : 6),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: widget.color.withOpacity(_pressed ? 0.85 : 1),
-                borderRadius: BorderRadius.circular(12),
+      child: AnimatedScale(
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOutCubic,
+        scale: _pressed ? 0.985 : 1.0,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOutCubic,
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+          decoration: BoxDecoration(
+            color: surface,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: border, width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(_pressed ? 0.04 : 0.08),
+                blurRadius: _pressed ? 14 : 24,
+                offset: Offset(0, _pressed ? 8 : 12),
               ),
-              child: Icon(widget.icon, color: Colors.white),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.title,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    widget.subtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.black54,
-                    ),
-                  ),
-                ],
+            ],
+          ),
+          child: Row(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 160),
+                curve: Curves.easeOutCubic,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: iconBg,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: iconBorder, width: 1),
+                ),
+                child: Icon(widget.icon, color: widget.color, size: 22),
               ),
-            ),
-            const Icon(Icons.arrow_forward_ios, size: 16),
-          ],
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.1,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.subtitle,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: subtitleColor,
+                        height: 1.15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Icon(Icons.chevron_right, color: chevronColor),
+            ],
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_risk/qc_risk_badge.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_risk/qc_risk_evaluator.dart';
 import 'package:flutter/material.dart';
@@ -14,18 +15,29 @@ class QCStepSummary extends StatelessWidget {
     required this.images,
   });
 
-  Widget _row(String label, String value) {
+  Widget _row(BuildContext context, String label, String value) {
+    final theme = Theme.of(context);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           Expanded(
             child: Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              label.toUpperCase(),
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.8,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
-          Text(value),
+          Text(
+            value,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
@@ -34,23 +46,28 @@ class QCStepSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-final risk = QCRiskEvaluator.evaluate(measurements);
+    final risk = QCRiskEvaluator.evaluate(measurements);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-       
-     Row(
+        // Header
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                const Icon(Icons.fact_check, size: 22),
-                const SizedBox(width: 6),
+                Icon(
+                  Icons.fact_check,
+                  size: 22,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
                 Text(
                   'Inspection Summary',
                   style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.2,
                   ),
                 ),
               ],
@@ -59,59 +76,93 @@ final risk = QCRiskEvaluator.evaluate(measurements);
           ],
         ),
 
+        const SizedBox(height: 14),
 
-        /// 📊 Measurements Card
+        // Measurements
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade200),
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: theme.colorScheme.onSurface.withOpacity(0.06),
+            ),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
             ],
           ),
           child: Column(
             children: [
-              _row('Temperature', '${measurements.temperature} °C'),
-              _row('Weight', '${measurements.weight} kg'),
-              _row('Moisture', '${measurements.moisture} %'),
-              _row('Packaging', measurements.packaging),
-              _row('Texture', measurements.texture),
-              _row('Notes', measurements.notes),
+              _row(context, 'Temperature', '${measurements.temperature} °C'),
+              Divider(
+                height: 1,
+                color: theme.colorScheme.onSurface.withOpacity(0.06),
+              ),
+              _row(context, 'Weight', '${measurements.weight} kg'),
+              Divider(
+                height: 1,
+                color: theme.colorScheme.onSurface.withOpacity(0.06),
+              ),
+              _row(context, 'Moisture', '${measurements.moisture} %'),
+              Divider(
+                height: 1,
+                color: theme.colorScheme.onSurface.withOpacity(0.06),
+              ),
+              _row(context, 'Packaging', measurements.packaging),
+              Divider(
+                height: 1,
+                color: theme.colorScheme.onSurface.withOpacity(0.06),
+              ),
+              _row(context, 'Texture', measurements.texture),
+              Divider(
+                height: 1,
+                color: theme.colorScheme.onSurface.withOpacity(0.06),
+              ),
+              _row(context, 'Notes', measurements.notes),
             ],
           ),
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 18),
 
-        /// 🖼 Images
-        if (images.isNotEmpty) ...[
-          Text(
-            'Inspection Images',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+        // Images
+        Text(
+          'Inspection Images',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w900,
           ),
-          const SizedBox(height: 12),
+        ),
+        const SizedBox(height: 10),
+
+        if (images.isEmpty)
+          Text(
+            'No evidence images attached.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          )
+        else
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: 10,
+            runSpacing: 10,
             children: images
                 .map(
                   (img) => ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(14),
                     child: Image.file(
                       img,
-                      width: 90,
-                      height: 90,
+                      width: 92,
+                      height: 92,
                       fit: BoxFit.cover,
                     ),
                   ),
                 )
                 .toList(),
           ),
-        ],
       ],
     );
   }

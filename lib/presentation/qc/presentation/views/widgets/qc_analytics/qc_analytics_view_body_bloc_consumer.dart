@@ -27,16 +27,13 @@ class QCAnalyticsViewBodyBlocConsumer extends StatelessWidget {
           );
         }
 
-        /// ✅ إذا عندنا dashboard data نستخدمه
         if (state is QCDashboardLoaded) {
           return QCAnalyticsViewBody(
             trend: state.trend,
-
             results: state.allResults,
           );
         }
 
-        /// ✅ fallback
         return const SizedBox();
       },
     );

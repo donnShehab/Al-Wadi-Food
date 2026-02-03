@@ -14,7 +14,6 @@ import 'package:alwadi_food/presentation/home/presentation/views/widgets/home_ro
 import 'package:alwadi_food/theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 class HomeViewBodyContent extends StatelessWidget {
   final UserEntity user;
   final int totalBatches;
@@ -42,63 +41,94 @@ class HomeViewBodyContent extends StatelessWidget {
         final user = state.user; // 👈 المصدر الوحيد
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF7F9FC),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: AppSpacing.paddingLg,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HeaderFadeSlide(child: HomeHeader(user: user)),
-
-                  const SizedBox(height: 20),
-
-                  WelcomeSlideIn(
-                    child: HomeWelcomeCard(
-                      user: user,
-                      totalBatches: totalBatches,
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // HomeStatsTiles(
-                  //   total: totalBatches,
-                  //   passed: passedQC,
-                  //   issues: issues,
-                  // ),
-                  BlocBuilder<ProductionCubit, ProductionState>(
-                    builder: (context, state) {
-                      if (state is ProductionBatchesLoaded) {
-                        final batches = state.batches;
-
-                        final total = batches.length;
-                        final passed = batches
-                            .where((b) => b.status == AppConstants.statusPassed)
-                            .length;
-                        final issues = batches
-                            .where((b) => b.status == AppConstants.statusFailed)
-                            .length;
-
-                        return HomeStatsTiles(
-                          total: total,
-                          passed: passed,
-                          issues: issues,
-                        );
-                      }
-
-                      // Loading or empty
-                      return const SizedBox(height: 80);
-                    },
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  HomeRoleSections(
-                    role: user.role, // ✅ دايمًا أحدث role
-                    theme: theme,
-                  ),
+          body: DecoratedBox(
+            // UI-only: subtle executive background (matches Auth look & feels premium).
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: Alignment.topCenter,
+                radius: 1.25,
+                colors: [
+                  theme.colorScheme.surface,
+                  theme.colorScheme.primary.withOpacity(0.035),
                 ],
+              ),
+            ),
+            child: SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final horizontalPadding = constraints.maxWidth >= 600
+                      ? AppSpacing.xxl
+                      : AppSpacing.lg;
+
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding,
+                      vertical: AppSpacing.lg,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 560),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            HeaderFadeSlide(child: HomeHeader(user: user)),
+
+                            const SizedBox(height: 18),
+
+                            WelcomeSlideIn(
+                              child: HomeWelcomeCard(
+                                user: user,
+                                totalBatches: totalBatches,
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            BlocBuilder<ProductionCubit, ProductionState>(
+                              builder: (context, state) {
+                                if (state is ProductionBatchesLoaded) {
+                                  final batches = state.batches;
+
+                                  final total = batches.length;
+                                  final passed = batches
+                                      .where(
+                                        (b) =>
+                                            b.status ==
+                                            AppConstants.statusPassed,
+                                      )
+                                      .length;
+                                  final issues = batches
+                                      .where(
+                                        (b) =>
+                                            b.status ==
+                                            AppConstants.statusFailed,
+                                      )
+                                      .length;
+
+                                  return HomeStatsTiles(
+                                    total: total,
+                                    passed: passed,
+                                    issues: issues,
+                                  );
+                                }
+
+                                // Loading or empty
+                                return const SizedBox(height: 80);
+                              },
+                            ),
+
+                            const SizedBox(height: 28),
+
+                            HomeRoleSections(
+                              role: user.role, // ✅ دايمًا أحدث role
+                              theme: theme,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),

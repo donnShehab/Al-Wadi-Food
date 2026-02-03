@@ -6,9 +6,21 @@ class QCHintSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const QCHintCard(
-      text:
-          "⚠️ Inspections should be completed quickly to prevent production delays and ensure compliance.",
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 520),
+      curve: Curves.easeOutCubic,
+      builder: (context, t, child) {
+        final dy = (1 - t) * 8;
+        return Opacity(
+          opacity: t,
+          child: Transform.translate(offset: Offset(0, dy), child: child),
+        );
+      },
+      child: const QCHintCard(
+        text:
+            "⚠️ Inspections should be completed quickly to prevent production delays and ensure compliance.",
+      ),
     );
   }
 }

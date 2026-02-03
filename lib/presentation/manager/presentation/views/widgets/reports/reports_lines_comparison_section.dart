@@ -23,105 +23,94 @@ class ReportsLinesComparisonSection extends StatelessWidget {
     return ScreenEntryAnimation(
       beginOffset: const Offset(0, 0.15),
       child: Container(
-        padding: const EdgeInsets.all(22),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          gradient: LinearGradient(
-            colors: [scheme.surface, scheme.surface.withOpacity(0.92)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          borderRadius: BorderRadius.circular(22),
+          color: Colors.white.withOpacity(0.96),
+          border: Border.all(color: Colors.black.withOpacity(0.05)),
           boxShadow: [
             BoxShadow(
-              color: Colors.blueGrey.withOpacity(0.12),
-              blurRadius: 24,
-              offset: const Offset(0, 10),
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 26,
+              offset: const Offset(0, 16),
             ),
           ],
-          border: Border.all(color: scheme.outline.withOpacity(0.14)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // =====================================================
-            // HEADER
-            // =====================================================
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
+                    color: scheme.primary.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(16),
-                    color: scheme.primary.withOpacity(0.12),
+                    border: Border.all(color: Colors.black.withOpacity(0.05)),
                   ),
                   child: Icon(
-                    Icons.insights_rounded,
+                    Icons.bar_chart_rounded,
                     color: scheme.primary,
-                    size: 22,
+                    size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     "Line Performance Overview",
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
-                      letterSpacing: -0.3,
+                      letterSpacing: -0.2,
+                      color: Colors.black87,
                     ),
                   ),
                 ),
               ],
             ),
-
-            const SizedBox(height: 8),
-
+            const SizedBox(height: 6),
             Text(
               "High-level comparison between the best and worst performing lines.",
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: scheme.onSurface.withOpacity(0.65),
+                fontWeight: FontWeight.w600,
+                color: Colors.black54,
               ),
             ),
+            const SizedBox(height: 14),
 
-            const SizedBox(height: 20),
-
-            // =====================================================
-            // KPI HIGHLIGHTS
-            // =====================================================
             Row(
               children: [
                 if (bestLine != null)
                   Expanded(
                     child: PressableScale(
+                      onTap: () {}, // UI-only tactile
                       child: _highlightCard(
                         context,
                         title: "Best Line",
                         line: bestLine!,
-                        color: Colors.green,
+                        color: const Color(0xFF2E8B57),
                       ),
                     ),
                   ),
                 if (bestLine != null && worstLine != null)
-                  const SizedBox(width: 14),
+                  const SizedBox(width: 12),
                 if (worstLine != null)
                   Expanded(
                     child: PressableScale(
+                      onTap: () {}, // UI-only tactile
                       child: _highlightCard(
                         context,
                         title: "Worst Line",
                         line: worstLine!,
-                        color: Colors.redAccent,
+                        color: const Color(0xFFA30015),
                       ),
                     ),
                   ),
               ],
             ),
 
-            const SizedBox(height: 26),
+            const SizedBox(height: 16),
 
-            // =====================================================
-            // COMPARISON CHART
-            // =====================================================
             ReportsLinesComparisonChart(lines: lines),
           ],
         ),
@@ -129,66 +118,63 @@ class ReportsLinesComparisonSection extends StatelessWidget {
     );
   }
 
-  // =========================================================
-  // HIGHLIGHT CARD
-  // =========================================================
   Widget _highlightCard(
     BuildContext context, {
     required String title,
     required ReportsLineComparisonEntity line,
     required Color color,
   }) {
-    final scheme = Theme.of(context).colorScheme;
+    final t = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        color: scheme.surface.withOpacity(0.96),
-        border: Border.all(color: color.withOpacity(0.28)),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.22),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(20),
+        color: color.withOpacity(0.07),
+        border: Border.all(color: color.withOpacity(0.18)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.circle, color: color, size: 12),
-              const SizedBox(width: 6),
-              Text(
-                title.toUpperCase(),
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 12,
-                  letterSpacing: 0.4,
-                  color: color,
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title.toUpperCase(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 11,
+                    letterSpacing: 0.3,
+                    color: color,
+                  ),
                 ),
               ),
             ],
           ),
-
-          const SizedBox(height: 8),
-
+          const SizedBox(height: 10),
           Text(
             line.lineName,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+            style: t.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: Colors.black87,
+              letterSpacing: -0.2,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-
-          const SizedBox(height: 10),
-
+          const SizedBox(height: 8),
           Text(
             "${line.passRate.toStringAsFixed(1)}% Pass Rate",
-            style: TextStyle(fontWeight: FontWeight.w800, color: color),
+            style: t.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: Colors.black87,
+            ),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:alwadi_food/presentation/manager/cubit/manager_action/manager_action_needed_cubit.dart';
@@ -40,17 +41,20 @@ class ManagerDashboardViewBodyBlocConsumer extends StatelessWidget {
             : 0;
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8F9FA),
+          backgroundColor: Colors.transparent,
           appBar: _ExecutiveAppBar(
             name: name,
             notificationCount: notifCount,
             onBellTap: () => _goToActionNeeded(context),
           ),
-          body: SafeArea(
-            child: RefreshIndicator(
-              onRefresh: () =>
-                  context.read<ManagerDashboardCubit>().loadDashboard(),
-              child: _buildBody(context, state),
+          body: DecoratedBox(
+            decoration: _executiveBackgroundDecoration(theme),
+            child: SafeArea(
+              child: RefreshIndicator(
+                onRefresh: () =>
+                    context.read<ManagerDashboardCubit>().loadDashboard(),
+                child: _buildBody(context, state),
+              ),
             ),
           ),
         );
@@ -150,19 +154,21 @@ class _ExecutiveAppBar extends StatelessWidget implements PreferredSizeWidget {
     final initial = safeName.substring(0, 1).toUpperCase();
 
     return AppBar(
-      backgroundColor: const Color(0xFFF8F9FA),
-      surfaceTintColor: const Color(0xFFF8F9FA),
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
+      scrolledUnderElevation: 0,
       titleSpacing: 16,
+      flexibleSpace: _ExecutiveAppBarSurface(theme: t),
       title: Row(
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: t.colorScheme.primary,
+            backgroundColor: t.colorScheme.primary.withOpacity(0.12),
             child: Text(
               initial,
               style: t.textTheme.titleMedium?.copyWith(
-                color: t.colorScheme.onPrimary,
+                color: t.colorScheme.primary,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -184,6 +190,39 @@ class _ExecutiveAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         _NotificationBell(count: notificationCount, onTap: onBellTap),
         const SizedBox(width: 8),
+      ],
+    );
+  }
+}
+
+class _ExecutiveAppBarSurface extends StatelessWidget {
+  final ThemeData theme;
+  const _ExecutiveAppBarSurface({required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: _executiveBackgroundDecoration(theme),
+          ),
+        ),
+        Positioned.fill(
+          child: ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.72),
+                  border: Border(
+                    bottom: BorderSide(color: Colors.black.withOpacity(0.05)),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -640,6 +679,7 @@ class _PrioritySummaryCardModel {
     required this.chipLabel,
   });
 }
+
 class _PrioritySummaryCard extends StatelessWidget {
   final _PrioritySummaryCardModel model;
   final VoidCallback onOpen;
@@ -806,12 +846,30 @@ class _DashboardErrorState extends StatelessWidget {
 // Styling Helpers
 // =============================================================
 
+BoxDecoration _executiveBackgroundDecoration(ThemeData theme) {
+  return BoxDecoration(
+    gradient: RadialGradient(
+      center: Alignment.topCenter,
+      radius: 1.25,
+      colors: [
+        theme.colorScheme.surface,
+        theme.colorScheme.primary.withOpacity(0.035),
+      ],
+    ),
+  );
+}
+
 BoxDecoration _cardDecoration() {
   return BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(24),
+    color: Colors.white.withOpacity(0.96),
+    borderRadius: BorderRadius.circular(22),
+    border: Border.all(color: Colors.black.withOpacity(0.05)),
     boxShadow: [
-      BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 20),
+      BoxShadow(
+        color: Colors.black.withOpacity(0.06),
+        blurRadius: 26,
+        offset: const Offset(0, 16),
+      ),
     ],
   );
 }
@@ -819,9 +877,14 @@ BoxDecoration _cardDecoration() {
 BoxDecoration _cardDecorationColored(Color color) {
   return BoxDecoration(
     color: color,
-    borderRadius: BorderRadius.circular(24),
+    borderRadius: BorderRadius.circular(22),
+    border: Border.all(color: Colors.black.withOpacity(0.05)),
     boxShadow: [
-      BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 20),
+      BoxShadow(
+        color: Colors.black.withOpacity(0.06),
+        blurRadius: 26,
+        offset: const Offset(0, 16),
+      ),
     ],
   );
 }

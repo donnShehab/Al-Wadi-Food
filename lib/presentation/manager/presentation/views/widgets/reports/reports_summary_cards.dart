@@ -3,7 +3,6 @@ import 'package:alwadi_food/presentation/animations/staggered_fade_slide_item.da
 import 'package:flutter/material.dart';
 import 'package:alwadi_food/presentation/manager/domain/entities/reports_summary_entity.dart';
 
-
 class ReportsSummaryCards extends StatelessWidget {
   final ReportsSummaryEntity summary;
 
@@ -16,16 +15,13 @@ class ReportsSummaryCards extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ======================================================
-        // SUMMARY KPI GRID (STAGGERED ENTRY)
-        // ======================================================
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: 1.45,
+          childAspectRatio: 1.55,
           children: [
             StaggeredSlideFade(
               index: 0,
@@ -72,12 +68,7 @@ class ReportsSummaryCards extends StatelessWidget {
             ),
           ],
         ),
-
         const SizedBox(height: 16),
-
-        // ======================================================
-        // QC INSIGHT (SOFT ENTRY)
-        // ======================================================
         StaggeredSlideFade(
           index: 4,
           delay: const Duration(milliseconds: 320),
@@ -87,9 +78,6 @@ class ReportsSummaryCards extends StatelessWidget {
     );
   }
 
-  // ======================================================
-  // PRESSABLE KPI CARD (EXECUTIVE FEEDBACK)
-  // ======================================================
   Widget _pressableKpi(
     BuildContext context, {
     required String title,
@@ -98,7 +86,7 @@ class ReportsSummaryCards extends StatelessWidget {
     required Color color,
   }) {
     return PressableScale(
-      onTap: () {}, // purely tactile, no action
+      onTap: () {}, // UI-only tactile
       child: _kpiCard(
         context,
         title: title,
@@ -109,9 +97,6 @@ class ReportsSummaryCards extends StatelessWidget {
     );
   }
 
-  // ======================================================
-  // KPI CARD (VISUALS UNCHANGED)
-  // ======================================================
   Widget _kpiCard(
     BuildContext context, {
     required String title,
@@ -119,59 +104,61 @@ class ReportsSummaryCards extends StatelessWidget {
     required IconData icon,
     required Color color,
   }) {
+    final t = Theme.of(context);
+
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
-        gradient: LinearGradient(
-          colors: [color.withOpacity(0.18), Colors.white],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(color: color.withOpacity(0.25)),
+        borderRadius: BorderRadius.circular(22),
+        color: Colors.white.withOpacity(0.96),
+        border: Border.all(color: Colors.black.withOpacity(0.05)),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.22),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 26,
+            offset: const Offset(0, 16),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(18),
+              color: color.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: color.withOpacity(0.14)),
             ),
-            child: Icon(icon, color: color, size: 26),
+            child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     value,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    style: t.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w900,
                       letterSpacing: -0.4,
-                      color: color,
+                      color: Colors.black87,
+                      height: 1.0,
                     ),
                   ),
                 ),
-                const SizedBox(height: 4),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
+                const SizedBox(height: 6),
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: t.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black54,
                   ),
                 ),
               ],
@@ -182,23 +169,25 @@ class ReportsSummaryCards extends StatelessWidget {
     );
   }
 
-  // ======================================================
-  // QC INSIGHT CARD (UNCHANGED LOGIC)
-  // ======================================================
   Widget _qcInsightCard(BuildContext context, ReportsSummaryEntity s) {
     final status = _qcStatus(s.passRate, s.failedCount, s.highRiskCount);
+    final t = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: const Color(0xFF0A1931),
+        borderRadius: BorderRadius.circular(22),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0A1931), Color(0xFF111827)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         border: Border.all(color: Colors.white.withOpacity(0.10)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: Colors.black.withOpacity(0.18),
+            blurRadius: 28,
+            offset: const Offset(0, 18),
           ),
         ],
       ),
@@ -208,42 +197,38 @@ class ReportsSummaryCards extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.amber.withOpacity(0.15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withOpacity(0.50),
-                      blurRadius: 18,
-                    ),
-                  ],
+                  color: Colors.white.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white.withOpacity(0.10)),
                 ),
                 child: const Icon(
                   Icons.insights_rounded,
                   color: Colors.amber,
-                  size: 26,
+                  size: 22,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   "QC Health Insight",
-                  style: TextStyle(
-                    color: Colors.amber.shade300,
+                  style: t.textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
                     fontWeight: FontWeight.w900,
-                    fontSize: 18,
+                    letterSpacing: -0.2,
                   ),
                 ),
               ),
               _statusBadge(status.label, status.color),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             status.narrative,
-            style: const TextStyle(
-              color: Colors.white,
+            style: t.textTheme.bodySmall?.copyWith(
+              color: Colors.white.withOpacity(0.90),
               fontWeight: FontWeight.w700,
               height: 1.45,
             ),
@@ -255,26 +240,25 @@ class ReportsSummaryCards extends StatelessWidget {
 
   Widget _statusBadge(String text, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.22),
-        borderRadius: BorderRadius.circular(20),
+        color: color.withOpacity(0.20),
+        borderRadius: BorderRadius.circular(999),
         border: Border.all(color: color.withOpacity(0.35)),
       ),
       child: Text(
         text,
         style: TextStyle(
           fontWeight: FontWeight.w900,
-          fontSize: 12,
-          color: color,
+          fontSize: 11,
+          letterSpacing: 0.2,
+          color: Colors.white.withOpacity(0.95),
         ),
       ),
     );
   }
 
-  // ======================================================
-  // STATUS LOGIC (UNCHANGED)
-  // ======================================================
+  // LOGIC unchanged
   _QCStatus _qcStatus(double passRate, int failed, int risk) {
     if (passRate < 75 || failed >= 3) {
       return _QCStatus(

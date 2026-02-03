@@ -47,7 +47,7 @@ class QCStepReview extends StatelessWidget {
                 'Production Images',
                 style: Theme.of(
                   context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 10),
 
@@ -72,23 +72,37 @@ class QCStepReview extends StatelessWidget {
   }
 
   Widget _header(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.08),
+        color: theme.colorScheme.primary.withOpacity(0.06),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.withOpacity(0.25)),
+        border: Border.all(color: theme.colorScheme.primary.withOpacity(0.16)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.fact_check, color: Colors.blue, size: 26),
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.fact_check,
+              color: theme.colorScheme.primary,
+              size: 22,
+            ),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               'Step 1: Review Batch',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
         ],
@@ -103,16 +117,18 @@ class QCStepReview extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
           ),
         ],
-        border: Border.all(color: theme.colorScheme.primary.withOpacity(0.08)),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withOpacity(0.06),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +136,7 @@ class QCStepReview extends StatelessWidget {
           Text(
             'Batch Summary',
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: theme.colorScheme.primary,
             ),
           ),
@@ -167,6 +183,7 @@ class QCStepReview extends StatelessWidget {
     required String value,
   }) {
     final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -188,13 +205,18 @@ class QCStepReview extends StatelessWidget {
                 Text(
                   label.toUpperCase(),
                   style: theme.textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: theme.colorScheme.primary,
-                    letterSpacing: 0.6,
+                    fontWeight: FontWeight.w900,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    letterSpacing: 0.8,
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(value, style: theme.textTheme.bodyLarge),
+                Text(
+                  value,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -204,12 +226,14 @@ class QCStepReview extends StatelessWidget {
   }
 
   Widget _hint(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.amber.withOpacity(0.12),
+        color: Colors.amber.withOpacity(0.10),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.amber.withOpacity(0.25)),
+        border: Border.all(color: Colors.amber.withOpacity(0.22)),
       ),
       child: Row(
         children: [
@@ -218,7 +242,10 @@ class QCStepReview extends StatelessWidget {
           Expanded(
             child: Text(
               'Review the production details and images before recording measurements.',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: theme.textTheme.bodySmall?.copyWith(
+                height: 1.25,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         ],

@@ -1,6 +1,4 @@
-
 import 'package:alwadi_food/core/di/injection.dart';
-import 'package:alwadi_food/presentation/animations/screen_entry_animation.dart';
 import 'package:alwadi_food/presentation/production/cubit/production_cubit.dart';
 import 'package:alwadi_food/presentation/production/presentation/views/widgets/batch_list_view_body_bloc_builder.dart';
 import 'package:alwadi_food/presentation/widgets/custom_app_bar.dart';
@@ -17,19 +15,20 @@ class BatchListView extends StatelessWidget {
     return BlocProvider(
       create: (_) => getIt<ProductionCubit>()..listenToBatchesStream(),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF7F9FC),
+        // ✅ UI-only: let body paint the executive background
+        backgroundColor: theme.colorScheme.surface,
         appBar: buildAppBar(
           context,
           title: 'Production Batches',
           backgroundColor: theme.colorScheme.primary,
           titleColor: Colors.white,
-          showBackButton: false, // غالباً هذه شاشة رئيسية
+          showBackButton: false,
           actions: [
             IconButton(
               icon: const Icon(Icons.filter_list),
               color: Colors.white,
               onPressed: () {
-                // ممكن لاحقاً تضيف فلترة حقيقية
+                // (كما هو) ممكن لاحقاً تضيف فلترة حقيقية
               },
             ),
           ],

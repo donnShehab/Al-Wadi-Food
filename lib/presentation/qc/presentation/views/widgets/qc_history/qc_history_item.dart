@@ -17,84 +17,213 @@ class QCHistoryItem extends StatelessWidget {
     final theme = Theme.of(context);
     final bool isPassed = result.result == AppConstants.qcResultPass;
 
-    return Card(
+    final Color statusColor = isPassed
+        ? LightModeColors.lightSuccess
+        : LightModeColors.lightError;
+
+    final surface = theme.colorScheme.surface;
+    final border = theme.colorScheme.onSurface.withOpacity(0.08);
+
+    return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 22,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
 
-        /// 🔗 NAVIGATION TO QC DETAILS
-        onTap: () {
-          context.push('${AppRouter.KQCDetailsView}/${result.inspectionId}');
-        },
+          /// 🔗 NAVIGATION TO QC DETAILS (UNCHANGED)
+          onTap: () {
+            context.push('${AppRouter.KQCDetailsView}/${result.inspectionId}');
+          },
 
-        child: Padding(
-          padding: AppSpacing.paddingMd,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              /// ─── HEADER ─────────────────────────────────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Inspector: ${result.inspectorName}',
-                    style: theme.textTheme.titleMedium?.semiBold,
+              // ✅ Accent rail (ERP feel)
+              Container(
+                width: 6,
+                height: 190,
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.92),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    bottomLeft: Radius.circular(18),
                   ),
-                  Chip(
-                    label: Text(
-                      result.result.toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ===== Header =====
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Inspector: ${result.inspectorName}',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.1,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+
+                          // Executive status pill
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: statusColor.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: statusColor.withOpacity(0.45),
+                              ),
+                            ),
+                            child: Text(
+                              result.result.toUpperCase(),
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: statusColor,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    backgroundColor: isPassed
-                        ? LightModeColors.lightSuccess
-                        : LightModeColors.lightError,
+
+                      const SizedBox(height: 10),
+
+                      // ===== Date =====
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_month_outlined,
+                            size: 16,
+                            color: theme.colorScheme.onSurfaceVariant
+                                .withOpacity(0.75),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Date: ${DateFormatter.formatDateTime(result.createdAt)}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant
+                                    .withOpacity(0.78),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 14),
+                      Divider(height: 1, color: border),
+                      const SizedBox(height: 14),
+
+                      // ===== Metrics (ERP key/value table) =====
+                      _metricRow(
+                        context,
+                        label: 'Temperature',
+                        value: '${result.temperature} °C',
+                      ),
+                      _metricRow(
+                        context,
+                        label: 'Weight',
+                        value: '${result.weight} kg',
+                      ),
+                      _metricRow(
+                        context,
+                        label: 'Moisture',
+                        value: '${result.moisture} %',
+                      ),
+                      _metricRow(
+                        context,
+                        label: 'Packaging',
+                        value: result.packaging,
+                      ),
+                      _metricRow(
+                        context,
+                        label: 'Texture',
+                        value: result.texture,
+                      ),
+
+                      if (result.notes.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          'Notes',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: theme.colorScheme.onSurface.withOpacity(
+                              0.85,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          result.notes,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            height: 1.25,
+                            color: theme.colorScheme.onSurfaceVariant
+                                .withOpacity(0.85),
+                          ),
+                        ),
+                      ],
+
+                      if (result.failureReason != null) ...[
+                        const SizedBox(height: 14),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: statusColor.withOpacity(0.10),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: statusColor.withOpacity(0.35),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Failure Reason',
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  color: statusColor,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                result.failureReason!,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: statusColor.withOpacity(0.95),
+                                  height: 1.25,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
-                ],
-              ),
-
-              const SizedBox(height: AppSpacing.sm),
-
-              /// ─── DATE ───────────────────────────────────────
-              Text(
-                'Date: ${DateFormatter.formatDateTime(result.createdAt)}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-
-              const Divider(height: 24),
-
-              /// ─── MEASUREMENTS ──────────────────────────────
-              _row('Temperature', '${result.temperature} °C'),
-              _row('Weight', '${result.weight} kg'),
-              _row('Moisture', '${result.moisture} %'),
-              _row('Packaging', result.packaging),
-              _row('Texture', result.texture),
-
-              if (result.notes.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.sm),
-                Text('Notes:', style: theme.textTheme.bodyMedium?.semiBold),
-                Text(result.notes),
-              ],
-
-              if (result.failureReason != null) ...[
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  'Failure Reason:',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: LightModeColors.lightError,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  result.failureReason!,
-                  style: TextStyle(color: LightModeColors.lightError),
-                ),
-              ],
             ],
           ),
         ),
@@ -102,19 +231,34 @@ class QCHistoryItem extends StatelessWidget {
     );
   }
 
-  /// ─── Helper Row ───────────────────────────────────────
-  Widget _row(String label, String value) {
+  // UI-only helper
+  Widget _metricRow(
+    BuildContext context, {
+    required String label,
+    required String value,
+  }) {
+    final theme = Theme.of(context);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: theme.colorScheme.onSurface.withOpacity(0.82),
+              ),
             ),
           ),
-          Text(value),
+          Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.9),
+            ),
+          ),
         ],
       ),
     );

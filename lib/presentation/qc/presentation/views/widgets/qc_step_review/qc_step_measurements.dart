@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:alwadi_food/presentation/qc/domain/entites/qc_measurements_entity.dart';
 import 'package:alwadi_food/presentation/qc/presentation/views/widgets/qc_step_review/qc_measurement_fields.dart';
@@ -30,20 +31,18 @@ class _QCStepMeasurementsState extends State<QCStepMeasurements> {
   final _packagingController = TextEditingController();
   final _notesController = TextEditingController();
 
-
   @override
   void dispose() {
     _temperatureController.dispose();
     _weightController.dispose();
     _moistureController.dispose();
     _textureController.dispose();
-     _packagingController.dispose();
+    _packagingController.dispose();
     _notesController.dispose();
     super.dispose();
-   
-
   }
-void _saveMeasurements() {
+
+  void _saveMeasurements() {
     if (!widget.formKey.currentState!.validate()) return;
 
     widget.onMeasurementsChanged(
@@ -58,7 +57,6 @@ void _saveMeasurements() {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -70,14 +68,25 @@ void _saveMeasurements() {
         children: [
           Text(
             'Physical & Quality Measurements',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.3,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 6),
+          Text(
+            'Record the measured values exactly as observed on the production line.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.78),
+              height: 1.25,
+            ),
+          ),
+          const SizedBox(height: 18),
 
-          /// 🔢 INPUT FIELDS
-       QCMeasurementFields(
+          // Inputs
+          _SectionTitle(title: 'Measurements'),
+          const SizedBox(height: 10),
+          QCMeasurementFields(
             temperatureController: _temperatureController,
             weightController: _weightController,
             moistureController: _moistureController,
@@ -86,26 +95,68 @@ void _saveMeasurements() {
             notesController: _notesController,
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 18),
 
-          /// 🖼 IMAGES
+          // Evidence images
+          _SectionTitle(title: 'QC Evidence Images (Optional)'),
+          const SizedBox(height: 10),
           QCMeasurementImages(
             images: widget.images,
             onPickImage: widget.onPickImage,
           ),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 22),
 
-          /// 💾 SAVE STEP
+          // Save
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
+            child: FilledButton.icon(
               onPressed: _saveMeasurements,
-              child: const Text('Save & Continue'),
+              style: FilledButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              icon: const Icon(Icons.check_circle),
+              label: const Text('Save & Continue'),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Row(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withOpacity(0.55),
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          title,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -9,6 +9,8 @@ class QCAnalyticsTrendCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -22,7 +24,45 @@ class QCAnalyticsTrendCard extends StatelessWidget {
           ),
         ],
       ),
-      child: QCTrendChart(trend: trend),
+      child: Column(
+        children: [
+          QCTrendChart(trend: trend),
+          const SizedBox(height: 12),
+
+          // ✅ Chart legend (للمدير)
+          Row(
+            children: [
+              _legendDot(Colors.green),
+              const SizedBox(width: 6),
+              Text(
+                "Pass",
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: 14),
+              _legendDot(Colors.red),
+              const SizedBox(width: 6),
+              Text(
+                "Fail",
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _legendDot(Color c) {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(color: c, shape: BoxShape.circle),
     );
   }
 }

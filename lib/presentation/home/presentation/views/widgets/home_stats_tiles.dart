@@ -1,4 +1,3 @@
-
 import 'package:alwadi_food/presentation/animations/animated_number.dart';
 import 'package:alwadi_food/presentation/animations/staggered_fade_slide_item.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +16,13 @@ class HomeStatsTiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    // UI-only: keep KPIs aligned with the system palette (executive).
+    final totalColor = theme.colorScheme.primary;
+    final passedColor = Colors.green.shade600;
+    final issuesColor = Colors.redAccent.shade200;
+
     return Row(
       children: [
         Expanded(
@@ -26,12 +32,12 @@ class HomeStatsTiles extends StatelessWidget {
             child: _StatTile(
               label: "Total Batches",
               value: total,
-              color: Colors.blue,
+              color: totalColor,
               icon: Icons.inventory_2,
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         Expanded(
           child: StaggeredSlideFade(
             index: 1,
@@ -39,12 +45,12 @@ class HomeStatsTiles extends StatelessWidget {
             child: _StatTile(
               label: "Passed QC",
               value: passed,
-              color: Colors.green,
+              color: passedColor,
               icon: Icons.check_circle,
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         Expanded(
           child: StaggeredSlideFade(
             index: 2,
@@ -52,7 +58,7 @@ class HomeStatsTiles extends StatelessWidget {
             child: _StatTile(
               label: "Issues",
               value: issues,
-              color: Colors.redAccent,
+              color: issuesColor,
               icon: Icons.warning_amber_rounded,
             ),
           ),
@@ -77,29 +83,46 @@ class _StatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final surface = theme.colorScheme.surface;
+    final border = theme.colorScheme.onSurface.withOpacity(0.08);
+    final tint = color.withOpacity(0.10);
+
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        color: surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Column(
         children: [
-          Icon(icon, size: 28, color: color),
-          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: tint,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, size: 22, color: color),
+          ),
+          const SizedBox(height: 8),
           _InteractiveNumber(value: value, color: color),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 11),
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.85),
+              height: 1.1,
+            ),
           ),
         ],
       ),

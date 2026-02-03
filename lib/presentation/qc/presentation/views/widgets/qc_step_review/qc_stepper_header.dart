@@ -10,48 +10,107 @@ class QCStepperHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _stepItem('Review', 0, currentStep),
-        _line(),
-        _stepItem('Inspect', 1, currentStep),
-        _line(),
-        _stepItem('Decide', 2, currentStep),
+        _stepItem(context, title: 'Review', stepIndex: 0),
+        _line(context, from: 0),
+        _stepItem(context, title: 'Inspect', stepIndex: 1),
+        _line(context, from: 1),
+        _stepItem(context, title: 'Decide', stepIndex: 2),
       ],
     );
   }
 
-  Widget _stepItem(String title, int step, int current) {
-    final isActive = step <= current;
+  Widget _stepItem(
+    BuildContext context, {
+    required String title,
+    required int stepIndex,
+  }) {
+    final theme = Theme.of(context);
+
+    // This flow has 4 internal pages (0..3) but 3 visible steps:
+    // Review (0), Inspect (1), Decide (2 + 3).
+    final bool isActive = currentStep >= stepIndex;
+    final bool isCompleted = stepIndex < 2
+        ? currentStep > stepIndex
+        : currentStep >= 3; // Decide completed when we reach final page
+
+    final Color activeColor = theme.colorScheme.primary;
+    final Color idleBg = theme.colorScheme.onSurface.withOpacity(0.06);
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        CircleAvatar(
-          radius: 16,
-          backgroundColor: isActive ? Colors.blue : Colors.grey.shade300,
-          child: Text(
-            '${step + 1}',
-            style: const TextStyle(color: Colors.white),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(
+            color: isActive ? activeColor : idleBg,
+            shape: BoxShape.circle,
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: activeColor.withOpacity(0.18),
+                      blurRadius: 14,
+                      offset: const Offset(0, 8),
+                    ),
+                  ]
+                : const [],
+          ),
+          alignment: Alignment.center,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 160),
+            child: isCompleted
+                ? const Icon(
+                    Icons.check,
+                    key: ValueKey('check'),
+                    size: 18,
+                    color: Colors.white,
+                  )
+                : Text(
+                    '${stepIndex + 1}',
+                    key: ValueKey('num-$stepIndex'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                    ),
+                  ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         Text(
           title,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          style: theme.textTheme.labelMedium?.copyWith(
+            fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+            color: isActive
+                ? theme.colorScheme.onSurface
+                : theme.colorScheme.onSurfaceVariant.withOpacity(0.75),
           ),
         ),
       ],
     );
   }
 
-  Widget _line() {
+  Widget _line(BuildContext context, {required int from}) {
+    final theme = Theme.of(context);
+
+    final bool filled = currentStep > from;
+    final Color c = filled
+        ? theme.colorScheme.primary.withOpacity(0.55)
+        : theme.colorScheme.onSurface.withOpacity(0.08);
+
     return Expanded(
-      child: Container(
-        height: 2,
-        margin: const EdgeInsets.symmetric(horizontal: 6),
-        color: Colors.grey.shade300,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        height: 3,
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: c,
+          borderRadius: BorderRadius.circular(99),
+        ),
       ),
     );
   }
 }
-

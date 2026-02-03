@@ -74,28 +74,26 @@ class ManagerActionNeededViewBody extends StatelessWidget {
         }
 
         if (items.isEmpty) {
-          return const Center(child: Text("No items 🎉"));
+          return const _PremiumEmptyState();
         }
 
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           children: [
-            _Header(title: header, subtitle: subtitle),
+            _Header(title: header, subtitle: subtitle, count: items.length),
             const SizedBox(height: 12),
 
             AnimationLimiter(
               child: Column(
                 children: List.generate(items.length, (i) {
-                  final x = items[i]; // ✅ current item is x
+                  final x = items[i];
 
                   final batchId = (x["batchId"] ?? x["id"] ?? "").toString();
                   final title = ManagerFieldsHelper.productName(x);
                   final line = (x["line"] ?? x["productionLine"] ?? "Unknown")
                       .toString();
 
-                  // ✅ Image fix (as you already intended)
                   final imageUrl = (x["imageUrl"] ?? "").toString();
-
                   final statusRaw =
                       (forceStatus ?? (x["status"] ?? x["result"] ?? ""))
                           .toString();
@@ -119,8 +117,6 @@ class ManagerActionNeededViewBody extends StatelessWidget {
                                 extra: {'rootNodeId': batchId},
                               );
                             },
-
-                            // ✅ FIX: pass batch: x (NOT batch: batch)
                             onPdf: () async {
                               await pdf.previewInApp(
                                 context: context,
@@ -146,38 +142,138 @@ class ManagerActionNeededViewBody extends StatelessWidget {
 class _Header extends StatelessWidget {
   final String title;
   final String subtitle;
+  final int count;
   final Color? color;
 
-  const _Header({required this.title, required this.subtitle, this.color});
+  const _Header({
+    required this.title,
+    required this.subtitle,
+    required this.count,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final c = color ?? Colors.black;
+    final t = Theme.of(context);
+    final c = color ?? Colors.black87;
 
     return Padding(
       padding: const EdgeInsets.only(left: 2, right: 2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
-              color: c,
-              letterSpacing: -0.2,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: t.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: c,
+                    letterSpacing: -0.2,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: t.textTheme.bodySmall?.copyWith(
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: t.colorScheme.surface.withOpacity(0.85),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: Colors.black.withOpacity(0.06)),
+            ),
+            child: Text(
+              "$count",
+              style: t.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: Colors.black87,
+              ),
             ),
           ),
+          const SizedBox(width: 2),
         ],
+      ),
+    );
+  }
+}
+
+class _PremiumEmptyState extends StatelessWidget {
+  const _PremiumEmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.96),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: Colors.black.withOpacity(0.05)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 26,
+                offset: const Offset(0, 16),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: t.colorScheme.primary.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.verified_rounded,
+                  color: t.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "All clear",
+                      style: t.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black87,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      "No items require attention in this category.",
+                      style: t.textTheme.bodySmall?.copyWith(
+                        color: Colors.black54,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

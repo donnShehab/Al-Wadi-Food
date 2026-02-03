@@ -1,5 +1,3 @@
-
-
 import 'package:alwadi_food/core/constants/app_constants.dart';
 import 'package:alwadi_food/core/router/app_router.dart';
 import 'package:alwadi_food/presentation/animations/staggered_fade_slide_item.dart';
@@ -31,9 +29,28 @@ class HomeRoleSections extends StatelessWidget {
   }
 
   Widget _sectionTitle(String title) {
+    // UI-only: executive section header (title + subtle divider line).
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: Text(title, style: theme.textTheme.titleLarge?.semiBold),
+      child: Row(
+        children: [
+          Text(title, style: theme.textTheme.titleLarge?.semiBold),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Container(
+              height: 1,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.onSurface.withOpacity(0.18),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -44,11 +61,11 @@ class HomeRoleSections extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         StaggeredSlideFade(
-            index: 0,
-        delay: const Duration(milliseconds: 100),
-        offsetY: 20,
-          
-          child: _sectionTitle('Production Module')),
+          index: 0,
+          delay: const Duration(milliseconds: 100),
+          offsetY: 20,
+          child: _sectionTitle('Production Module'),
+        ),
         StaggeredSlideFade(
           index: 1,
           delay: const Duration(milliseconds: 220),
@@ -78,7 +95,8 @@ class HomeRoleSections extends StatelessWidget {
   }
 
   // ================= QC =================
-Widget _qcSection(BuildContext context) {
+
+  Widget _qcSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -88,49 +106,25 @@ Widget _qcSection(BuildContext context) {
           offsetY: 20,
           child: _sectionTitle('Quality Control'),
         ),
-
-        /// 🧠 QC Dashboard (المدخل الرئيسي)
         StaggeredSlideFade(
           index: 1,
           delay: const Duration(milliseconds: 220),
           offsetY: 26,
-          // child: HomeNavigationCard(
-          //   title: 'QC Dashboard',
-          //   subtitle: 'Overview of inspections & performance',
-          //   icon: Icons.dashboard_customize,
-          //   color: LightModeColors.lightTertiary,
-          //   route: '/qc-dashboard',
-          // ),
           child: HomeNavigationCard(
-  title: 'QC Dashboard',
-  subtitle: 'Overview of inspections & workload',
-  icon: Icons.dashboard_outlined,
-  color: LightModeColors.lightPrimary,
-  route: AppRouter.KQCDashboardView,
-),
-
-          
+            title: 'QC Dashboard',
+            subtitle: 'Overview of inspections & workload',
+            icon: Icons.dashboard_outlined,
+            color: LightModeColors.lightPrimary,
+            route: AppRouter.KQCDashboardView,
+          ),
         ),
-
-        /// 🕒 Pending QC
-        // StaggeredSlideFade(
-        //   index: 2,
-        //   delay: const Duration(milliseconds: 340),
-        //   offsetY: 26,
-        //   child: HomeNavigationCard(
-        //     title: 'Pending Inspections',
-        //     subtitle: 'Batches waiting for QC',
-        //     icon: Icons.assignment,
-        //     color: LightModeColors.lightSecondary,
-        //     route: AppRouter.KqCPendingListView,
-        //   ),
-        // ),
       ],
     );
   }
 
   // ================= MANAGER =================
-Widget _managerSection(BuildContext context) {
+
+  Widget _managerSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -140,7 +134,6 @@ Widget _managerSection(BuildContext context) {
           offsetY: 20,
           child: _sectionTitle('Manager Module'),
         ),
-
         StaggeredSlideFade(
           index: 1,
           delay: const Duration(milliseconds: 220),
@@ -150,11 +143,10 @@ Widget _managerSection(BuildContext context) {
             subtitle: 'Dashboard • Alerts • Reports • Traceability • More',
             icon: Icons.space_dashboard_rounded,
             color: LightModeColors.lightPrimary,
-            route: AppRouter.KManagerMainView, // ✅ أهم تعديل
+            route: AppRouter.KManagerMainView,
           ),
         ),
       ],
     );
   }
-
 }

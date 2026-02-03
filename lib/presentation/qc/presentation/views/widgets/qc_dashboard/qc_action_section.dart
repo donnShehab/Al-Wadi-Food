@@ -12,17 +12,30 @@ class QCActionSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return QCActionCard(
-      pendingCount: pendingCount,
-      onStart: pendingCount == 0
-          ? null
-          : () async {
-              final result = await context.push(AppRouter.KqCPendingListView);
+    // UI-only: subtle entrance (no state, no logic change)
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeOutCubic,
+      builder: (context, t, child) {
+        final dy = (1 - t) * 10;
+        return Opacity(
+          opacity: t,
+          child: Transform.translate(offset: Offset(0, dy), child: child),
+        );
+      },
+      child: QCActionCard(
+        pendingCount: pendingCount,
+        onStart: pendingCount == 0
+            ? null
+            : () async {
+                final result = await context.push(AppRouter.KqCPendingListView);
 
-              if (result == true && context.mounted) {
-                context.read<QCCubit>().loadQCDashboard();
-              }
-            },
+                if (result == true && context.mounted) {
+                  context.read<QCCubit>().loadQCDashboard();
+                }
+              },
+      ),
     );
   }
 }

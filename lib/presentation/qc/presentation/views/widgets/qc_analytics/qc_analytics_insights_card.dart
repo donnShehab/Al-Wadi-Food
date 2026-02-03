@@ -77,10 +77,14 @@ class QCAnalyticsInsightsCard extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
-        Text(
-          value,
-          style: TextStyle(fontWeight: FontWeight.bold, color: color),
+       FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            style: TextStyle(fontWeight: FontWeight.bold, color: color),
+          ),
         ),
+
       ],
     );
   }

@@ -8,7 +8,7 @@ import 'audit_history_state.dart';
 enum AuditSeverityFilter { all, low, medium, high }
 
 class AuditHistoryCubit extends Cubit<AuditHistoryState> {
-  final TraceabilityV3Repository  repository;
+  final TraceabilityV3Repository repository;
 
   AuditHistoryCubit(this.repository) : super(AuditHistoryInitial());
 
@@ -16,6 +16,10 @@ class AuditHistoryCubit extends Cubit<AuditHistoryState> {
 
   DateTimeRange? _dateRange;
   AuditSeverityFilter _severity = AuditSeverityFilter.all;
+
+  // Expose current filters (UI needs to keep dropdown/date in sync)
+  DateTimeRange? get currentDateRange => _dateRange;
+  AuditSeverityFilter get currentSeverity => _severity;
 
   // ============================================================
   // 🔹 LOAD AUDIT HISTORY
@@ -29,12 +33,12 @@ class AuditHistoryCubit extends Cubit<AuditHistoryState> {
 
       _allAudits = rawAudits.map((data) {
         return RecallAuditModel(
-          managerId: data['managerId'] as String,
-          managerName: data['managerName'] as String,
-          sourceNodeId: data['sourceNodeId'] as String,
-          affectedCount: data['affectedCount'] as int,
-          maxDepth: data['maxDepth'] as int,
-          executedAt: data['executedAt'] as DateTime,
+          managerId: _asString(data['managerId']),
+          managerName: _asString(data['managerName']),
+          sourceNodeId: _asString(data['sourceNodeId']),
+          affectedCount: _asInt(data['affectedCount']),
+          maxDepth: _asInt(data['maxDepth']),
+          executedAt: _asDateTime(data['executedAt']),
         );
       }).toList();
 
@@ -65,11 +69,11 @@ class AuditHistoryCubit extends Cubit<AuditHistoryState> {
   void _emitFiltered() {
     var filtered = _allAudits;
 
-    // Date filter
+    // Date filter (inclusive range)
     if (_dateRange != null) {
       filtered = filtered.where((a) {
-        return a.executedAt.isAfter(_dateRange!.start) &&
-            a.executedAt.isBefore(_dateRange!.end);
+        return !a.executedAt.isBefore(_dateRange!.start) &&
+            !a.executedAt.isAfter(_dateRange!.end);
       }).toList();
     }
 
@@ -99,5 +103,43 @@ class AuditHistoryCubit extends Cubit<AuditHistoryState> {
       return (state as AuditHistoryLoaded).audits;
     }
     return [];
+  }
+
+  // ============================================================
+  // 🧰 PARSERS (makes history resilient to Firestore Timestamp)
+  // ============================================================
+
+  String _asString(dynamic v) {
+    if (v == null) return '';
+    return v.toString();
+  }
+
+  int _asInt(dynamic v) {
+    if (v == null) return 0;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse(v.toString()) ?? 0;
+  }
+
+  DateTime _asDateTime(dynamic v) {
+    if (v == null) return DateTime.fromMillisecondsSinceEpoch(0);
+    if (v is DateTime) return v;
+
+    // Firestore Timestamp support without importing cloud_firestore
+    try {
+      final dynamic d = (v as dynamic).toDate();
+      if (d is DateTime) return d;
+    } catch (_) {
+      // ignore
+    }
+
+    if (v is int) {
+      return DateTime.fromMillisecondsSinceEpoch(v);
+    }
+
+    final parsed = DateTime.tryParse(v.toString());
+    if (parsed != null) return parsed;
+
+    return DateTime.fromMillisecondsSinceEpoch(0);
   }
 }

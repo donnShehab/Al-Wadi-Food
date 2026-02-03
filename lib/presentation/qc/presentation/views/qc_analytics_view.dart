@@ -6,9 +6,8 @@ class QCAnalyticsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFF7F9FC),
-      body: QCAnalyticsViewBodyBlocConsumer(),
-    );
+    // Used inside QCCommandCenterView (which already provides AppBar + bottom nav).
+    // Avoid nested Scaffolds/AppBars for a cleaner executive look.
+    return const QCAnalyticsViewBodyBlocConsumer();
   }
 }
