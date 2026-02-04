@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:alwadi_food/presentation/manager/traceability_v3/presentation/views/recall_audit_replay_view.dart';
+import 'package:alwadi_food/presentation/manager/traceability_v3/presentation/views/recall_audit_details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -537,7 +537,7 @@ class _AuditCard extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (_) =>
-                  RecallAuditReplayView(audit: audit, repository: repository),
+                  RecallAuditDetailsView(audit: audit, repository: repository),
             ),
           );
         },
