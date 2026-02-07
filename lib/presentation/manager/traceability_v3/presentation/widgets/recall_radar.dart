@@ -4,8 +4,9 @@ import '../projections/recall_ui_projection.dart';
 
 class RecallRadar extends StatelessWidget {
   final RecallUiProjection projection;
+  final String rootNodeId;
 
-  const RecallRadar({super.key, required this.projection});
+  const RecallRadar({super.key, required this.projection, required this.rootNodeId});
 
   @override
   Widget build(BuildContext context) {

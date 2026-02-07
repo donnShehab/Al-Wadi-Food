@@ -2,7 +2,8 @@ import 'dart:io';
 import 'package:alwadi_food/presentation/manager/domain/entities/reports_summary_entity.dart';
 import 'package:alwadi_food/presentation/manager/presentation/views/widgets/reports/reports_center_firestore_ds.dart';
 import 'package:excel/excel.dart';
-import 'package:open_file/open_file.dart';
+import 'package:flutter/material.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:share_plus/share_plus.dart';
@@ -114,20 +115,20 @@ class ReportsExcelService {
   }
 
   /// ✅ Try open, if no app then Share
-  Future<bool> openFile(File file) async {
-    final result = await OpenFile.open(file.path);
+Future<bool> openFile(File file) async {
+    final result = await OpenFilex.open(file.path);
 
-    print("📌 OpenFile result: ${result.type} - ${result.message}");
+    // بدل print (اختياري)
+    debugPrint("OpenFilex result: ${result.type} - ${result.message}");
 
+    // إذا ما في تطبيق يفتح الملف
     if (result.type == ResultType.noAppToOpen) {
-      await Share.shareXFiles([
-        XFile(file.path),
-      ], text: "📌 QC Excel Report Exported");
-      return true; // ✅ Share is success
+      return false;
     }
 
     return result.type == ResultType.done;
   }
+
 
   String _rangeLabel(ReportsRange range) {
     switch (range) {

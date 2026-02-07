@@ -81,7 +81,11 @@ class RecallAuditReplayView extends StatelessWidget {
                   /// ====================================================
                   /// 📡 VISUALIZATION (READ-ONLY)
                   /// ====================================================
-                  Expanded(flex: 2, child: RecallRadar(projection: projection)),
+                  Expanded(flex: 2, child:RecallRadar(
+  projection: projection,
+  rootNodeId: audit.sourceNodeId,
+)
+),
                   Expanded(
                     flex: 3,
                     child: RecallTimeline(projection: projection),

@@ -137,7 +137,8 @@ class RecallConfirmationDialog extends StatelessWidget {
                     ),
                     child: const Text(
                       'Confirm & Execute',
-                      style: TextStyle(fontWeight: FontWeight.w900),
+                      style: TextStyle(fontWeight: FontWeight.w900,
+                          ),
                     ),
                   ),
                 ),

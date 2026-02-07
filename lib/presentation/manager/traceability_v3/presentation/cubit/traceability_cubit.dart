@@ -91,6 +91,7 @@ class TraceabilityCubit extends Cubit<TraceabilityState> {
 
       // 2️⃣ Build audit model
       final audit = RecallAuditModel(
+        
         managerId: managerId,
         managerName: managerName,
         sourceNodeId: recallResult.source.id,
@@ -101,6 +102,140 @@ class TraceabilityCubit extends Cubit<TraceabilityState> {
 
       // 3️⃣ Execute atomic recall
       await repository.executeRecall(statusUpdates: updates, audit: audit);
+
+      emit(TraceabilityRecallExecuted());
+    } catch (e) {
+      emit(TraceabilityError(e.toString()));
+    }
+  }
+
+  // ============================================================
+  // ✅ APPROVAL WORKFLOW (Draft → Pending → Executed)
+  // ============================================================
+
+  Future<String?> createRecallDraft({
+    required RecallResultModel recallResult,
+    required String managerId,
+    required String managerName,
+    required String severityLabel, // LOW | MEDIUM | HIGH
+    required int requiredApprovals,
+  }) async {
+    emit(TraceabilityLoading());
+
+    try {
+      final draft = RecallAuditModel(
+        managerId: managerId,
+        managerName: managerName,
+        sourceNodeId: recallResult.source.id,
+        affectedCount: recallResult.affectedNodes.length,
+        maxDepth: recallResult.maxDepth,
+        status: 'DRAFT',
+        severity: severityLabel,
+        requiredApprovals: requiredApprovals,
+        approvals: const [],
+        attachments: const [],
+        affectedNodeIds: recallResult.affectedNodes.map((e) => e.id).toList(),
+        createdAt: DateTime.now(),
+        submittedAt: null,
+        executedAt: DateTime.now(),
+      );
+
+      final id = await repository.createRecallDraft(
+        draftPayload: draft.toFirestore(),
+      );
+
+      // restore previous UI (no new states added)
+      if (state is TraceabilityRecallReady) {
+        final s = state as TraceabilityRecallReady;
+        emit(
+          TraceabilityRecallReady(
+            projection: s.projection,
+            severity: s.severity,
+          ),
+        );
+      } else {
+        emit(TraceabilityInitial());
+      }
+      return id;
+    } catch (e) {
+      emit(TraceabilityError(e.toString()));
+      return null;
+    }
+  }
+
+  Future<bool> submitRecallForApproval({required String auditId}) async {
+    emit(TraceabilityLoading());
+    try {
+      await repository.submitRecallForApproval(auditId: auditId);
+
+      if (state is TraceabilityRecallReady) {
+        final s = state as TraceabilityRecallReady;
+        emit(
+          TraceabilityRecallReady(
+            projection: s.projection,
+            severity: s.severity,
+          ),
+        );
+      } else {
+        emit(TraceabilityInitial());
+      }
+      return true;
+    } catch (e) {
+      emit(TraceabilityError(e.toString()));
+      return false;
+    }
+  }
+
+  Future<bool> addApproval({
+    required String auditId,
+    required String approverId,
+    required String approverName,
+  }) async {
+    emit(TraceabilityLoading());
+    try {
+      await repository.addRecallApproval(
+        auditId: auditId,
+        approval: {
+          'approverId': approverId,
+          'approverName': approverName,
+          'approvedAt': DateTime.now(),
+        },
+      );
+
+      if (state is TraceabilityRecallReady) {
+        final s = state as TraceabilityRecallReady;
+        emit(
+          TraceabilityRecallReady(
+            projection: s.projection,
+            severity: s.severity,
+          ),
+        );
+      } else {
+        emit(TraceabilityInitial());
+      }
+      return true;
+    } catch (e) {
+      emit(TraceabilityError(e.toString()));
+      return false;
+    }
+  }
+
+  Future<void> executeApprovedRecall({
+    required String auditId,
+    required RecallResultModel recallResult,
+  }) async {
+    emit(TraceabilityLoading());
+
+    try {
+      final updates = <String, String>{};
+      for (final node in recallResult.affectedNodes) {
+        updates[node.id] = 'BLOCKED';
+      }
+
+      await repository.executeApprovedRecall(
+        auditId: auditId,
+        statusUpdates: updates,
+      );
 
       emit(TraceabilityRecallExecuted());
     } catch (e) {

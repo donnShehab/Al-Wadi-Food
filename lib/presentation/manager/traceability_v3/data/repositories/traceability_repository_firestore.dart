@@ -303,7 +303,7 @@ class TraceabilityV3RepositoryFirestore implements TraceabilityV3Repository {
   // ============================================================
   // 🔹 UPDATE NODE STATUSES (ATOMIC)
   // ============================================================
-@override
+  @override
   Future<void> updateNodeStatuses({
     required Map<String, String> statusUpdates,
   }) async {
@@ -322,7 +322,6 @@ class TraceabilityV3RepositoryFirestore implements TraceabilityV3Repository {
 
     await batch.commit();
   }
-
 
   // ============================================================
   // 🔹 CREATE RECALL AUDIT
@@ -343,6 +342,7 @@ class TraceabilityV3RepositoryFirestore implements TraceabilityV3Repository {
   Future<List<Map<String, dynamic>>> fetchRecallAudits({int limit = 50}) async {
     final snap = await firestore
         .collection('recall_audits')
+        .where('status', isEqualTo: 'EXECUTED')
         .orderBy('executedAt', descending: true)
         .limit(limit)
         .get();
@@ -350,7 +350,7 @@ class TraceabilityV3RepositoryFirestore implements TraceabilityV3Repository {
     return snap.docs.map((d) => d.data()).toList();
   }
 
-@override
+  @override
   Future<void> executeRecall({
     required Map<String, String> statusUpdates,
     required RecallAuditModel audit,
@@ -361,6 +361,58 @@ class TraceabilityV3RepositoryFirestore implements TraceabilityV3Repository {
     await updateProductionBatchStatuses(statusUpdates: statusUpdates);
 
     await createRecallAudit(auditPayload: audit.toFirestore());
+  }
+
+  // ============================================================
+  // ✅ Approval Workflow (Draft → Pending → Executed)
+  // ============================================================
+
+  @override
+  Future<String> createRecallDraft({
+    required Map<String, dynamic> draftPayload,
+  }) async {
+    final ref = await firestore.collection('recall_audits').add(draftPayload);
+
+    // ✅ store doc id for easier updates / UI
+    await ref.update({'auditId': ref.id});
+
+    return ref.id;
+  }
+
+  @override
+  Future<void> submitRecallForApproval({required String auditId}) async {
+    await firestore.collection('recall_audits').doc(auditId).update({
+      'status': 'PENDING',
+      'submittedAt': DateTime.now(),
+    });
+  }
+
+  @override
+  Future<void> addRecallApproval({
+    required String auditId,
+    required Map<String, dynamic> approval,
+  }) async {
+    await firestore.collection('recall_audits').doc(auditId).update({
+      'approvals': FieldValue.arrayUnion([approval]),
+    });
+  }
+
+  @override
+  Future<void> executeApprovedRecall({
+    required String auditId,
+    required Map<String, String> statusUpdates,
+  }) async {
+    // ✅ First: block nodes (same as normal execute)
+    await updateNodeStatuses(statusUpdates: statusUpdates);
+
+    // ✅ Keep production batches in sync (existing behavior)
+    await updateProductionBatchStatuses(statusUpdates: statusUpdates);
+
+    // ✅ Mark audit as executed (do NOT create a second audit doc)
+    await firestore.collection('recall_audits').doc(auditId).update({
+      'status': 'EXECUTED',
+      'executedAt': DateTime.now(),
+    });
   }
 
   Future<Map<String, TraceNodeModel>> _enrichWithProductionBatches(
@@ -485,6 +537,7 @@ class TraceabilityV3RepositoryFirestore implements TraceabilityV3Repository {
 
     return out;
   }
+
   Future<void> updateProductionBatchStatuses({
     required Map<String, String> statusUpdates,
   }) async {
@@ -503,7 +556,6 @@ class TraceabilityV3RepositoryFirestore implements TraceabilityV3Repository {
 
     await batch.commit();
   }
-
 
   Future<Map<String, dynamic>?> _fetchQcResultByBatchId(String batchId) async {
     final snap = await firestore
@@ -541,5 +593,4 @@ class TraceabilityV3RepositoryFirestore implements TraceabilityV3Repository {
 
     return fallback.isEmpty ? 'UNKNOWN' : fallback.toUpperCase();
   }
-
 }
